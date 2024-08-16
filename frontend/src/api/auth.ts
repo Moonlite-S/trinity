@@ -3,6 +3,7 @@
  * via the session token / cookie.
  * 
  * @returns a boolean representing if the user is verified or not
+ * (Will probably change this to an object later)
  */
 export const checkUser = async(): Promise<boolean> => {
     try {
