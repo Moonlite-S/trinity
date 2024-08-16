@@ -1,5 +1,7 @@
 import React from "react"
 import { useNavigate } from "react-router-dom"
+import { Header } from "./misc"
+import { login } from "../api/auth"
 
 /**
  * Index Home Page
@@ -97,33 +99,34 @@ export default function Home() {
   
       setError(false)
 
+      // Get results of login()
+      try {
+        const response: number = await login({username, password})
+        console.log(response)
+
+        if (response === 200) {
+          navigate("/main_menu")
+        }
+        else if (response === 401) {
+          console.log("login failed")
+          navigate("/main_menu") // DEBUG    
+        }
+        else {
+          console.log("Another Error")
+          navigate("/main_menu") // DEBUG
+        }
+      }
+      catch (error) {
+        console.error("Network Error: ",error)
+        navigate("/main_menu") // DEBUG
+      }
+
       // POST form to backend
       // If successful, go to main page
       // If not, show error
 
-      const response = await fetch('/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          username: username,
-          password: password
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json()
-        console.log("login successful" + data)
-        navigate('/main_menu')
-      }
-      else {
-        //console.log("login failed")
-        //setError(true)
-        navigate('/main_menu') //DEBUG
-      }
     }
-  
+
     return(
       <div className='m-5'>
   
@@ -148,17 +151,5 @@ export default function Home() {
         </form>
   
       </div>
-    )
-  }
-  
-  export function Header() {
-    return(
-      <header className='w-screen h-32 relative'>
-  
-        <div className='h-4 w-screen bg-orange-400 absolute -z-10' />
-  
-        <img src='' alt='Trinity MVP Logo' />
-  
-      </header>
     )
   }

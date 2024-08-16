@@ -1,10 +1,12 @@
-import { Header } from "./Home";
+import { Header } from "./misc";
 import { useNavigate } from "react-router-dom"
 
 /**
  * Home Menu
  */
 export function MainMenu() {
+    // Check what roles the user has
+    // and show / hide buttons accordingly
     return (
         <>
             <Header />
@@ -13,12 +15,13 @@ export function MainMenu() {
 
                 <Button text="Create Project" route="/create_project" />
                 <Button text="Update Project" route="/update_project" />
-                <Button text="Home" route="/" />
-                <Button text="Home" route="/" />
-                <Button text="Home" route="/" />
-                <Button text="Home" route="/" />
-                <Button text="Home" route="/" />
-                <Button text="Home" route="/" />
+                <Button text="Project Status Report" route="/" />
+                <Button text="Tasks" route="/" />
+                <Button text="Report" route="/" />
+                <Button text="Submittal" route="/" />
+                <Button text="Proposal" route="/" />
+                <Button text="Calendar" route="/" />
+                <Button text="Calls" route="/" />
 
             </div>
 
@@ -60,6 +63,7 @@ function LogOut() {
     const handleClick = () => {
         navigate("/")
         console.log("Logged out")
+        // Also call the backend to clear the session token
     }
 
     return(
