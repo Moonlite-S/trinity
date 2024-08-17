@@ -93,7 +93,7 @@ export function UpdateProject() {
     useEffect(() => {
         // We need to fetch a list of projects
 
-        fetch('/project_list', {
+        fetch('http://localhost:3306/project_list', {
             method: 'GET',
             mode: 'cors',
             headers: {
