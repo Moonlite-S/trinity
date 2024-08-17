@@ -13,3 +13,7 @@ class Project(models.Model):
     
     def __str__(self):
         return self.Name + " " + self.Customer
+    
+class User(models.Model):
+    Name=models.CharField(max_length=50)
+    Password=models.CharField(max_length=50)    
