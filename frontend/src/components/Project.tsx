@@ -1,6 +1,8 @@
 import { useEffect } from "react";
-import { Header } from "./misc";
+import { Header, Back_Button } from "./misc";
 import React from "react";
+
+// TO DO FINISH AUTO UPDATE OF UPDATE PROJECTS
 
 /**
  * Create Project
@@ -65,7 +67,7 @@ export function CreateProject() {
 
             <div className="justify-center mx-auto">
 
-                <Form button_text="Create Project" projectManagers={projectManagers} onSubmit={onSubmit} />
+                <Form button_text="Create Project" projectManagerList={projectManagers} onSubmit={onSubmit} />
 
             </div>
         </>
@@ -75,9 +77,12 @@ export function CreateProject() {
 type UpdateProjectProps = {
     project_name?: string
     date_created?: string
-    project_manager?: string
+    current_project_manager?: string
     project_description?: string
     project_status?: string
+    project_id?: number
+    customer_name?: string
+    city?: string
 }
 /**
  * Update Project
@@ -87,6 +92,7 @@ export function UpdateProject() {
     //  (THE LIST SHOULD ONLY SHOW PROJECTS THAT THE USER IS AUTHORIZED WITH)
     // Finally, use same layout as create project
     const [projects, setProjects] = React.useState<string[]>([])
+    const [projectManager, setProjectManagers] = React.useState<string[]>([])
     const [currentProject, setCurrentProject] = React.useState<UpdateProjectProps>()
     const [hasEdited, setHasEdited] = React.useState<boolean>(false) // To prevent accidental switching to a different project
 
@@ -112,6 +118,14 @@ export function UpdateProject() {
         ).catch((error) => console.log(error))
 
         setProjects(['Project 1', 'Project 2', 'Project 3'])
+        setProjectManagers(['Sean', 'Israel', 'Leo'])
+        setCurrentProject({
+            project_name: 'Project 1',
+            date_created: '2022-01-01',
+            current_project_manager: 'Leo',
+            project_description: 'Project 1 description',
+            project_status: 'Completed'
+        })
     }, [])
 
     const handleChange = (event: any) => {
@@ -158,12 +172,26 @@ export function UpdateProject() {
 
                 </select>
 
-                {currentProject && <Form button_text="Update Project" projectManagers={[]} onSubmit={onSubmit} />}
+                {currentProject && <Form button_text="Update Project" projectManagerList={projectManager} onSubmit={onSubmit} {...currentProject}/>}
 
             </div>
         </>
     )
 }
+
+function Project_Status_Report() {
+    // Maybe this is about showing the status of the project
+    return(
+        <>
+            <Header />
+
+
+        </>
+    )
+}
+
+
+// Helper Comonents
 
 function ProjectManager(name: string, id: number) {
     return(
@@ -179,11 +207,21 @@ function ProjectList(project_name: string, id: number){
 
 type FormProps = {
     button_text: string
-    projectManagers?: string[]
+    projectManagerList?: string[]
     onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
+
+    // For Project Update
+    project_name?: string
+    date_created?: string
+    current_project_manager?: string
+    project_description?: string
+    project_status?: string
+    project_id?: number
+    customer_name?: string
+    city?: string
 }
 function Form(
-    {button_text, projectManagers, onSubmit}: FormProps
+    {button_text, projectManagerList, onSubmit, ...props}: FormProps
 ) {
 
     return (
@@ -194,41 +232,49 @@ function Form(
             <div className="flex flex-col ">
 
                 <label htmlFor="project_name">Project Name:</label>
-                <input className="bg-slate-100" type="text" name="project_name" autoFocus required/>
+                <input defaultValue={props?.project_name} className="bg-slate-100" type="text" name="project_name" autoFocus required/>
 
-                <label htmlFor="date_created">Date Created:</label>
-                <input className="bg-slate-100" type="date" name="date_created" required/>
+                <label  htmlFor="date_created">Date Created:</label>
+                <input defaultValue={props?.date_created} className="bg-slate-100" type="date" name="date_created" required/>
 
-                <label htmlFor="project_description">Project Description:</label>
-                <textarea className="bg-slate-100" placeholder="Enter Project Description" name="project_description" required/>
+                <label  htmlFor="project_description">Project Description:</label>
+                <textarea defaultValue={props.project_description} className="bg-slate-100" placeholder="Enter Project Description" name="project_description" required/>
 
-            </div>
-
-            <div className="flex flex-col">
-
-                <label htmlFor="project_manager">Project Manager:</label>
-                <select name="project_manager" form="project_creation" required>
-                    {projectManagers &&projectManagers.map((projectManager, index) => ProjectManager(projectManager, index))}
-                </select>
-
-                <label>Project Status:</label>
-                <select name="project_status">
+                <label >Project Status:</label>
+                <select defaultValue={props.project_status} name="project_status">
 
                     <option value="Active">Active</option>
                     <option value="Inactive">Completed</option>
                     <option value="Cancelled">Cancelled</option>
 
                 </select>
+            </div>
 
-                <label>Something else</label>
-                <input className="bg-slate-100" type="text" name=""/>
+            <div className="flex flex-col">
+
+                <label >Project ID</label>
+                <input defaultValue={props.project_id} className="bg-slate-100" type="text" name="project_id"/>
+
+                <label >Customer Name</label>
+                <input defaultValue={props.customer_name} className="bg-slate-100" type="text" name="customer_name"/>
+
+                <label >City</label>
+                <input defaultValue={props.city} className="bg-slate-100" type="text" name="city"/>
+
+                <label  htmlFor="project_manager">Project Manager:</label>
+                <select defaultValue={props.current_project_manager} name="project_manager" form="project_creation" required>
+                    {projectManagerList &&projectManagerList.map((projectManager, index) => ProjectManager(projectManager, index))}
+                </select>
+
+
 
             </div>  
 
         </div>
 
         <div className="mx-auto text-center justify-center pb-5">
-            <button type="submit" className="bg-orange-300 rounded p-4">{button_text}</button>
+            <Back_Button route="/main_menu" />
+            <button type="submit" className="bg-orange-300 rounded p-4 ml-5">{button_text}</button>
         </div>
 
     </form>

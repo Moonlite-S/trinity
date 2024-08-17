@@ -54,17 +54,17 @@ export function MainMenu() {
                 
             </div>
 
-            <div className='bg-slate-50 w-screen h-full grid grid-cols-6 p-5 gap-10'>
+            <div className='bg-slate-50 w-screen h-full grid grid-cols-6 p-5 gap-104'>
 
-                <Button text="Create Project" route="/create_project" />
-                <Button text="Update Project" route="/update_project" />
-                <Button text="Project Status Report" route="/" />
-                <Button text="Tasks" route="/" />
-                <Button text="Report" route="/" />
-                <Button text="Submittal" route="/" />
-                <Button text="Proposal" route="/" />
-                <Button text="Calendar" route="/" />
-                <Button text="Calls" route="/" />
+                <Button_Card text="Create Project" route="/create_project" />
+                <Button_Card text="Update Project" route="/update_project" />
+                <Button_Card text="Project Status Report" route="/" />
+                <Button_Card text="Tasks" route="/" />
+                <Button_Card text="Report" route="/" />
+                <Button_Card text="Submittal" route="/" />
+                <Button_Card text="Proposal" route="/" />
+                <Button_Card text="Calendar" route="/" />
+                <Button_Card text="Calls" route="/" />
 
             </div>
 
@@ -77,7 +77,7 @@ type ButtonProps = {
     route: string
 }
 
-function Button(
+function Button_Card(
     {text, route}: ButtonProps
 ) {
     const navigate = useNavigate();
@@ -87,7 +87,7 @@ function Button(
     }
 
     return (
-        <button onClick={handleClick}>
+        <button onClick={handleClick} className="min-w-32 max-w-52 ">
 
             <div className=" bg-orange-300 rounded h-32 min-w-32 max-w-52 justify-center items-center flex">
 
