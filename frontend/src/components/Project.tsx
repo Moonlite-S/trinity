@@ -93,23 +93,23 @@ export function UpdateProject() {
     useEffect(() => {
         // We need to fetch a list of projects
 
-        // fetch('/get_projects', {
-        //     method: 'GET',
-        //     mode: 'cors',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        // }).then(
-        //     (response) => {
-        //         if (response.ok) {
-        //             console.log("Success")
-        //         }
-        //         else {
-        //             console.log("Error")
-        //         }
-        //         response.json()
-        //     }
-        // ).catch((error) => console.log(error))
+        fetch('/project_list', {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        }).then(
+            (response) => {
+                if (response.ok) {
+                    console.log("Success")
+                }
+                else {
+                    console.log("Error")
+                }
+                response.json()
+            }
+        ).catch((error) => console.log(error))
 
         setProjects(['Project 1', 'Project 2', 'Project 3'])
     }, [])
