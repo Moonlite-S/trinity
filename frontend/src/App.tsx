@@ -48,6 +48,7 @@ export function Verification() {
       // Check if user is logged in
       checkUser()
       isAuth(true)
+      console.log("Checking..")
     }, []);
 
     return (auth ? <Outlet/> : <Home />)
