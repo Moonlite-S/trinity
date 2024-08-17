@@ -28,9 +28,9 @@ export function MainMenu() {
         <>
             <Header />
 
-            <div className="bg-slate-400 flex flex-row justify-center">
+            <div className="bg-slate-100 flex flex-row justify-center">
 
-                <div className="bg-red-300 p-5 basis-1/5">
+                <div className="p-5 basis-1/5">
 
                     <h3>Hello, {user.name}</h3>
 
@@ -38,23 +38,23 @@ export function MainMenu() {
 
                 </div>
 
-                <div className="bg-green-300 p-5 basis-1/3">
+                <div className="p-5 basis-1/3">
                     <h3>Tasks:</h3>
                     <h3>Tasks go here</h3>
                 </div>
             
-                <div className="bg-teal-400 p-5 basis-1/3">
+                <div className="p-5 basis-1/3">
                     <h3>Projects:</h3>
                     <h3>Projects go here</h3>
                 </div>
 
-                <div className="bg-amber-300 p-5 ">
+                <div className="p-5 ">
                     <LogOut />
                 </div>
                 
             </div>
 
-            <div className='w-screen h-full bg-slate-900 grid grid-cols-6 p-5 gap-10'>
+            <div className='bg-slate-50 w-screen h-full grid grid-cols-6 p-5 gap-10'>
 
                 <Button text="Create Project" route="/create_project" />
                 <Button text="Update Project" route="/update_project" />
