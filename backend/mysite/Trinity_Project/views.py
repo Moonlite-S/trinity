@@ -8,7 +8,6 @@ from .serializers import ProjectSerializer
 
 # Create your views here.
 
-
 def index(request):
     return HttpResponse("Hello, world. You're at the Project index.")
 
@@ -22,9 +21,13 @@ def project_list(request):
     
     if request.method == 'POST':
         serializer = ProjectSerializer(data=request.data)
+
         if serializer.is_valid():
+            print("Valid data:", serializer.validated_data) # Debug
             serializer.save()
+            print("Serializer errors:", serializer.errors) # Debug
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET','PUT','DELETE'])
 def project_detail(request, Project_id):

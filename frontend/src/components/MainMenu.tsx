@@ -87,9 +87,9 @@ function Button_Card(
     }
 
     return (
-        <button onClick={handleClick} className="min-w-32 max-w-52 ">
+        <button onClick={handleClick} className="min-w-32 max-w-40 mb-5">
 
-            <div className=" bg-orange-300 rounded h-32 min-w-32 max-w-52 justify-center items-center flex">
+            <div className=" bg-orange-300 rounded h-32 min-w-32 max-w-40 justify-center items-center flex">
 
                 <h3>{text}</h3>
                 

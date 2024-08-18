@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { Header, Back_Button } from "./misc";
 import React from "react";
+import { create_project, test_project_list } from "../api/projects";
+import { useNavigate } from "react-router-dom";
 
 // TO DO FINISH AUTO UPDATE OF UPDATE PROJECTS
 
@@ -10,7 +12,7 @@ import React from "react";
 export function CreateProject() {
     const [projectManagers, setProjectManagers] = React.useState<string[]>([])
 
-    const onSubmit = (event: any) => {
+    const onSubmit = async (event: any) => {
         event.preventDefault()
 
         const formData = new FormData(event.target)
@@ -19,28 +21,27 @@ export function CreateProject() {
         // Also do some light validation here
         // like no symbols on the project name, or something
 
-        console.log(data)
+        // This converts the data to be seend correctly to the backend
+        const convert_to_backend = {
+            project_id: data.project_id,
+            name: data.project_name,
+            manager: data.project_manager,
+            customer: data.customer_name,
+            city: data.city,
+            start_date: data.date_created,
+            end_date: data.date_created
+        }
+        
+        console.log("Sending data:", convert_to_backend);
 
-        fetch('/create_project', {
-            method: 'POST',
-            mode: 'cors',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        }).then(
-            (response) => {
-                if (response.ok) {
-                    console.log("Success")
-                }
-                else {
-                    console.log("Error")
-                }
-                response.json()
-            }
-        ).catch(
-            (error) => console.log(error)
-        )
+        try {
+            await create_project(convert_to_backend)
+            // Component that signals that a project has been created
+            event.target.reset()
+        } catch (error) {
+            console.error("Error creating project:", error);
+            throw error; // Re-throw the error so the caller can handle it if needed
+        }
     }
 
     useEffect(() => {
@@ -75,12 +76,13 @@ export function CreateProject() {
 }
 
 type UpdateProjectProps = {
+    project_id?: number
     project_name?: string
     date_created?: string
+    date_ended?: string
     current_project_manager?: string
     project_description?: string
     project_status?: string
-    project_id?: number
     customer_name?: string
     city?: string
 }
@@ -88,9 +90,8 @@ type UpdateProjectProps = {
  * Update Project
  */
 export function UpdateProject() {
-    // Then, fetch list of projects
-    //  (THE LIST SHOULD ONLY SHOW PROJECTS THAT THE USER IS AUTHORIZED WITH)
-    // Finally, use same layout as create project
+    // CHANGE THIS TO A PAGE WHERE THE USER HAS A TABLE OF ALL THEIR PROJECTS
+    // THEN THE USER CAN CHOOSE WHICH ONE THEY WANT TO EDIT IN ANOTHER COMPONENT
     const [projects, setProjects] = React.useState<string[]>([])
     const [projectManager, setProjectManagers] = React.useState<string[]>([])
     const [currentProject, setCurrentProject] = React.useState<UpdateProjectProps>()
@@ -99,33 +100,28 @@ export function UpdateProject() {
     useEffect(() => {
         // We need to fetch a list of projects
 
-        fetch('http://localhost:3306/project_list', {
-            method: 'GET',
-            mode: 'cors',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        }).then(
-            (response) => {
-                if (response.ok) {
-                    console.log("Success")
+        test_project_list()
+            .then(
+                (response) => {
+                    const to_Props: UpdateProjectProps = {
+                        project_name: response.Name,
+                        date_created: response.Start_Date,
+                        current_project_manager: response.Manager,
+                        date_ended: response.End_Date,
+                        customer_name: response.Customer,
+                        //project_description: sent_project.project_description,
+                        //project_status: sent_project.project_status
+                    }
+            
+                    setCurrentProject(to_Props)
                 }
-                else {
-                    console.log("Error")
-                }
-                response.json()
-            }
-        ).catch((error) => console.log(error))
+            )
+            .catch(
+                (error) => console.log(error)
+            )
 
         setProjects(['Project 1', 'Project 2', 'Project 3'])
-        setProjectManagers(['Sean', 'Israel', 'Leo'])
-        setCurrentProject({
-            project_name: 'Project 1',
-            date_created: '2022-01-01',
-            current_project_manager: 'Leo',
-            project_description: 'Project 1 description',
-            project_status: 'Completed'
-        })
+        setProjectManagers(['Sean', 'Israel', 'Leo', 'Matt'])
     }, [])
 
     const handleChange = (event: any) => {
@@ -134,7 +130,7 @@ export function UpdateProject() {
         const project_selected = event.target.value
 
         const switchProject = () => {
-            setCurrentProject({project_name: project_selected})
+            setCurrentProject({project_name: project_selected}) // This would be changed to fetch that project
             setHasEdited(true)
             console.log("We got here: " + project_selected)
         }
@@ -211,12 +207,13 @@ type FormProps = {
     onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
 
     // For Project Update
+    project_id?: number
     project_name?: string
     date_created?: string
+    date_ended?: string
     current_project_manager?: string
     project_description?: string
     project_status?: string
-    project_id?: number
     customer_name?: string
     city?: string
 }
