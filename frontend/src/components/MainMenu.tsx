@@ -10,7 +10,14 @@ type UserProps = {
     projects?: string
 }
 /**
- * Home Menu
+ * ### [Route for ('/main_menu')]
+ * 
+ * This component shows brief information about the user, their tasks and projects.
+ * 
+ * Based on the user's role, it will show / hide different buttons.
+ * 
+ * TODO:
+ *  - Actually implement the user role system
  */
 export function MainMenu() {
     // Check what roles the user has
@@ -27,34 +34,14 @@ export function MainMenu() {
     return (
         <>
             <Header />
-
-            <div className="bg-slate-100 flex flex-row justify-center">
-
-                <div className="p-5 basis-1/5">
-
-                    <h3>Hello, {user.name}</h3>
-
-                    <h3>Role: {user.role}</h3>
-
-                </div>
-
-                <div className="p-5 basis-1/3">
-                    <h3>Tasks:</h3>
-                    <h3>Tasks go here</h3>
-                </div>
             
-                <div className="p-5 basis-1/3">
-                    <h3>Projects:</h3>
-                    <h3>Projects go here</h3>
-                </div>
+            <MainMenuQuickBar
+                name={user.name}
+                role={user.role}
+            />
+            
 
-                <div className="p-5 ">
-                    <LogOut />
-                </div>
-                
-            </div>
-
-            <div className='bg-slate-50 w-screen h-full grid grid-cols-6 p-5 gap-104'>
+            <div className='bg-slate-50 grid grid-cols-6 p-5 justify-items-center'>
 
                 <Button_Card text="Create Project" route="/create_project" />
                 <Button_Card text="Update Project" route="/update_project" />
@@ -73,10 +60,17 @@ export function MainMenu() {
 }
 
 type ButtonProps = {
-    text: string,
+    text: string, 
     route: string
 }
 
+/**
+ * A button component that serves as main buttons for the Main Menu
+ * 
+ * @param text - The text of the button
+ * @param route - The route of the button
+ * 
+ */
 function Button_Card(
     {text, route}: ButtonProps
 ) {
@@ -87,9 +81,9 @@ function Button_Card(
     }
 
     return (
-        <button onClick={handleClick} className="min-w-32 max-w-40 mb-5">
+        <button onClick={handleClick} className="w-40 mb-5">
 
-            <div className=" bg-orange-300 rounded h-32 min-w-32 max-w-40 justify-center items-center flex">
+            <div className="bg-orange-300 rounded h-32 min-w-32 max-w-40 justify-center items-center flex">
 
                 <h3>{text}</h3>
                 
@@ -99,6 +93,12 @@ function Button_Card(
     )
 }
 
+/**
+ * Component for the log out button in the Main Menu
+ * 
+ * Deletes the session token and logs the user out
+ * 
+ */
 function LogOut() {
     const navigate = useNavigate();
 
@@ -119,4 +119,54 @@ function LogOut() {
 
         </div>
     )
+}
+
+/**
+ * A small component for the Main Menu component
+ * 
+ * Shows the user's name and role, along with tasks and projects
+ * 
+ * TODO:
+ *  - Maybe place the tasks and projects below the Buttons? It wouldn't have enough space to show all of the tasks the way it currently is
+ */
+function MainMenuQuickBar(
+    { name, role }: UserProps
+) {
+return (
+    <>
+        <div className="bg-slate-100 flex flex-row justify-center">
+
+            <div className="p-5 basis-1/5">
+
+                <h3>Hello, {name}</h3>
+
+                <h3>Role: {role}</h3>
+
+            </div>
+
+            <div className="p-5 basis-1/3">
+
+                <h3>Tasks:</h3>
+
+                <h3>Tasks go here</h3>
+
+            </div>
+        
+            <div className="p-5 basis-1/3">
+
+                <h3>Projects:</h3>
+
+                <h3>Projects go here</h3>
+
+            </div>
+
+            <div className="p-5 ">
+
+                <LogOut />
+
+            </div>
+            
+        </div>
+    </>
+      );
 }

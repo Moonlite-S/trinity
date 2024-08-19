@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { Header, Back_Button } from "./misc";
-import { create_project, get_project_list, get_project } from "../api/projects";
+import { createProject, getProjectList, getProject } from "../api/projects";
 import { useNavigate, useParams } from "react-router-dom";
 
 /**
@@ -21,7 +21,7 @@ export function CreateProject() {
         console.log("Sending data:", data);
 
         try {
-            await create_project(data)
+            await createProject(data)
             // Component that signals that a project has been created
             alert("Project created successfully!")
             navigate("/main_menu")
@@ -90,7 +90,7 @@ type UpdateProjectProps = {
  * This component fetches a list of projects and shows them in a table.
  * 
  * TODO: 
- *  - Add a button to create a new project
+ *  - Add a button to create a new project (so we can have one button in the Main Menu)
  *  - Add a search bar
  *  - Look for a custom component for the table that has search, sort, and pagination
  */
@@ -102,7 +102,7 @@ export function UpdateProjectList() {
         // This is where the list of projects will be fetched
         const fetchProjects = async () => {
             try {
-                const data: Array<UpdateProjectProps> = await get_project_list()
+                const data: Array<UpdateProjectProps> = await getProjectList()
                 
                 setProjectList(data)
                 console.log(data)
@@ -123,7 +123,7 @@ export function UpdateProjectList() {
 
             <div className="bg-slate-50 p-5">
 
-                <h2>Project List:</h2>
+                <h2 className="mb-5">Project List:</h2>
 
                 <div>
 
@@ -139,6 +139,7 @@ export function UpdateProjectList() {
         </>
     )
 }
+
 /**
  * ### [Route for ('/update_project/:id')]
  * 
@@ -151,11 +152,10 @@ export function UpdateProject() {
 
     useEffect(() => {
         // We need to fetch a list of projects
-
         const project = async () => {
             if (!id) return
 
-            const data = await get_project(id)
+            const data = await getProject(id)
             setCurrentProject(data)
         }
 
@@ -179,18 +179,48 @@ export function UpdateProject() {
     )
 }
 
-function Project_Status_Report() {
+/**
+ *  ### [Route for ('/project_status_report/:id')]
+ * 
+ * This component shows the status of a project based on the project id.
+ */
+export function ProjectStatusReport() {
     // Maybe this is about showing the status of the project
+    const { id } = useParams<string>()
+    const [project, setProject] = useState<UpdateProjectProps>()
+
+    useEffect(() => {
+        const reponse = async () => {
+            if (!id) return
+
+            const data = await getProject(id)
+            console.log(data)
+            setProject(data)
+        }
+
+        reponse()
+    }, [])
+
     return(
         <>
             <Header />
 
+            <h1 className="mb-5">Project Status Report</h1>
 
+            {project && <ProjectCard project={project} />}
         </>
     )
 }
 
-
+/**
+ * Small component option tag to be used in the ProjectForm.
+ * 
+ * Used to combo this with the select tag to list off all possible project managers
+ * 
+ * @param name name of the manager
+ * @param id unique key used for mapping
+ * @returns 
+ */
 function ProjectManager(name: string, id: number) {
     return(
         <option value={name} key={id}>{name}</option>
@@ -248,7 +278,7 @@ function ProjectForm(
                 project_status={project_status}
                 projectManagerList={projectManagerList}
                 start_date={start_date}
-                />
+            />
 
             <ProjectFormBottom
                 project_description={project_description}
@@ -269,8 +299,9 @@ type ProjectNameIDProps =  {
     project_id: number | "";
     project_name: string;
 };
-
 /**
+ * Renders the top section of the form.
+ * 
  * Consists of Project Name and Project ID
  */
 function ProjectTop({ project_id, project_name }: ProjectNameIDProps) {
@@ -344,6 +375,11 @@ type ProjectFormBottomProps =  {
     project_description: string;
 };
 
+/**
+ * Renders the bottom section of the form. 
+ * 
+ * Consists of ProjectDescription
+ */
 function ProjectFormBottom({ project_description }: ProjectFormBottomProps) {
     return (
         <div className="flex flex-col gap-5">
@@ -360,7 +396,10 @@ type ProjectStatusAndDateProps =  {
     project_status: ProjectStatus;
     start_date: string;
 };
-      
+    
+/**
+ * For the ProjectMiddle component. 
+ */
 function ProjectStatusAndDate({ 
     end_date,
     project_status,
@@ -399,9 +438,12 @@ function ProjectStatusAndDate({
     );
 }
 
+/**
+ * The legend layer that sits atop the ProjectCard in the UpdateProjectList component.
+ */
 function ProjectCardLegend() {
     return(
-        <div className="grid grid-cols-9 justify-between border-b-2 border-black">
+        <div className="grid grid-cols-10 justify-between border-b-2 border-black">
 
             <div className="bg-slate-200 ">
                 <h5>Project ID</h5>
@@ -427,13 +469,21 @@ function ProjectCardLegend() {
             <div className="bg-slate-100 ">
                 <h5>Date Ended</h5>
             </div>
+            <div className="bg-slate-200 ">
+                <h5>Edit Project</h5>
+            </div>
             <div className="bg-slate-100 ">
-
+                <h5>Project Status</h5>
             </div>
         </div>
     )
 }
 
+/**
+ * For the ProjectMiddle component.
+ * 
+ * A template that uses the {UpdateProjectProps} props to fill in the form
+ */
 function ProjectCard(
     { project } : { project: UpdateProjectProps}
 ) {
@@ -449,18 +499,23 @@ function ProjectCard(
     } = project ?? {}
 
     const navigate = useNavigate();
-    const handleClick = () => {
+    const handleEditClick = () => {
         console.log("Clicked")
         navigate(`/update_project/${project_id}`)
     }
 
+    const handleStatusClick = () => {
+        console.log("Clicked")
+        navigate(`/project_status_report/${project_id}`)
+    }
+
     return(
-        <div className="grid grid-cols-9 justify-between">
+        <div className="grid grid-cols-10 justify-between border-b-2 border-stone-300">
 
             <div className="bg-slate-200 ">
                 <h5>{project_id}</h5>
             </div>
-            <div className="bg-slate-100 ">
+            <div className="bg-slate-100 truncate">
                 <h5>{project_name}</h5>
             </div>
             <div className="bg-slate-200 ">
@@ -482,7 +537,10 @@ function ProjectCard(
                 <h5>{end_date}</h5>
             </div>
             <div className="bg-slate-100 ">
-                <button className="border-2 w-full bg-slate-300 hover:bg-slate-400 transition" onClick={handleClick}>Edit</button>
+                <button className="border-2 w-full h-full bg-slate-300 hover:bg-slate-400 transition" onClick={handleEditClick}>Edit</button>
+            </div>
+            <div className="bg-slate-100 ">
+                <button className="border-2 w-full h-full bg-slate-300 hover:bg-slate-400 transition" onClick={handleStatusClick}>Status</button>
             </div>
         </div>
     )
@@ -495,6 +553,9 @@ type ProjectManagerCustomerCityProps =  {
     projectManagerList: string[] | undefined;
 };
 
+/**
+ * For use in the ProjectFormMiddle component
+ */
 function ProjectManagerCustomerCity({ 
     city,
     current_manager,
@@ -529,15 +590,21 @@ function ProjectManagerCustomerCity({
       );
     }
 
-type MainMenuButtonProps =  {
-    button_text: string;
-};
-      
-function MainMenuFormButton({ button_text }: MainMenuButtonProps) {
+/**
+ * For use in the MainMenu component
+ *  
+ * There are two buttons: One that goes back to the main menu and one that creates or updates a project
+ * 
+ * @params {string} button_text - The text of the second button
+ * 
+ * This is usually either "Create Project" or "Update Project"
+ */
+function MainMenuFormButton({ button_text }: { button_text: string }) {
     return (
     <div className="mx-auto text-center justify-center pt-5">
 
         <Back_Button route="/main_menu" />
+        
         <button type="submit" className="bg-orange-300 rounded p-4 ml-5">
             {button_text}
         </button>
