@@ -111,7 +111,7 @@ function LogOut() {
     return(
         <div className="mx-auto text-center justify-center ">
 
-            <button className="bg-orange-300 rounded p-4" onClick={handleClick}>
+            <button className="bg-slate-300 rounded p-4" onClick={handleClick}>
 
                 <h6 className="inline-block">Logout</h6>
 

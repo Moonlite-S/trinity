@@ -30,10 +30,10 @@ def project_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET','PUT','DELETE'])
-def project_detail(request, Project_id):
+def project_detail(request, project_id):
     
     try:
-        project=Project.objects.get(Project_id=Project_id)
+        project=Project.objects.get(project_id=project_id)
     except Project.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     

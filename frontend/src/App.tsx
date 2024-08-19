@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Outlet } from 'react-router-dom
 import { MainMenu } from './components/MainMenu'
 import Home from './components/Home'
 import './App.css'
-import { CreateProject, UpdateProject } from './components/Project'
+import { CreateProject, UpdateProject, UpdateProjectList } from './components/Project'
 import { checkUser } from './api/auth'
 import { Tasks } from './components/Tasks';
 
@@ -20,7 +20,8 @@ export default function App() {
 
               <Route path='/main_menu' element={<MainMenu />} />
               <Route path='/create_project' element={<CreateProject />} />
-              <Route path='/update_project' element={<UpdateProject />} />
+              <Route path='/update_project' element={<UpdateProjectList />} />
+              <Route path='/update_project/:id' element={<UpdateProject />} />
               <Route path='/task' element={<Tasks />} />
 
             </Route>
