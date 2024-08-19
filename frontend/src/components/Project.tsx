@@ -67,7 +67,7 @@ export function CreateProject() {
 }
 
 type UpdateProjectProps = {
-    project_id?: number
+    project_id: number
     project_name?: string
     current_manager?: string
     city?: string
@@ -90,7 +90,7 @@ export function UpdateProjectList() {
         // This is where the list of projects will be fetched
         const fetchProjects = async () => {
             try {
-                const data: Array<any> = await get_project_list()
+                const data: Array<UpdateProjectProps> = await get_project_list()
                 
                 setProjectList(data)
                 console.log(data)
