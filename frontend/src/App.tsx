@@ -5,6 +5,7 @@ import Home from './components/Home'
 import './App.css'
 import { CreateProject, UpdateProject } from './components/Project'
 import { checkUser } from './api/auth'
+import { Tasks } from './components/Tasks';
 
 // Main Router for the application
 export default function App() {
@@ -20,6 +21,7 @@ export default function App() {
               <Route path='/main_menu' element={<MainMenu />} />
               <Route path='/create_project' element={<CreateProject />} />
               <Route path='/update_project' element={<UpdateProject />} />
+              <Route path='/task' element={<Tasks />} />
 
             </Route>
 
