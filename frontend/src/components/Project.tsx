@@ -1,16 +1,16 @@
-import { useEffect } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Header, Back_Button } from "./misc";
-import React from "react";
-import { create_project, test_project_list } from "../api/projects";
-import { useNavigate } from "react-router-dom";
-
-// TO DO FINISH AUTO UPDATE OF UPDATE PROJECTS
+import { create_project, get_project_list, get_project } from "../api/projects";
+import { useNavigate, useParams } from "react-router-dom";
 
 /**
- * Create Project
+ * Create Project 
+ * 
+ * ### [Main Component]
  */
 export function CreateProject() {
-    const [projectManagers, setProjectManagers] = React.useState<string[]>([])
+    const [projectManagers, setProjectManagers] = useState<string[]>([])
+    const navigate = useNavigate()
 
     const onSubmit = async (event: any) => {
         event.preventDefault()
@@ -18,26 +18,14 @@ export function CreateProject() {
         const formData = new FormData(event.target)
         const data = Object.fromEntries(formData)
 
-        // Also do some light validation here
-        // like no symbols on the project name, or something
-
-        // This converts the data to be seend correctly to the backend
-        const convert_to_backend = {
-            project_id: data.project_id,
-            name: data.project_name,
-            manager: data.project_manager,
-            customer: data.customer_name,
-            city: data.city,
-            start_date: data.date_created,
-            end_date: data.date_created
-        }
-        
-        console.log("Sending data:", convert_to_backend);
+        console.log("Sending data:", data);
 
         try {
-            await create_project(convert_to_backend)
+            await create_project(data)
             // Component that signals that a project has been created
-            event.target.reset()
+            alert("Project created successfully!")
+            navigate("/main_menu")
+            //event.target.reset()
         } catch (error) {
             console.error("Error creating project:", error);
             throw error; // Re-throw the error so the caller can handle it if needed
@@ -66,11 +54,14 @@ export function CreateProject() {
         <>
             <Header />
 
-            <div className="justify-center mx-auto">
+            <div className="justify-center mx-auto p-5">
+
+                <h2 className="text-center">Create Project:</h2>
+
+            </div>
 
                 <Form button_text="Create Project" projectManagerList={projectManagers} onSubmit={onSubmit} />
 
-            </div>
         </>
     )
 }
@@ -78,76 +69,88 @@ export function CreateProject() {
 type UpdateProjectProps = {
     project_id?: number
     project_name?: string
-    date_created?: string
-    date_ended?: string
-    current_project_manager?: string
+    current_manager?: string
+    city?: string
+    customer_name?: string
+    start_date?: string
+    end_date?: string
     project_description?: string
     project_status?: string
-    customer_name?: string
-    city?: string
+}
+/**
+ * Update Project List
+ * 
+ * ### [Main Component]
+ */
+export function UpdateProjectList() {
+    const [projectList, setProjectList] = useState<UpdateProjectProps[]>([])
+    const [projectLoaded, setProjectLoaded] = useState<boolean>(false)
+
+    useEffect(() => {
+        // This is where the list of projects will be fetched
+        const fetchProjects = async () => {
+            try {
+                const data: Array<any> = await get_project_list()
+                
+                setProjectList(data)
+                console.log(data)
+                setProjectLoaded(true)
+           }
+           catch (error) {
+               console.error("Error fetching projects:", error);
+               throw error; // Re-throw the error so the caller can handle it if needed
+           }
+        }
+
+        fetchProjects()
+    }, [])
+
+    return(
+        <>
+            <Header />
+
+            <div className="bg-slate-50 p-5">
+
+                <h2>Project List:</h2>
+
+                <div>
+
+                    <ProjectCardLegend />
+
+                    {projectLoaded && 
+                        projectList.map((project) =>
+                            <ProjectCard key={project.project_id} project={project}/>)}
+
+                </div>
+
+            </div>
+        </>
+    )
 }
 /**
  * Update Project
+ * 
+ * ### [Main Component]
  */
 export function UpdateProject() {
-    // CHANGE THIS TO A PAGE WHERE THE USER HAS A TABLE OF ALL THEIR PROJECTS
-    // THEN THE USER CAN CHOOSE WHICH ONE THEY WANT TO EDIT IN ANOTHER COMPONENT
-    const [projects, setProjects] = React.useState<string[]>([])
-    const [projectManager, setProjectManagers] = React.useState<string[]>([])
-    const [currentProject, setCurrentProject] = React.useState<UpdateProjectProps>()
-    const [hasEdited, setHasEdited] = React.useState<boolean>(false) // To prevent accidental switching to a different project
+    const { id } = useParams<string>()
+    const [projectManager, setProjectManagers] = useState<string[]>([])
+    const [currentProject, setCurrentProject] = useState<UpdateProjectProps>()
 
     useEffect(() => {
         // We need to fetch a list of projects
 
-        test_project_list()
-            .then(
-                (response) => {
-                    const to_Props: UpdateProjectProps = {
-                        project_name: response.Name,
-                        date_created: response.Start_Date,
-                        current_project_manager: response.Manager,
-                        date_ended: response.End_Date,
-                        customer_name: response.Customer,
-                        //project_description: sent_project.project_description,
-                        //project_status: sent_project.project_status
-                    }
-            
-                    setCurrentProject(to_Props)
-                }
-            )
-            .catch(
-                (error) => console.log(error)
-            )
+        const project = async () => {
+            if (!id) return
 
-        setProjects(['Project 1', 'Project 2', 'Project 3'])
+            const data = await get_project(id)
+            setCurrentProject(data)
+        }
+
+        project()
+
         setProjectManagers(['Sean', 'Israel', 'Leo', 'Matt'])
     }, [])
-
-    const handleChange = (event: any) => {
-        // TODO: Make sure to add the information to the current project
-        event.preventDefault()
-        const project_selected = event.target.value
-
-        const switchProject = () => {
-            setCurrentProject({project_name: project_selected}) // This would be changed to fetch that project
-            setHasEdited(true)
-            console.log("We got here: " + project_selected)
-        }
-
-        if (hasEdited) {
-            if (window.confirm("Are you sure you want to switch projects? All unsaved changes will be lost.")) {
-                switchProject()
-            }
-            else {
-                console.log("User cancelled project switch")
-                event.target.value = currentProject?.project_name || '';
-            }
-        }
-        else {
-            switchProject()          
-        }
-    }
 
     const onSubmit = (event: any) => {
         event.preventDefault()
@@ -158,19 +161,8 @@ export function UpdateProject() {
         <>
             <Header />
 
-            <div className='w-screen h-full p-5 gap-10 flex flex-col justify-center'>
+            <Form button_text="Update Project" projectManagerList={projectManager} onSubmit={onSubmit} formProps={currentProject}/>
 
-                <select defaultValue={"= Select Project ="} value={currentProject?.project_name} name="project_name" form="project_creation" onChange={handleChange} className="p-2" required>
-
-                    <option disabled>= Select Project =</option>
-
-                    {projects.map((project, index) => ProjectList(project, index))}
-
-                </select>
-
-                {currentProject && <Form button_text="Update Project" projectManagerList={projectManager} onSubmit={onSubmit} {...currentProject}/>}
-
-            </div>
         </>
     )
 }
@@ -187,7 +179,7 @@ function Project_Status_Report() {
 }
 
 
-// Helper Comonents
+// Helper Components
 
 function ProjectManager(name: string, id: number) {
     return(
@@ -195,86 +187,211 @@ function ProjectManager(name: string, id: number) {
     )
 }
 
-function ProjectList(project_name: string, id: number){
-    return(
-        <option value={project_name} key={id}>{project_name}</option>
-    )
-}
-
 type FormProps = {
     button_text: string
     projectManagerList?: string[]
-    onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
+    onSubmit: (event: FormEvent<HTMLFormElement>) => void
 
     // For Project Update
-    project_id?: number
-    project_name?: string
-    date_created?: string
-    date_ended?: string
-    current_project_manager?: string
-    project_description?: string
-    project_status?: string
-    customer_name?: string
-    city?: string
+    formProps?: UpdateProjectProps
 }
-function Form(
-    {button_text, projectManagerList, onSubmit, ...props}: FormProps
-) {
 
+function Form(
+    {button_text, projectManagerList, onSubmit, formProps}: FormProps
+) { 
+    const {
+        project_id = '',
+        project_name = '',
+        current_manager = '',
+        city = '',
+        customer_name = '',
+        start_date = '',
+        end_date = '',
+        project_status = '',
+        project_description = '',
+    } = formProps ?? {}
+
+    // YOU BETTER REFACROT THIS LATER
     return (
         <form id="project_creation" onSubmit={onSubmit}  method="post">
 
-        <div className="flex flex-row justify-center gap-10 p-5" >
+        <div className="flex flex-col gap-10 p-24 mx-auto max-w-screen-lg bg-zinc-50" >
 
-            <div className="flex flex-col ">
+            <div className="flex flex-row justify-center gap-5">
 
                 <label htmlFor="project_name">Project Name:</label>
-                <input defaultValue={props?.project_name} className="bg-slate-100" type="text" name="project_name" autoFocus required/>
+                <input defaultValue={project_name} className="bg-slate-100 border border-zinc-300" type="text" name="project_name" autoFocus required/>
 
-                <label  htmlFor="date_created">Date Created:</label>
-                <input defaultValue={props?.date_created} className="bg-slate-100" type="date" name="date_created" required/>
+                <label >Project ID:</label>
+                <input defaultValue={project_id} className="bg-slate-100 border-zinc-300" type="text" name="project_id"/>
 
-                <label  htmlFor="project_description">Project Description:</label>
-                <textarea defaultValue={props.project_description} className="bg-slate-100" placeholder="Enter Project Description" name="project_description" required/>
-
-                <label >Project Status:</label>
-                <select defaultValue={props.project_status} name="project_status">
-
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Completed</option>
-                    <option value="Cancelled">Cancelled</option>
-
-                </select>
             </div>
 
-            <div className="flex flex-col">
+            <div className="flex flex-col gap-5">
 
-                <label >Project ID</label>
-                <input defaultValue={props.project_id} className="bg-slate-100" type="text" name="project_id"/>
+                <label  htmlFor="project_description">Project Description:</label>
+                <textarea defaultValue={project_description} className="bg-slate-100 border border-zinc-300" placeholder="Enter Project Description" name="project_description" required/>
+            
+            </div>
 
-                <label >Customer Name</label>
-                <input defaultValue={props.customer_name} className="bg-slate-100" type="text" name="customer_name"/>
+            <div className="flex flex-row gap-5 justify-between">
 
-                <label >City</label>
-                <input defaultValue={props.city} className="bg-slate-100" type="text" name="city"/>
+                <div className="flex flex-col gap-5 justify-between">
 
-                <label  htmlFor="project_manager">Project Manager:</label>
-                <select defaultValue={props.current_project_manager} name="project_manager" form="project_creation" required>
-                    {projectManagerList &&projectManagerList.map((projectManager, index) => ProjectManager(projectManager, index))}
-                </select>
+                    <div className="flex flex-row justify-between gap-5">
+
+                        <label >Project Status:</label>
+                        <select defaultValue={project_status} name="project_status">
+
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+
+                        </select>
+                        
+                    </div>
+
+                    <div className="flex flex-row justify-between gap-5">
+
+                        <label  htmlFor="start_date">Date Created:</label>
+                        <input defaultValue={start_date} className="bg-slate-100 border border-zinc-300" type="date" name="start_date" required/>
+                    
+                    </div>
+
+                    <div className="flex flex-row justify-between gap-5">
+
+                        <label  htmlFor="end_date">Date Ended:</label>
+                        <input defaultValue={end_date} className="bg-slate-100 border border-zinc-300" type="date" name="end_date" required/>
+                    
+                    </div>
+                </div>
+
+                <div className="flex flex-col gap-5 justify-between">
+                    
+                    <div className="flex flex-row justify-between gap-5">
+
+                        <label  htmlFor="current_manager" >Project Manager:</label>
+                        <select defaultValue={current_manager} name="current_manager" form="project_creation" required>
+                            {projectManagerList &&projectManagerList.map((projectManager, index) => ProjectManager(projectManager, index))}
+                        </select>
+                    
+                    </div>
+
+                    <div className="flex flex-row justify-between gap-5">
+
+                        <label >Customer Name</label>
+                        <input defaultValue={customer_name} className="bg-slate-100 border border-zinc-300" type="text" name="customer_name"/>
+                    
+                    </div>
+                    
+                    <div className="flex flex-row justify-between gap-5">
+
+                        <label >City</label>
+                        <input defaultValue={city} className="bg-slate-100 border border-zinc-300" type="text" name="city"/>
+                    
+                    </div>
 
 
-
+                    </div>
             </div>  
 
         </div>
 
-        <div className="mx-auto text-center justify-center pb-5">
+        <div className="mx-auto text-center justify-center pt-5">
             <Back_Button route="/main_menu" />
             <button type="submit" className="bg-orange-300 rounded p-4 ml-5">{button_text}</button>
         </div>
 
     </form>
 
+    )
+}
+
+function ProjectCardLegend() {
+    return(
+        <div className="grid grid-cols-9 justify-between border-b-2 border-black">
+
+            <div className="bg-slate-200 ">
+                <h5>Project ID</h5>
+            </div>
+            <div className="bg-slate-100 ">
+                <h5>Project Name</h5>
+            </div>
+            <div className="bg-slate-200 ">
+                <h5>Project Manager</h5>
+            </div>
+            <div className="bg-slate-100 ">
+                <h5>Status</h5>
+            </div>
+            <div className="bg-slate-200 ">
+                <h5>Customer Name</h5>
+            </div>
+            <div className="bg-slate-100 ">
+                <h5>City</h5>
+            </div>
+            <div className="bg-slate-200 ">
+                <h5>Date Created</h5>
+            </div>
+            <div className="bg-slate-100 ">
+                <h5>Date Ended</h5>
+            </div>
+            <div className="bg-slate-100 ">
+
+            </div>
+        </div>
+    )
+}
+
+function ProjectCard(
+    { project } : { project: UpdateProjectProps}
+) {
+    const {
+        project_id = '',
+        project_name = '',
+        current_manager = '',
+        city = '',
+        customer_name = '',
+        start_date = '',
+        end_date = '',
+        project_status = 'Active',
+    } = project ?? {}
+
+    const navigate = useNavigate();
+    const handleClick = () => {
+        console.log("Clicked")
+        navigate(`/update_project/${project_id}`)
+    }
+
+    return(
+        <div className="grid grid-cols-9 justify-between">
+
+            <div className="bg-slate-200 ">
+                <h5>{project_id}</h5>
+            </div>
+            <div className="bg-slate-100 ">
+                <h5>{project_name}</h5>
+            </div>
+            <div className="bg-slate-200 ">
+                <h5>{current_manager}</h5>
+            </div>
+            <div className="bg-slate-100 ">
+                <h5>{project_status}</h5>
+            </div>
+            <div className="bg-slate-200 ">
+                <h5>{customer_name}</h5>
+            </div>
+            <div className="bg-slate-100 ">
+                <h5>{city}</h5>
+            </div>
+            <div className="bg-slate-200 ">
+                <h5>{start_date}</h5>
+            </div>
+            <div className="bg-slate-100 ">
+                <h5>{end_date}</h5>
+            </div>
+            <div className="bg-slate-100 ">
+                <button className="border-2 w-full bg-slate-300 hover:bg-slate-400 transition" onClick={handleClick}>Edit</button>
+            </div>
+        </div>
     )
 }
