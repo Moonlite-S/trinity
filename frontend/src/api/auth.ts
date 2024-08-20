@@ -4,9 +4,9 @@
  * 
  * @returns a boolean representing if the user is verified or not
  */
-export async function checkUser(): Promise<boolean> {
+export async function checkUser(): Promise<number> {
     try {
-    const response = await fetch('/api/user/verify', {
+    const response = await fetch('http://localhost:8000/api/user', {
       method: 'GET',
       credentials: 'include', // This gets the cookies
       headers: {
@@ -17,35 +17,31 @@ export async function checkUser(): Promise<boolean> {
       // If user is verified
       if (response.ok) {
         const data = await response.json()
+        console.log(data)
 
-        if (data.isVerified) {
+        if (data) {
           console.log("User verified")
-          return true
+          return response.status
         } else {
           console.log("User not verified")
-          return false
+          return response.status
         } 
-      }
-      // If user is not verified
-      else if (response.status === 401) {
-        console.log("User not verified")
-        return false
       }
       // Any other error
       else {
         console.log("Server Error")
-        return false 
+        return response.status 
       }
     }
 
     catch (error) {
       console.error("Network Error: ",error)
-      return false
+      return 500
     }
 }
 
 type LoginProps = {
-    username: string,
+    email: string,
     password: string
 }
 /**
@@ -54,34 +50,28 @@ type LoginProps = {
  * 
  * (true = success, false = failure)
  * 
- * @param username user-inputted username
+ * @param email user-inputted email
  * @param password user-inputted password
  */
-export async function login({username, password }: LoginProps): Promise<number> {
+export async function login({email, password }: LoginProps): Promise<number> {
     try {
-        const response = await fetch('/login', {
+        const response = await fetch('http://localhost:8000/api/login', {
           method: 'POST',
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            username: username,
+            email: email,
             password: password
-          })
+          }),
         });
 
         if (response.ok) {
           const data = await response.json()
           console.log("login successful" + data)
           return response.status
-        }
-        else if (response.status === 401) {
-          console.log("login failed")
-          //setError(true)
-          return response.status
-        }
-        else {
-          console.log("Server Error")
+        } else {
           return response.status
         }
       }
@@ -90,4 +80,30 @@ export async function login({username, password }: LoginProps): Promise<number> 
         console.error("Network Error: ",error)
         return 500
       }
+}
+
+/**
+ * Sends a GET request to log the user out
+ * 
+ * TODO: Make sure to delete the session token
+ * and anything that ties back to the user
+ */
+export async function logout() {
+    try {
+      const response = await fetch('/api/logout', {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+              'Content-Type': 'application/json',
+          }
+      })
+
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      console.log("Logged out")
+    } catch (error) {
+      console.error("Network Error: ",error)
+    }
 }

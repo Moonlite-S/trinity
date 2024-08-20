@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Header } from "./misc";
 import { useNavigate } from "react-router-dom"
+import { logout } from "../api/auth";
 
 type UserProps = {
     name: string
@@ -102,12 +103,13 @@ function Button_Card(
 function LogOut() {
     const navigate = useNavigate();
 
-    const handleClick = () => {
+    const handleClick = async() => {
         navigate("/")
         console.log("Logged out")
         // Also call the backend to clear the session token
+        await logout()
     }
-
+ 
     return(
         <div className="mx-auto text-center justify-center ">
 

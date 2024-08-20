@@ -16,9 +16,12 @@ class Project(models.Model):
     
 class User(AbstractUser):
     name=models.CharField(max_length=50)
-    email=models.CharField(max_length=50, unique=True)
+    email=models.EmailField(max_length=50, unique=True)
     password=models.CharField(max_length=255)
     username= None
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []    
+
+    def __str__(self):
+        return f"{self.name} | {self.email}"

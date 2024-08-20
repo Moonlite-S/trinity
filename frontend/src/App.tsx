@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BrowserRouter as Router, Route, Routes, Outlet } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Routes, Outlet, useLocation } from 'react-router-dom'
 import { MainMenu } from './components/MainMenu'
 import Home from './components/Home'
 import './App.css'
@@ -40,20 +40,47 @@ export default function App() {
  * 
  * if so, go to where the user wants to go
  * 
- * if not, redirect to login
+ * if not, redirect to login.
+ * 
+ * #### This component triggers EVERY time the user navigates anywhere in it's children.
  * 
  * @param isAuth: boolean
  * @param redirectPath: string
  */
 export function Verification() {
-    const [auth, isAuth] = useState<boolean>(true)
+    const [auth, isAuth] = useState<boolean>(false)
+    const [loading, setLoading] = useState<boolean>(true)
+    const location = useLocation()
 
     useEffect(() => {
       // Check if user is logged in
-      checkUser()
-      isAuth(true)
+      const checkForValidation = async () => {
+        setLoading(true)
+        try {
+          const reponse_code = await checkUser()
+          
+          if (reponse_code === 200) {
+            console.log("User verified")
+            isAuth(true)
+          }
+        } catch (error) {
+          console.error("Error checking user:", error);
+          isAuth(false)
+          setLoading(false)
+        } finally {
+          setLoading(false)
+        }
+      }
       console.log("Checking..")
-    }, []);
+
+      checkForValidation()
+
+    }, [location]);
+    
+    // Change this to a custom loading screen
+    if (loading) {
+      return <div>Loading...</div>
+    }
 
     return (auth ? <Outlet/> : <Home />)
 }
