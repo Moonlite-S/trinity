@@ -3,9 +3,8 @@
  * via the session token / cookie.
  * 
  * @returns a boolean representing if the user is verified or not
- * (Will probably change this to an object later)
  */
-export const checkUser = async(): Promise<boolean> => {
+export async function checkUser(): Promise<boolean> {
     try {
     const response = await fetch('/api/user/verify', {
       method: 'GET',
@@ -57,9 +56,8 @@ type LoginProps = {
  * 
  * @param username user-inputted username
  * @param password user-inputted password
- * @returns 
  */
-export const login = async({username, password }: LoginProps): Promise<number> => {
+export async function login({username, password }: LoginProps): Promise<number> {
     try {
         const response = await fetch('/login', {
           method: 'POST',
