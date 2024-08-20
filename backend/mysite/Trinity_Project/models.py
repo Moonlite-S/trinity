@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 class Project(models.Model):
@@ -14,6 +14,11 @@ class Project(models.Model):
     def __str__(self):
         return f"ID: {self.project_id} | {self.project_name} | {self.customer_name}"
     
-class User(models.Model):
+class User(AbstractUser):
     name=models.CharField(max_length=50)
-    password=models.CharField(max_length=50)    
+    email=models.CharField(max_length=50, unique=True)
+    password=models.CharField(max_length=255)
+    username= None
+    
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []    
