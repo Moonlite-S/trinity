@@ -41,7 +41,6 @@ export function MainMenu() {
                 role={user.role}
             />
             
-
             <div className='bg-slate-50 grid grid-cols-6 p-5 justify-items-center'>
 
                 <Button_Card text="Create Project" route="/create_project" />
@@ -53,6 +52,7 @@ export function MainMenu() {
                 <Button_Card text="Proposal" route="/" />
                 <Button_Card text="Calendar" route="/" />
                 <Button_Card text="Calls" route="/" />
+                <Button_Card text="Create Employee" route="/create_employee" />
 
             </div>
 
@@ -104,10 +104,19 @@ function LogOut() {
     const navigate = useNavigate();
 
     const handleClick = async() => {
-        navigate("/")
-        console.log("Logged out")
-        // Also call the backend to clear the session token
-        await logout()
+        try {
+            const response = await logout()
+            
+            if (response === 200) {
+                console.log("Logged out")
+                navigate("/")
+            } else {
+                console.log("Error: ", response)
+            }
+        }
+        catch {
+            console.log("Server Error: ")
+        }
     }
  
     return(

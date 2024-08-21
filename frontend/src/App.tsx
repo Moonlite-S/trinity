@@ -6,6 +6,7 @@ import './App.css'
 import { CreateProject, UpdateProject, UpdateProjectList, ProjectStatusReport } from './components/Project'
 import { checkUser } from './api/auth'
 import { Tasks } from './components/Tasks';
+import { CreateEmployee } from './components/Employee'
 
 // Main Router for the application
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
 
             <Route path='/' element={<Home />} />
 
+            {/* All routes here are checked for authentication. */}
             <Route element={<Verification />}>
 
               <Route path='/main_menu' element={<MainMenu />} />
@@ -24,6 +26,7 @@ export default function App() {
               <Route path='/update_project/:id' element={<UpdateProject />} />
               <Route path='/project_status_report/:id' element={<ProjectStatusReport />} />
               <Route path='/task' element={<Tasks />} />
+              <Route path='/create_employee' element={<CreateEmployee />} />
 
             </Route>
 
@@ -71,6 +74,7 @@ export function Verification() {
           setLoading(false)
         }
       }
+      
       console.log("Checking..")
 
       checkForValidation()
@@ -79,8 +83,20 @@ export function Verification() {
     
     // Change this to a custom loading screen
     if (loading) {
-      return <div>Loading...</div>
+      return <LoadingComponent />
     }
 
     return (auth ? <Outlet/> : <Home />)
+}
+
+/**
+ * Maybe add some flair to this later
+ * 
+ */
+function LoadingComponent() {
+  return (
+    <div className='mx-auto flex justify-center'>
+      <h1>Loading...</h1>
+    </div>
+  )
 }

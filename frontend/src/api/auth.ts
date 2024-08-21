@@ -2,7 +2,9 @@
  * This sends a GET request to the backend and verifies a user's authentication status
  * via the session token / cookie.
  * 
- * @returns a boolean representing if the user is verified or not
+ * This is called everytime the user navigates anywhere in the app, aside from the login page
+ * 
+ * @returns a repsponse code representing if the user is verified or not
  */
 export async function checkUser(): Promise<number> {
     try {
@@ -88,10 +90,10 @@ export async function login({email, password }: LoginProps): Promise<number> {
  * TODO: Make sure to delete the session token
  * and anything that ties back to the user
  */
-export async function logout() {
+export async function logout(): Promise<number> {
     try {
-      const response = await fetch('/api/logout', {
-          method: 'GET',
+      const response = await fetch('http://localhost:8000/api/logout', {
+          method: 'POST',
           credentials: 'include',
           headers: {
               'Content-Type': 'application/json',
@@ -99,11 +101,14 @@ export async function logout() {
       })
 
       if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
+          return response.status
       }
 
       console.log("Logged out")
+      return response.status
+
     } catch (error) {
       console.error("Network Error: ",error)
+      return 500
     }
 }

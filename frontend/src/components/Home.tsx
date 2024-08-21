@@ -13,7 +13,7 @@ export default function Home() {
 
         <div className='w-screen'>
             
-          <div className='flex flex-row justify-center gap-3'>
+          <div className='flex flex-row justify-center gap-3 mx-auto'>
   
             <ContactForm />
   
@@ -49,6 +49,8 @@ function ContactForm() {
     // Removes leading and trailing whitespace
     setEmail(email.trim())
 
+    window.open('mailto:test@gmail.com?subject=Contact For More Information')
+
     setSubmitted(true)
     setError(false)
 
@@ -68,7 +70,7 @@ function ContactForm() {
 
         </div>
 
-        {submitted ? <p className='mt-3'>Submitted</p> : <button type='submit' onClick={handleSubmit} className='mt-3 bg-red-100 p-3'>Submit</button>}
+        {submitted ? <p className='mt-3 text-green-500'>Submitted. We will get back to you as soon as we can!</p> : <button type='submit' onClick={handleSubmit} className='mt-3 bg-red-100 p-3'>Submit</button>}
         {error && <p className='mt-3 text-red-500'>Please Enter a Valid Email</p>}
 
     </div>
