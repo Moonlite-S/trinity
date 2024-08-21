@@ -59,7 +59,7 @@ export function MainMenu() {
                 <Button_Card text="Create Project" route="/create_project" />
                 <Button_Card text="Update Project" route="/update_project" />
                 <Button_Card text="Project Status Report" route="/" />
-                <Button_Card text="Tasks" route="/" />
+                <Button_Card text="Tasks" route="/task" />
                 <Button_Card text="Report" route="/" />
                 <Button_Card text="Submittal" route="/" />
                 <Button_Card text="Proposal" route="/" />
