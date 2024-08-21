@@ -11,7 +11,7 @@ export function Header() {
 
       <div className='h-4 w-screen bg-orange-400 absolute -z-10' />
 
-      <img src={logo} alt='Trinity MVP Logo' className="h-32 cursor-pointer" onClick={() => navigate('/main_menu')}/>
+      <img src={logo} alt='Trinity MEP Logo' className="h-32 cursor-pointer" onClick={() => navigate('/main_menu')}/>
 
     </header>
   )
