@@ -4,7 +4,7 @@
  * @ param {string} the user's role so filter out projects they can't see (not yet implemented)
  * @returns (supposed to be) a list of projects
  */
-export function get_project_list(): Promise<any> {
+export function getProjectList(): Promise<any> {
     // This has to be changed everytime the user switches projects
     // Remember to convert this to an async function
     return fetch('http://localhost:8000/api/projects', {
@@ -46,7 +46,7 @@ export function get_project_list(): Promise<any> {
  * @param id the project id of the project
  * @returns Code 200 if successful and error if not
  */
-export async function get_project(id: string): Promise<any> {
+export async function getProject(id: string): Promise<any> {
     try {
         const response = await fetch('http://localhost:8000/api/projects/' + id, {
             method: 'GET',
@@ -78,7 +78,7 @@ export async function get_project(id: string): Promise<any> {
  * { project_id: number, project_name: string, project_description: string, current_manager: string, customer_name: string, city: string, start_date: string, end_date: string }
  * @returns Code 200 if successful and error if not
  */
-export async function create_project(project_data: any): Promise<any> {
+export async function createProject(project_data: any): Promise<any> {
     try {
         const response = await fetch('http://localhost:8000/api/projects/', {
             method: 'POST',
