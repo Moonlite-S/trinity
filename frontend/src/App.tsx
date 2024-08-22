@@ -69,7 +69,6 @@ export function Verification() {
         } catch (error) {
           console.error("Error checking user:", error);
           isAuth(false)
-          setLoading(false)
         } finally {
           setLoading(false)
         }

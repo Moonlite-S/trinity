@@ -4,40 +4,28 @@
  * @ param {string} the user's role so filter out projects they can't see (not yet implemented)
  * @returns (supposed to be) a list of projects
  */
-export function getProjectList(): Promise<any> {
-    // This has to be changed everytime the user switches projects
-    // Remember to convert this to an async function
-    return fetch('http://localhost:8000/api/projects', {
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-    }).then(
-        // This is where the raw response from the backend is returned
-        (response: Response) => {
-            if (response.ok) {
-                console.log("Success")
-                return response.json() // This goes to the next 'then'
-            }
-            else {
-                console.log("Was not ok")
-                throw new Error("Network not ok")
-            }
+export async function getProjectList(): Promise<any> {
+    try {
+        const response = await fetch('http://localhost:8000/api/projects', {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
         }
-    ).then(
-        // The 'data' is the parsed JSON response
-        (data) => {
-            const sent_project = data
-            console.log("Sent from backend: %O", sent_project)
-            return sent_project // This is what actually gets returned
-        }
-    ).catch(
-        (error: Error) => {
-            console.error("Error: ",error, error.name)
-            throw error
-        }
-    )
+
+        const data = await response.json()
+
+        return data
+
+    } catch (error) {
+        console.error("Error: ",error)
+        throw error
+    }
 }
 
 /**

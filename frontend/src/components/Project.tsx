@@ -1,7 +1,8 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Header, Back_Button } from "./misc";
 import { createProject, getProjectList, getProject } from "../api/projects";
 import { useNavigate, useParams } from "react-router-dom";
+import DataTable, { Direction, TableColumn } from "react-data-table-component";
 
 /**
  * ### [Route for ('/create_project')]
@@ -73,17 +74,22 @@ enum ProjectStatus {
 }
 
 type UpdateProjectProps = {
-    project_id: number
-    project_name?: string
-    current_manager?: string
-    city?: string
-    customer_name?: string
-    start_date?: string
-    end_date?: string
+    project_id: string
+    project_name: string
+    current_manager: string
+    city: string
+    customer_name: string
+    start_date: string
+    end_date: string
     project_description?: string
-    project_status?: ProjectStatus
+    project_status: ProjectStatus
 }
 
+type FilterProps = {
+    filterText: string
+    onFilter: (e: FormEvent<HTMLInputElement>) => void
+    onClear: () => void
+}
 /**
  * ### [Route for ('/update_project')]
  * 
@@ -105,7 +111,6 @@ export function UpdateProjectList() {
                 const data: Array<UpdateProjectProps> = await getProjectList()
                 
                 setProjectList(data)
-                console.log(data)
                 setProjectLoaded(true)
            }
            catch (error) {
@@ -121,24 +126,11 @@ export function UpdateProjectList() {
         <>
             <Header />
 
-            <div className="bg-slate-50 p-5">
-
-                <h2 className="mb-5">Project List:</h2>
-
-                <div>
-
-                    <ProjectCardLegend />
-
-                    {projectLoaded && 
-                        projectList.map((project) =>
-                            <ProjectCard key={project.project_id} project={project}/>)}
-
-                </div>
-
-            </div>
+            <ProjectUpdateTable projectList={projectList} projectLoaded={projectLoaded} />
         </>
     )
 }
+
 
 /**
  * ### [Route for ('/update_project/:id')]
@@ -206,8 +198,7 @@ export function ProjectStatusReport() {
             <Header />
 
             <h1 className="mb-5">Project Status Report</h1>
-
-            {project && <ProjectCard project={project} />}
+            {project?.project_name}
         </>
     )
 }
@@ -296,7 +287,7 @@ function ProjectForm(
 }
 
 type ProjectNameIDProps =  {
-    project_id: number | "";
+    project_id: string;
     project_name: string;
 };
 /**
@@ -371,16 +362,12 @@ function ProjectFormMiddle({
     );
 }
 
-type ProjectFormBottomProps =  {
-    project_description: string;
-};
-
 /**
  * Renders the bottom section of the form. 
  * 
  * Consists of ProjectDescription
  */
-function ProjectFormBottom({ project_description }: ProjectFormBottomProps) {
+function ProjectFormBottom({ project_description }: { project_description: string }) {
     return (
         <div className="flex flex-col gap-5">
 
@@ -436,114 +423,6 @@ function ProjectStatusAndDate({
             </div>
         </>
     );
-}
-
-/**
- * The legend layer that sits atop the ProjectCard in the UpdateProjectList component.
- */
-function ProjectCardLegend() {
-    return(
-        <div className="grid grid-cols-10 justify-between border-b-2 border-black">
-
-            <div className="bg-slate-200 ">
-                <h5>Project ID</h5>
-            </div>
-            <div className="bg-slate-100 ">
-                <h5>Project Name</h5>
-            </div>
-            <div className="bg-slate-200 ">
-                <h5>Project Manager</h5>
-            </div>
-            <div className="bg-slate-100 ">
-                <h5>Status</h5>
-            </div>
-            <div className="bg-slate-200 ">
-                <h5>Customer Name</h5>
-            </div>
-            <div className="bg-slate-100 ">
-                <h5>City</h5>
-            </div>
-            <div className="bg-slate-200 ">
-                <h5>Date Created</h5>
-            </div>
-            <div className="bg-slate-100 ">
-                <h5>Date Ended</h5>
-            </div>
-            <div className="bg-slate-200 ">
-                <h5>Edit Project</h5>
-            </div>
-            <div className="bg-slate-100 ">
-                <h5>Project Status</h5>
-            </div>
-        </div>
-    )
-}
-
-/**
- * For the ProjectMiddle component.
- * 
- * A template that uses the {UpdateProjectProps} props to fill in the form
- */
-function ProjectCard(
-    { project } : { project: UpdateProjectProps}
-) {
-    const {
-        project_id = '',
-        project_name = '',
-        current_manager = '',
-        city = '',
-        customer_name = '',
-        start_date = '',
-        end_date = '',
-        project_status = ProjectStatus.NOT_STARTED,
-    } = project ?? {}
-
-    const navigate = useNavigate();
-    const handleEditClick = () => {
-        console.log("Clicked")
-        navigate(`/update_project/${project_id}`)
-    }
-
-    const handleStatusClick = () => {
-        console.log("Clicked")
-        navigate(`/project_status_report/${project_id}`)
-    }
-
-    return(
-        <div className="grid grid-cols-10 justify-between border-b-2 border-stone-300">
-
-            <div className="bg-slate-200 ">
-                <h5>{project_id}</h5>
-            </div>
-            <div className="bg-slate-100 truncate">
-                <h5>{project_name}</h5>
-            </div>
-            <div className="bg-slate-200 ">
-                <h5>{current_manager}</h5>
-            </div>
-            <div className="bg-slate-100 ">
-                <h5>{project_status}</h5>
-            </div>
-            <div className="bg-slate-200 ">
-                <h5>{customer_name}</h5>
-            </div>
-            <div className="bg-slate-100 ">
-                <h5>{city}</h5>
-            </div>
-            <div className="bg-slate-200 ">
-                <h5>{start_date}</h5>
-            </div>
-            <div className="bg-slate-100 ">
-                <h5>{end_date}</h5>
-            </div>
-            <div className="bg-slate-100 ">
-                <button className="border-2 w-full h-full bg-slate-300 hover:bg-slate-400 transition" onClick={handleEditClick}>Edit</button>
-            </div>
-            <div className="bg-slate-100 ">
-                <button className="border-2 w-full h-full bg-slate-300 hover:bg-slate-400 transition" onClick={handleStatusClick}>Status</button>
-            </div>
-        </div>
-    )
 }
 
 type ProjectManagerCustomerCityProps =  {
@@ -612,4 +491,104 @@ function MainMenuFormButton({ button_text }: { button_text: string }) {
     </div>
     );
 }
-    
+
+/**
+ * Helper Component for ProjectUpdateTable
+ * 
+ * This is the filter bar at the top of the table
+ * 
+ * At some point, we'll implement the vector search here maybe
+ */
+const FilterComponent = ({ filterText, onFilter, onClear }: FilterProps) => (
+    <>
+        <input
+         id="search"
+         type="text"
+         placeholder="Filter..."
+         aria-label="Search input"
+         value={filterText}
+         onChange={onFilter}
+         className="bg-slate-100 px-4 py-2"
+         />
+
+        <button className="bg-orange-200 rounded px-4 py-2 ml-5 transition hover:bg-orange-300" type="button" onClick={onClear}>
+            X
+        </button>
+    </>
+)
+
+/**
+ * A Component that shows when the user clicks on a row on the table.
+ * 
+ * This is where the description of the project will be stored
+ * 
+ * But also I want buttons to see a report or edit the project
+ * 
+ * @param param0 data The props of a give row
+ * 
+ */
+const ExpandableRowComponent = ({ data }: { data: UpdateProjectProps }) => (
+    <div>
+        (This is where I'll probably store the description of the project) {data.project_id}
+    </div>
+)
+
+/**
+ * The Table Component that lists the projects
+ * 
+ * Features sorting by any field, and filtering by Project Name currently.
+ * 
+ * @param param0 projectList - List of projects 
+ * @param param1 projectLoaded - Boolean to check if projects have been loaded
+ */
+function ProjectUpdateTable({ projectList, projectLoaded }: { projectList: UpdateProjectProps[], projectLoaded: boolean }) {
+    const [filterText, setFilterText] = useState<string>('')
+    const [resetPaginationToggle, setResetPaginationToggle] = useState<boolean>(false);
+
+    const filteredProjects: UpdateProjectProps[] = projectList.filter(item => item.project_name.toLowerCase().includes(filterText.toLowerCase()))
+
+    // Column Names
+    const columns: TableColumn<UpdateProjectProps>[] = [
+        { name: "Project ID", selector: row => row.project_id, sortable: true },
+        { name: "Project Name", selector: row => row.project_name, sortable: true },
+        { name: "Project Manager", selector: row => row.current_manager, sortable: true },
+        { name: "Status", selector: row => row.project_status, sortable: true },
+        { name: "Customer", selector: row => row.customer_name, sortable: true },
+        { name: "City", selector: row => row.city, sortable: true },
+        { name: "Date Created", selector: row => row.start_date, sortable: true },
+        { name: "Date Ended", selector: row => row.end_date, sortable: true },
+    ]
+
+    // For the filter function
+    const filterSearchBox = useMemo(() => {
+        const handleClear = () => {
+            if (filterText) {
+                setResetPaginationToggle(!resetPaginationToggle);
+                setFilterText('')
+            }
+        }
+
+        return (
+            <FilterComponent onFilter={(e: any) => setFilterText(e.target.value)} onClear={handleClear} filterText={filterText} />
+
+        )
+    }, [filterText, resetPaginationToggle])
+
+    return(
+        <DataTable
+        title="Project List"
+        columns={columns}
+        data={filteredProjects}
+        direction={Direction.AUTO}
+        progressPending={!projectLoaded}
+        subHeaderComponent={filterSearchBox}
+        expandableRowsComponent={ExpandableRowComponent}
+        paginationResetDefaultPage={resetPaginationToggle}
+        persistTableHead
+        highlightOnHover
+        expandableRows
+        pagination
+        subHeader
+        />        
+    )
+}
