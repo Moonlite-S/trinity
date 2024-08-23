@@ -1,10 +1,11 @@
+import { UpdateProjectProps } from "../interfaces/project_types";
 /**
  * Fetches a list of projects
  * 
  * @ param {string} the user's role so filter out projects they can't see (not yet implemented)
  * @ returns (supposed to be) a list of projects
  */
-export async function getProjectList(): Promise<any> {
+export async function getProjectList(): Promise<UpdateProjectProps[]> {
     try {
         const response = await fetch('http://localhost:8000/api/projects', {
             method: 'GET',
@@ -33,9 +34,9 @@ export async function getProjectList(): Promise<any> {
  * Fetches a single project based on id
  * 
  * @param id the project id of the project
- * @returns Code 200 if successful and error if not
+ * @returns An object of type UpdateProjectProps
  */
-export async function getProject(id: string): Promise<any> {
+export async function getProject(id: string): Promise<UpdateProjectProps> {
     try {
         const response = await fetch('http://localhost:8000/api/projects/id/' + id, {
             method: 'GET',
@@ -68,7 +69,7 @@ export async function getProject(id: string): Promise<any> {
  * { project_id: number, project_name: string, project_description: string, current_manager: string, customer_name: string, city: string, start_date: string, end_date: string }
  * @returns Code 200 if successful and error if not
  */
-export async function createProject(project_data: any): Promise<any> {
+export async function createProject(project_data: { [key: string]: FormDataEntryValue }): Promise<UpdateProjectProps> {
     try {
         const response = await fetch('http://localhost:8000/api/projects/', {
             method: 'POST',
@@ -94,7 +95,7 @@ export async function createProject(project_data: any): Promise<any> {
     }
 }
 
-export async function updateProject(project_data: any, id: string): Promise<number> {
+export async function updateProject(project_data: { [key: string]: FormDataEntryValue }, id: string): Promise<number> {
     try {
         const response = await fetch('http://localhost:8000/api/projects/' + id + '/', {
             method: 'PUT',
@@ -106,12 +107,13 @@ export async function updateProject(project_data: any, id: string): Promise<numb
             body: JSON.stringify(project_data)
         })
 
-        if (!response.ok){  
+        if (!response.ok) {  
             console.log("Error: ", response)
             return response.status
         }
 
         return response.status
+
     } catch (error) {
         console.error("Error updating project:", error);
         return 500

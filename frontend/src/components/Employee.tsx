@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { createEmployee, getEmployeeList } from "../api/employee";
+import { createEmployee, getAllEmployeeData } from "../api/employee";
 import { Route_Button, Header } from "./misc";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import DataTable, { Direction, TableColumn } from "react-data-table-component";
+import { EmployeeProps } from "../interfaces/employee_type";
 /**
  *  ### [Route for ('/create_employee')]
  * 
@@ -116,8 +117,8 @@ export function EmployeeList() {
     useEffect(() => {
         const getEmployees = async () => {
             try {
-                const response = await getEmployeeList()
-                setEmployeeList(response)
+                const response = await getAllEmployeeData()
+                setEmployeeList(response as EmployeeProps[])
                 setListLoaded(true)
             } catch (error) {
                 console.error("Error fetching employees:", error);
@@ -166,13 +167,6 @@ const FilterComponent = ({ filterText, onFilter, onClear }: FilterProps) => (
     </>
 )
 
-type EmployeeProps = {
-    id: string,
-    name: string,
-    email: string,
-    role: string,
-    date_joined: string
-}
 /**
  * A Component that shows when the user clicks on a row on the table.
  * 
@@ -195,11 +189,10 @@ const ExpandableRowComponent = ({ data }: { data: EmployeeProps }) => (
  * 
  * Basically the same as the one in the Projects page.
  * 
- * 
  * Features sorting by any field, and filtering by Name currently.
  * 
- * @param param0 employeeList - List of projects 
- * @param param1 employeeLoaded - Boolean to check if projects have been loaded
+ * @param employeeList - List of projects 
+ * @param employeeLoaded - Boolean to check if projects have been loaded
  */
 function EmployeeUpdateTable({ employeeList, employeeLoaded }: { employeeList: EmployeeProps[], employeeLoaded: boolean }) {
     const [filterText, setFilterText] = useState<string>('')

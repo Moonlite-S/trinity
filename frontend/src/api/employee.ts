@@ -41,7 +41,10 @@ export async function createEmployee({name, email, password} : EmployeeProps): P
     }
 }
 
-export async function getEmployeeList(): Promise<any> {
+/**
+ * @returns a list of ONLY employee names
+ */
+export async function getEmployeeNameList(): Promise<string[]> {
     try {
         const response = await fetch('http://localhost:8000/api/user/all_users_names', {
             method: 'GET',
@@ -53,14 +56,22 @@ export async function getEmployeeList(): Promise<any> {
 
         if (!response.ok) {
             console.log("Error: " + response.status)
-            return response.status
+            const error = {
+                status: response.status
+            }
+
+            return JSON.parse(JSON.stringify(error))
         }
 
         const data = await response.json();
         console.log("Got data", data);
         return data;
-    } catch (error) {
-        console.error("Error getting employee list:", error);
+    } catch (e) {
+        console.error("Error getting employee list:", e);
+        const error = {
+            status: 500
+        }
+        return JSON.parse(JSON.stringify(error))
         throw error; // Re-throw the error so the caller can handle it if needed
     }
 }
@@ -91,4 +102,36 @@ export async function getOneEmployee(email: string): Promise<any> {
         console.error("Error getting employee list:", error);
         throw error; // Re-throw the error so the caller can handle it if needed
     }
+}
+
+export async function getAllEmployeeData(): Promise<EmployeeProps[]>  {
+    try {
+        const response = await fetch('http://localhost:8000/api/user/all_users', {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (!response.ok) {
+            console.log("Error: " + response.status)
+            const error = {
+                status: response.status
+            }
+
+            return JSON.parse(JSON.stringify(error))
+        }
+
+        const data = await response.json();
+        console.log("Got data", data);
+        return data;
+    } catch (e) {
+        console.error("Error getting employee list:", e);
+        const error = {
+            status: 500
+        }
+        return JSON.parse(JSON.stringify(error))
+    }
+        
 }

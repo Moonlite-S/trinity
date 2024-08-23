@@ -1,8 +1,9 @@
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Header, Route_Button } from "./misc";
 import { createProject, getProjectList, getProject } from "../api/projects";
 import { useNavigate, useParams } from "react-router-dom";
 import DataTable, { Direction, TableColumn } from "react-data-table-component";
+import { FilterProps, ProjectFormMiddleProps, ProjectFormProps, ProjectManagerCustomerCityProps, ProjectNameIDProps, ProjectStatus, ProjectStatusAndDateProps, UpdateProjectProps } from "../interfaces/project_types";
 
 /**
  * ### [Route for ('/create_project')]
@@ -66,30 +67,6 @@ export function CreateProject() {
     )
 }
 
-enum ProjectStatus {
-    ACTIVE = "ACTIVE",
-    NOT_STARTED = "NOT_STARTED",
-    COMPLETED = "COMPLETED",
-    CANCELLED = "CANCELLED",
-}
-
-type UpdateProjectProps = {
-    project_id: string
-    project_name: string
-    manager: string
-    city: string
-    client_name: string
-    start_date: string
-    end_date: string
-    description?: string
-    status: ProjectStatus
-}
-
-type FilterProps = {
-    filterText: string
-    onFilter: (e: FormEvent<HTMLInputElement>) => void
-    onClear: () => void
-}
 /**
  * ### [Route for ('/update_project')]
  * 
@@ -161,7 +138,7 @@ export function UpdateProject() {
         setProjectManagers(['Sean', 'Israel', 'Leo', 'Matt'])
     }, [])
 
-    const onSubmit = (event: any) => {
+    const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         console.log("We got here")
     }
@@ -223,14 +200,7 @@ function ProjectManager(name: string, id: number) {
     )
 }
 
-type ProjectFormProps = {
-    button_text: string
-    projectManagerList?: string[]
-    onSubmit: (event: FormEvent<HTMLFormElement>) => void
 
-    // For Project Update
-    formProps?: UpdateProjectProps
-}
 /**
  * This component shows the user the form to create a new project.
  * 
@@ -291,10 +261,7 @@ function ProjectForm(
     )
 }
 
-type ProjectNameIDProps =  {
-    project_id: string;
-    project_name: string;
-};
+
 /**
  * Renders the top section of the form.
  * 
@@ -314,15 +281,7 @@ function ProjectTop({ project_id, project_name }: ProjectNameIDProps) {
     );
 }
 
-type ProjectFormMiddleProps =  {
-    city: string;
-    current_manager: string;
-    customer_name: string;
-    end_date: string;
-    project_status: ProjectStatus;
-    projectManagerList?: string[];
-    start_date: string;
-};
+
     
 /**
  * Renders the middle section of the form.
@@ -383,12 +342,6 @@ function ProjectFormBottom({ project_description }: { project_description: strin
     );
 }
 
-type ProjectStatusAndDateProps =  {
-    end_date: string;
-    project_status: ProjectStatus;
-    start_date: string;
-};
-    
 /**
  * For the ProjectMiddle component. 
  */
@@ -430,13 +383,6 @@ function ProjectStatusAndDate({
     </>
     );
 }
-
-type ProjectManagerCustomerCityProps =  {
-    city: string;
-    current_manager: string;
-    customer_name: string;
-    projectManagerList: string[] | undefined;
-};
 
 /**
  * For use in the ProjectFormMiddle component
@@ -597,6 +543,7 @@ function ProjectUpdateTable({ projectList, projectLoaded }: { projectList: Updat
         persistTableHead
         highlightOnHover
         expandableRows
+        selectableRows
         pagination
         subHeader
         />        
