@@ -5,7 +5,7 @@ from .models import User
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model=Project
-        fields = ['project_id','project_name','current_manager', 'city', 'customer_name','start_date','end_date']
+        fields = ['project_id','project_name','manager','client_name','city','start_date','end_date','description','status']
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
