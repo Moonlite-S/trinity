@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { Header, Back_Button } from "./misc";
+import { Header, Route_Button } from "./misc";
 import { createProject, getProjectList, getProject } from "../api/projects";
 import { useNavigate, useParams } from "react-router-dom";
 import DataTable, { Direction, TableColumn } from "react-data-table-component";
@@ -131,7 +131,6 @@ export function UpdateProjectList() {
     )
 }
 
-
 /**
  * ### [Route for ('/update_project/:id')]
  * 
@@ -141,14 +140,20 @@ export function UpdateProject() {
     const { id } = useParams<string>()
     const [projectManager, setProjectManagers] = useState<string[]>([])
     const [currentProject, setCurrentProject] = useState<UpdateProjectProps>()
+    const navigate = useNavigate()
 
     useEffect(() => {
         // We need to fetch a list of projects
         const project = async () => {
             if (!id) return
 
-            const data = await getProject(id)
-            setCurrentProject(data)
+            try {
+                const data = await getProject(id)
+                setCurrentProject(data)
+            } catch (error) {
+                console.error("Error fetching project:", error);
+                navigate("/main_menu") // SEND'EM BACK
+            }
         }
 
         project()
@@ -277,9 +282,11 @@ function ProjectForm(
 
         </div>
 
-        <MainMenuFormButton
-        button_text={button_text}
-        />
+        {/* Swtiches button route based on button_text 
+        CREATE PROJECT => Main Menu / UPDATE PROJECT => Update Project List */}
+        {button_text === "Create Project" ? <MainMenuFormButton button_text={button_text} route="/main_menu"/>
+        : 
+        <MainMenuFormButton button_text={button_text} route="/update_project"/>}
 
     </form>
 
@@ -474,15 +481,16 @@ function ProjectManagerCustomerCity({
  *  
  * There are two buttons: One that goes back to the main menu and one that creates or updates a project
  * 
- * @params {string} button_text - The text of the second button
- * 
+ * @params button_text The text of the second button (Either "Create Project" or "Update Project")
+ * @params route The route of the back button (Either "/main_menu" or "/update_project")
  * This is usually either "Create Project" or "Update Project"
  */
-function MainMenuFormButton({ button_text }: { button_text: string }) {
+function MainMenuFormButton({ button_text, route }: { button_text: string, route: string }) {
+    const navigate = useNavigate();
     return (
     <div className="mx-auto text-center justify-center pt-5">
 
-        <Back_Button route="/main_menu" />
+        <button className='bg-orange-300 rounded p-4' onClick={() =>navigate(route)}>Back</button>
         
         <button type="submit" className="bg-orange-300 rounded p-4 ml-5">
             {button_text}
@@ -528,8 +536,11 @@ const FilterComponent = ({ filterText, onFilter, onClear }: FilterProps) => (
  * 
  */
 const ExpandableRowComponent = ({ data }: { data: UpdateProjectProps }) => (
-    <div>
+    <div className="flex flex-row gap-5 bg-slate-50">
         (This is where I'll probably store the description of the project) {data.project_id}
+
+        <Route_Button route={"/update_project/" + data.project_id} text="Edit"/>
+        <Route_Button route="/project_report" text="Report"/>
     </div>
 )
 

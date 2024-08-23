@@ -20,26 +20,37 @@ type UserProps = {
  * TODO:
  *  - Actually implement the user role system
  */
-export function MainMenu() {
+type MainMenuProps = {
+    error?: string
+}
+export function MainMenu({ error='' } : MainMenuProps) {
     // Check what roles the user has
     // and show / hide buttons accordingly
 
     // Get User's name
     const [user, setUser] = React.useState<UserProps>({name: '', role: ''})
+    const [errorString, setErrorString] = React.useState<string>('')
     
     useEffect(() => {
         // I'd probably just fetch the user again from backend
         setUser({name: 'Sean', role: 'Manager'})
+
+        if (error) {
+            setErrorString(error)
+        }
     }, [])
 
     return (
         <>
             <Header />
             
+            {errorString && <MainMenuError error={errorString} />}
+
             <MainMenuQuickBar
                 name={user.name}
                 role={user.role}
             />
+
             
             <div className='bg-slate-50 grid grid-cols-6 p-5 justify-items-center'>
 
@@ -53,9 +64,22 @@ export function MainMenu() {
                 <Button_Card text="Calendar" route="/" />
                 <Button_Card text="Calls" route="/" />
                 <Button_Card text="Create Employee" route="/create_employee" />
+                <Button_Card text="Employee List" route="/employee" />
 
             </div>
 
+        </>
+    )
+}
+
+function MainMenuError({ error } : { error: string }) {
+    return (
+        <>
+            <div className='bg-red-300'>
+
+                <h1>{error}</h1>
+
+            </div>
         </>
     )
 }

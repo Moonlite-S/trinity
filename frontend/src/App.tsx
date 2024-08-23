@@ -6,7 +6,7 @@ import './App.css'
 import { CreateProject, UpdateProject, UpdateProjectList, ProjectStatusReport } from './components/Project'
 import { checkUser } from './api/auth'
 import { Tasks } from './components/Tasks';
-import { CreateEmployee } from './components/Employee'
+import { CreateEmployee, EmployeeList } from './components/Employee'
 
 // Main Router for the application
 export default function App() {
@@ -20,13 +20,14 @@ export default function App() {
             {/* All routes here are checked for authentication. */}
             <Route element={<Verification />}>
 
-              <Route path='/main_menu' element={<MainMenu />} />
+              <Route path='/main_menu' element={<MainMenu/>} />
               <Route path='/create_project' element={<CreateProject />} />
               <Route path='/update_project' element={<UpdateProjectList />} />
               <Route path='/update_project/:id' element={<UpdateProject />} />
               <Route path='/project_status_report/:id' element={<ProjectStatusReport />} />
               <Route path='/task' element={<Tasks />} />
               <Route path='/create_employee' element={<CreateEmployee />} />
+              <Route path='/employee' element={<EmployeeList />} />
 
             </Route>
 

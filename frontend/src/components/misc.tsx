@@ -17,13 +17,11 @@ export function Header() {
   )
 }
 
-type Back_Button_Props = {
-  route: string
-}
-export function Back_Button({route}: Back_Button_Props) {
+/** General Orange button */
+export function Route_Button({route, text}: {route: string, text: string}) {
   const navigate = useNavigate();
 
   return(
-    <button className='bg-orange-300 rounded p-4' onClick={() =>navigate(route)}>Back</button>
+    <button className='bg-orange-300 rounded p-4 m-2' onClick={() =>navigate(route)}>{text}</button>
   )
 }
