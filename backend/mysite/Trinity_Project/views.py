@@ -8,7 +8,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated
 from .models import Project
 from .models import User
-from .serializers import ProjectSerializer, UserSerializer
+from .serializers import ProjectSerializer, UserNameSerializer, UserSerializer
 from rest_framework.views import APIView
 import jwt, datetime
 from datetime import datetime,timezone,timedelta
@@ -149,3 +149,11 @@ def project_filter_by_manager(request, manager):
         else:
             serializer = ProjectSerializer(project,many=True)
         return Response(serializer.data)    
+
+@api_view(['GET'])
+def return_all_users_names(request):
+    payload = authenticate_jwt(request)
+    
+    users = User.objects.all()
+    serializer = UserNameSerializer(users, many=True)
+    return Response(serializer.data)
