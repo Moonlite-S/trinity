@@ -157,3 +157,11 @@ def return_all_users_names(request):
     users = User.objects.all()
     serializer = UserNameSerializer(users, many=True)
     return Response(serializer.data)
+
+@api_view(['GET'])
+def user_list(request):
+    payload = authenticate_jwt(request)
+    
+    users = User.objects.all()
+    serializer = UserSerializer(users, many=True)
+    return Response(serializer.data)
