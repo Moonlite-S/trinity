@@ -2,13 +2,14 @@
  * Fetches a list of projects
  * 
  * @ param {string} the user's role so filter out projects they can't see (not yet implemented)
- * @returns (supposed to be) a list of projects
+ * @ returns (supposed to be) a list of projects
  */
 export async function getProjectList(): Promise<any> {
     try {
         const response = await fetch('http://localhost:8000/api/projects', {
             method: 'GET',
             mode: 'cors',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -36,8 +37,9 @@ export async function getProjectList(): Promise<any> {
  */
 export async function getProject(id: string): Promise<any> {
     try {
-        const response = await fetch('http://localhost:8000/api/projects/' + id, {
+        const response = await fetch('http://localhost:8000/api/projects/id/' + id, {
             method: 'GET',
+            credentials: 'include',
             headers: {
             'Content-Type': 'application/json'
             },
@@ -71,6 +73,7 @@ export async function createProject(project_data: any): Promise<any> {
         const response = await fetch('http://localhost:8000/api/projects/', {
             method: 'POST',
             mode: 'cors',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -88,5 +91,29 @@ export async function createProject(project_data: any): Promise<any> {
     catch (error) {
         console.error("Error creating project:", error);
         throw error; // Re-throw the error so the caller can handle it if needed
+    }
+}
+
+export async function updateProject(project_data: any, id: string): Promise<number> {
+    try {
+        const response = await fetch('http://localhost:8000/api/projects/' + id + '/', {
+            method: 'PUT',
+            mode: 'cors',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(project_data)
+        })
+
+        if (!response.ok){  
+            console.log("Error: ", response)
+            return response.status
+        }
+
+        return response.status
+    } catch (error) {
+        console.error("Error updating project:", error);
+        return 500
     }
 }

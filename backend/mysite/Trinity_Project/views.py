@@ -133,12 +133,6 @@ def project_detail(request, project_id):
         project.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
-@api_view(['GET'])
-def employee_list(request):
-    employees = User.objects.all()
-    serializer = UserSerializer(employees, many=True)
-    return Response(serializer.data)
-
 @api_view(['GET'])    
 def project_filter_by_manager(request, manager):
     

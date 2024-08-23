@@ -67,22 +67,22 @@ export function CreateProject() {
 }
 
 enum ProjectStatus {
-    ACTIVE = "Active",
-    NOT_STARTED = "Not Started",
-    COMPLETED = "Completed",
-    CANCELLED = "Cancelled",
+    ACTIVE = "ACTIVE",
+    NOT_STARTED = "NOT_STARTED",
+    COMPLETED = "COMPLETED",
+    CANCELLED = "CANCELLED",
 }
 
 type UpdateProjectProps = {
     project_id: string
     project_name: string
-    current_manager: string
+    manager: string
     city: string
-    customer_name: string
+    client_name: string
     start_date: string
     end_date: string
-    project_description?: string
-    project_status: ProjectStatus
+    description?: string
+    status: ProjectStatus
 }
 
 type FilterProps = {
@@ -132,7 +132,7 @@ export function UpdateProjectList() {
 }
 
 /**
- * ### [Route for ('/update_project/:id')]
+ * ### [Route for ('/update_project/id/:id')]
  * 
  *  This component shows a Form component to update an existing project.
  */
@@ -236,8 +236,6 @@ type ProjectFormProps = {
  * 
  * @param FormProps : ( see type FormProps )  
  * 
- * TODO:
- *  - Currently does not save these: description, status [fix'em in the backend]
  */
 function ProjectForm(
     {button_text, projectManagerList, onSubmit, formProps}: ProjectFormProps
@@ -245,13 +243,13 @@ function ProjectForm(
     const {
         project_id = '',
         project_name = '',
-        current_manager = '',
+        manager = '',
         city = '',
-        customer_name = '',
+        client_name = '',
         start_date = '',
         end_date = '',
-        project_status = ProjectStatus.NOT_STARTED,
-        project_description = '',
+        status = ProjectStatus.NOT_STARTED,
+        description = '',
     } = formProps ?? {}
 
     // Uhh maybe there's a better way to refactor than prop drilling?
@@ -268,16 +266,16 @@ function ProjectForm(
         
             <ProjectFormMiddle
                 city={city}
-                current_manager={current_manager}
-                customer_name={customer_name}
+                current_manager={manager}
+                customer_name={client_name}
                 end_date={end_date}
-                project_status={project_status}
+                project_status={status}
                 projectManagerList={projectManagerList}
                 start_date={start_date}
             />
 
             <ProjectFormBottom
-                project_description={project_description}
+                project_description={description}
             />
 
         </div>
@@ -378,8 +376,8 @@ function ProjectFormBottom({ project_description }: { project_description: strin
     return (
         <div className="flex flex-col gap-5">
 
-            <label  htmlFor="project_description">Project Description:</label>
-            <textarea defaultValue={project_description} className="bg-slate-100 border border-zinc-300" placeholder="Enter Project Description" name="project_description" required/>
+            <label  htmlFor="description">Project Description:</label>
+            <textarea defaultValue={project_description} className="bg-slate-100 border border-zinc-300" placeholder="Enter Project Description" name="description" required/>
             
         </div>
     );
@@ -399,36 +397,37 @@ function ProjectStatusAndDate({
     project_status,
     start_date 
 }: ProjectStatusAndDateProps) {
-      return (
-        <>
-            <div className="flex flex-row justify-between gap-5">
+    console.log(project_status)
+    return (
+    <>
+        <div className="flex flex-row justify-between gap-5">
 
-                <label >Project Status:</label>
-                <select defaultValue={project_status} name="project_status">
+            <label htmlFor="status">Project Status:</label>
+            <select defaultValue={project_status} name="status">
 
-                    <option value={ProjectStatus.ACTIVE}>Active</option>
-                    <option value={ProjectStatus.COMPLETED}>Completed</option>
-                    <option value={ProjectStatus.CANCELLED}>Cancelled</option>
-                    <option value={ProjectStatus.NOT_STARTED}>Not Started</option>
+                <option value={ProjectStatus.ACTIVE}>Active</option>
+                <option value={ProjectStatus.COMPLETED}>Completed</option>
+                <option value={ProjectStatus.CANCELLED}>Cancelled</option>
+                <option value={ProjectStatus.NOT_STARTED}>Not Started</option>
 
-                </select>
-                
-            </div>
-
-            <div className="flex flex-row justify-between gap-5">
-
-                <label  htmlFor="start_date">Date Created:</label>
-                <input defaultValue={start_date} className="bg-slate-100 border border-zinc-300" type="date" name="start_date" required/>
+            </select>
             
-            </div>
+        </div>
 
-            <div className="flex flex-row justify-between gap-5">
+        <div className="flex flex-row justify-between gap-5">
 
-                <label  htmlFor="end_date">Date Ended:</label>
-                <input defaultValue={end_date} className="bg-slate-100 border border-zinc-300" type="date" name="end_date" required/>
-            
-            </div>
-        </>
+            <label  htmlFor="start_date">Date Created:</label>
+            <input defaultValue={start_date} className="bg-slate-100 border border-zinc-300" type="date" name="start_date" required/>
+        
+        </div>
+
+        <div className="flex flex-row justify-between gap-5">
+
+            <label  htmlFor="end_date">Date Ended:</label>
+            <input defaultValue={end_date} className="bg-slate-100 border border-zinc-300" type="date" name="end_date" required/>
+        
+        </div>
+    </>
     );
 }
 
@@ -452,8 +451,8 @@ function ProjectManagerCustomerCity({
     <>
         <div className="flex flex-row justify-between gap-5">
 
-            <label  htmlFor="current_manager" >Project Manager:</label>
-            <select defaultValue={current_manager} name="current_manager" form="project_creation" required>
+            <label  htmlFor="manager" >Project Manager:</label>
+            <select defaultValue={current_manager} name="manager" form="project_creation" required>
                 {projectManagerList &&projectManagerList.map((projectManager, index) => ProjectManager(projectManager, index))}
             </select>
         
@@ -462,7 +461,7 @@ function ProjectManagerCustomerCity({
         <div className="flex flex-row justify-between gap-5">
 
             <label >Customer Name</label>
-            <input defaultValue={customer_name} className="bg-slate-100 border border-zinc-300" type="text" name="customer_name"/>
+            <input defaultValue={customer_name} className="bg-slate-100 border border-zinc-300" type="text" name="client_name"/>
         
         </div>
         
@@ -562,9 +561,9 @@ function ProjectUpdateTable({ projectList, projectLoaded }: { projectList: Updat
     const columns: TableColumn<UpdateProjectProps>[] = [
         { name: "Project ID", selector: row => row.project_id, sortable: true },
         { name: "Project Name", selector: row => row.project_name, sortable: true },
-        { name: "Project Manager", selector: row => row.current_manager, sortable: true },
-        { name: "Status", selector: row => row.project_status, sortable: true },
-        { name: "Customer", selector: row => row.customer_name, sortable: true },
+        { name: "Project Manager", selector: row => row.manager, sortable: true },
+        { name: "Status", selector: row => row.status, sortable: true },
+        { name: "Customer", selector: row => row.client_name, sortable: true },
         { name: "City", selector: row => row.city, sortable: true },
         { name: "Date Created", selector: row => row.start_date, sortable: true },
         { name: "Date Ended", selector: row => row.end_date, sortable: true },
