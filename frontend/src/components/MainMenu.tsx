@@ -46,28 +46,35 @@ export function MainMenu({ error='' } : MainMenuProps) {
             
             {errorString && <MainMenuError error={errorString} />}
 
-            <MainMenuQuickBar
-                name={user.name}
-                role={user.role}
-            />
-
-            
-            <div className='bg-slate-50 grid grid-cols-6 p-5 justify-items-center'>
-
-                <Button_Card text="Create Project" route="/create_project" />
-                <Button_Card text="Update Project" route="/update_project" />
-                <Button_Card text="Project Status Report" route="/" />
-                <Button_Card text="Tasks" route="/task" />
-                <Button_Card text="Report" route="/" />
-                <Button_Card text="Submittal" route="/" />
-                <Button_Card text="Proposal" route="/" />
-                <Button_Card text="Calendar" route="/" />
-                <Button_Card text="Calls" route="/" />
-                <Button_Card text="Create Employee" route="/create_employee" />
-                <Button_Card text="Employee List" route="/employee" />
-
+            <div className="m-5">
+                <h2>Main Menu</h2>
             </div>
 
+            <div className="flex flex-row w-full bg-gray-50">
+
+                <div className='p-2 flex flex-col justify-items-center'>
+
+                    <Button_Card text="Create Project" route="/create_project" />
+                    <Button_Card text="Update Project" route="/update_project" />
+                    <Button_Card text="Project Status Report" route="/" />
+                    <Button_Card text="Tasks" route="/task" />
+                    <Button_Card text="Report" route="/" />
+                    <Button_Card text="Submittal" route="/" />
+                    <Button_Card text="Proposal" route="/" />
+                    <Button_Card text="Calendar" route="/" />
+                    <Button_Card text="Calls" route="/" />
+                    <Button_Card text="Create Employee" route="/create_employee" />
+                    <Button_Card text="Employee List" route="/employee" />
+
+                    <LogOut />
+
+                </div>
+
+                <MainMenuQuickBar
+                    name={user.name}
+                    role={user.role}
+                />
+            </div>
         </>
     )
 }
@@ -75,9 +82,9 @@ export function MainMenu({ error='' } : MainMenuProps) {
 function MainMenuError({ error } : { error: string }) {
     return (
         <>
-            <div className='bg-red-300'>
+            <div className='bg-red-400 p-2'>
 
-                <h1>{error}</h1>
+                <h1 className="text-center">{error}</h1>
 
             </div>
         </>
@@ -106,11 +113,11 @@ function Button_Card(
     }
 
     return (
-        <button onClick={handleClick} className="w-40 mb-5">
+        <button onClick={handleClick} className="w-40 my-2">
 
-            <div className="bg-orange-300 rounded h-32 min-w-32 max-w-40 justify-center items-center flex">
+            <div className="bg-orange-200 rounded h-14 justify-center items-center flex hover:bg-orange-300 transition">
 
-                <h3>{text}</h3>
+                <h4>{text}</h4>
                 
             </div>
 
@@ -144,9 +151,9 @@ function LogOut() {
     }
  
     return(
-        <div className="mx-auto text-center justify-center ">
+        <div className="bg-slate-300 mx-auto text-center justify-center w-40 h-14 rounded mt-2 hover:bg-slate-400 transition">
 
-            <button className="bg-slate-300 rounded p-4" onClick={handleClick}>
+            <button className="p-4" onClick={handleClick}>
 
                 <h6 className="inline-block">Logout</h6>
 
@@ -168,40 +175,44 @@ function MainMenuQuickBar(
     { name, role }: UserProps
 ) {
 return (
-    <>
-        <div className="bg-slate-100 flex flex-row justify-center">
+    <div className="grid grid-cols-2 grid-flow-row gap-3 justify-center w-screen p-5 ">
 
-            <div className="p-5 basis-1/5">
+        <div className="p-5 mx-auto border row-span-1 w-full">
 
-                <h3>Hello, {name}</h3>
+            <h3>Hello, {name}</h3>
 
-                <h3>Role: {role}</h3>
+            <h3>Role: {role}</h3>
 
-            </div>
+        </div>
 
-            <div className="p-5 basis-1/3">
+        <div className="flex flex-row justify-center row-span-6 w-full">
+
+            <div className="p-5 mx-auto border w-full">
 
                 <h3>Tasks:</h3>
 
                 <h3>Tasks go here</h3>
 
             </div>
-        
-            <div className="p-5 basis-1/3">
 
-                <h3>Projects:</h3>
-
-                <h3>Projects go here</h3>
-
-            </div>
-
-            <div className="p-5 ">
-
-                <LogOut />
-
-            </div>
-            
         </div>
-    </>
-      );
+
+        <div className="p-5 mx-auto border row-span-1 w-full">
+
+            <h3>Announcements:</h3>
+
+            <h3>- Announcements go here</h3>
+
+        </div>
+
+        <div className="p-5 mx-auto border row-span-4 w-full">
+
+            <h3>Projects:</h3>
+
+            <h3>Projects go here</h3>
+
+        </div>
+
+    </div>
+    );
 }

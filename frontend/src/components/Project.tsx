@@ -104,6 +104,10 @@ export function UpdateProjectList() {
             <Header />
 
             <ProjectUpdateTable projectList={projectList} projectLoaded={projectLoaded} />
+
+            <div className="flex flex-row justify-center gap-3 m-2">
+                <Route_Button route={"/main_menu"} text="Back"/>
+            </div>
         </>
     )
 }
@@ -444,6 +448,7 @@ function MainMenuFormButton({ button_text, route }: { button_text: string, route
     </div>
     );
 }
+
 
 /**
  * Helper Component for ProjectUpdateTable

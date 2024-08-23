@@ -8,32 +8,32 @@
  */
 export async function checkUser(): Promise<number> {
     try {
-    const response = await fetch('http://localhost:8000/api/user', {
-      method: 'GET',
-      credentials: 'include', // This gets the cookies
-      headers: {
-        'Content-Type': 'application/json',
-      }
-      })
+      const response = await fetch('http://localhost:8000/api/user', {
+        method: 'GET',
+        credentials: 'include', // This gets the cookies
+        headers: {
+          'Content-Type': 'application/json',
+        }
+        })
 
-      // If user is verified
-      if (response.ok) {
-        const data = await response.json()
-        console.log(data)
+        // If user is verified
+        if (response.ok) {
+          const data = await response.json()
+          console.log(data)
 
-        if (data) {
-          console.log("User verified")
-          return response.status
-        } else {
-          console.log("User not verified")
-          return response.status
-        } 
-      }
-      // Any other error
-      else {
-        console.log("Server Error")
-        return response.status 
-      }
+          if (data) {
+            console.log("User verified")
+            return response.status
+          } else {
+            console.log("User not verified")
+            return response.status
+          } 
+        }
+        // Any other error
+        else {
+          console.log("Server Error")
+          return response.status 
+        }
     }
 
     catch (error) {

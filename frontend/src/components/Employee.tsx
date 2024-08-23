@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { createEmployee, getAllEmployeeData } from "../api/employee";
 import { Route_Button, Header } from "./misc";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import DataTable, { Direction, TableColumn } from "react-data-table-component";
-import { EmployeeProps } from "../interfaces/employee_type";
+import { EmployeeProps, FilterProps } from "../interfaces/employee_type";
+
 /**
  *  ### [Route for ('/create_employee')]
  * 
@@ -53,53 +54,63 @@ export function CreateEmployee() {
 
     return (
         <>
-            <Header />
+        <Header />
 
-            <div className="px-5">
+        <div className="px-5">
 
-                <h1 className="text-center">Create Employee Form:</h1>
-                <form id="project_creation" onSubmit={onSubmit}  method="post">
+            <h1 className="text-center">Create Employee Form:</h1>
+            <form id="project_creation" onSubmit={onSubmit}  method="post">
 
-                    <div className="flex flex-row gap-5 p-24 mx-auto max-w-screen-lg bg-zinc-50 mt-5" >
+                <div className="grid grid-cols-2 gap-5 p-24 mx-auto max-w-screen-lg bg-zinc-50 mt-5" >
 
-                        <div className="grid grid-cols-2 gap-3 justify-center">
+                    <div className="grid grid-cols-2 gap-3 justify-center">
 
-                            <label htmlFor="name">Name:</label>
-                            <input type="text" name="name" className="bg-slate-100 border border-zinc-300" required/>
+                        <label htmlFor="name">Name:</label>
+                        <input type="text" name="name" className="bg-slate-100 border border-zinc-300" required/>
 
-                            <label htmlFor="name">Email:</label>
-                            <input type="text" name="email"  className="bg-slate-100 border border-zinc-300" required/>
-
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-3 justify-center">
-
-                            <label htmlFor="name">Password:</label>
-                            <input type="password" name="password" className="bg-slate-100 border border-zinc-300" required/>
-
-                            <label htmlFor="name">Re-enter Password:</label>
-                            <input type="password" name="re_password" className="bg-slate-100 border border-zinc-300" required/>
-
-                        </div>
+                        <label htmlFor="name">Email:</label>
+                        <input type="text" name="email"  className="bg-slate-100 border border-zinc-300" required/>
 
                     </div>
 
-                    <div className="flex flex-row justify-center gap-3 m-2">
+                    <div className="grid grid-cols-2 gap-3 justify-center">
 
-                        <Route_Button route={"/main_menu"} text="Back"/>
+                        <label htmlFor="name">Password:</label>
+                        <input type="password" name="password" className="bg-slate-100 border border-zinc-300" required/>
 
-                        <button type="submit" className="bg-orange-300 rounded p-4 m-2">
-                            <h6 className="inline-block">Submit</h6>    
-                        </button>
+                        <label htmlFor="name">Re-enter Password:</label>
+                        <input type="password" name="re_password" className="bg-slate-100 border border-zinc-300" required/>
 
                     </div>
 
-                    <div className="mt-5">
-                        {errorString && <p className="text-red-500 text-center">{errorString}</p>}
+                    <div className="grid grid-cols-2 gap-3 justify-center">
+
+                        <label htmlFor="name">Role:</label>
+                        <select name="role" className="bg-slate-100 border border-zinc-300" required>
+                            <option value="Manager">Manager</option>
+                            <option value="Employee">Employee</option>
+                        </select>
+
                     </div>
 
-                </form>
-            </div>
+                </div>
+
+                <div className="flex flex-row justify-center gap-3 m-2">
+
+                    <Route_Button route={"/main_menu"} text="Back"/>
+
+                    <button type="submit" className="bg-orange-300 rounded p-4 m-2">
+                        <h6 className="inline-block">Submit</h6>    
+                    </button>
+
+                </div>
+
+                <div className="mt-5">
+                    {errorString && <p className="text-red-500 text-center">{errorString}</p>}
+                </div>
+
+            </form>
+        </div>
         </>
     )
 }
@@ -133,15 +144,14 @@ export function EmployeeList() {
             <Header />
 
             <EmployeeUpdateTable employeeList={employeeList} employeeLoaded={listLoaded}/>
+
+            <div className="flex flex-row justify-center gap-3 m-2">
+                <Route_Button route={"/main_menu"} text="Back"/>
+            </div>
         </>
     )
 }
 
-type FilterProps = {
-    filterText: string
-    onFilter: (e: FormEvent<HTMLInputElement>) => void
-    onClear: () => void
-}
 /**
  * Helper Component for ProjectUpdateTable
  * 
@@ -236,6 +246,7 @@ function EmployeeUpdateTable({ employeeList, employeeLoaded }: { employeeList: E
         paginationResetDefaultPage={resetPaginationToggle}
         persistTableHead
         highlightOnHover
+        selectableRows
         expandableRows
         pagination
         subHeader
