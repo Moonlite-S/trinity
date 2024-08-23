@@ -16,6 +16,7 @@ from rest_framework.authentication import BaseAuthentication
 #from django.conf import setting
 from django.contrib.auth import get_user_model
 from .utils import authenticate_jwt
+from rest_framework.exceptions import PermissionDenied
 
 
 #from backend.mysite.Trinity_Project import serializers
@@ -45,6 +46,7 @@ class LoginView(APIView):
         
         payload = {
             'id': user.id,
+            'name': user.name,
             'exp': datetime.now(timezone.utc) + timedelta(minutes=60),
             'iat': datetime.now(timezone.utc)
         }
@@ -107,7 +109,7 @@ def project_list(request):
 #@jwt_required
 def project_detail(request, project_id):
     
-    payload = authenticate_jwt(request)
+    payload = authenticate_jwt(request) #this is used to check if your are login
     
     try:
         project=Project.objects.get(project_id=project_id)
@@ -118,11 +120,32 @@ def project_detail(request, project_id):
         serializer = ProjectSerializer(project)
         return Response(serializer.data)
     elif request.method == 'PUT':
+        if project.manager != payload['name']:
+            raise PermissionDenied("You do not have permission to edit this project.")
         serializer = ProjectSerializer(project, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
+        if project.manager != payload['name']:
+            raise PermissionDenied("You do not have permission to delete this project.")
         project.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET'])    
+def project_filter_by_manager(request, manager):
+    
+    payload = authenticate_jwt(request) #this is used to check if your are login
+    
+    try:
+        project=Project.objects.filter(manager=manager)
+    except Project.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        if project.count() == 1:
+            serializer = ProjectSerializer(project.first())
+        else:
+            serializer = ProjectSerializer(project,many=True)
+        return Response(serializer.data)    
