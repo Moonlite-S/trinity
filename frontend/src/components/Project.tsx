@@ -536,7 +536,7 @@ const FilterComponent = ({ filterText, onFilter, onClear }: FilterProps) => (
  */
 const ExpandableRowComponent = ({ data }: { data: UpdateProjectProps }) => (
     <div className="flex flex-row gap-5 bg-slate-50">
-        (This is where I'll probably store the description of the project) {data.project_id}
+        {data.description && <p>{data.description}</p>}
 
         <Route_Button route={"/update_project/" + data.project_id} text="Edit"/>
         <Route_Button route="/project_report" text="Report"/>
