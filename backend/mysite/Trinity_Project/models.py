@@ -20,6 +20,8 @@ class User(AbstractUser):
     name=models.CharField(max_length=50)
     email=models.EmailField(max_length=50, unique=True)
     password=models.CharField(max_length=255)
+    role=models.CharField(max_length=50)
+    date_joined=models.DateField(auto_now_add=True)
     username= None
     
     USERNAME_FIELD = 'email'
