@@ -18,7 +18,7 @@ export function Tasks() {
     setNewTask(event.target.value); //DOM element that triggered event, retrieves current value of input field
   }
 
-  function createTask() { //LEFT OFF HERE WITH LEARNING THE CODE!!!
+  function createTask() {
     if (newTask.trim() !== '') {
       setTasks((prevTasks) => [
         ...prevTasks,
@@ -32,7 +32,7 @@ export function Tasks() {
     setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
   }
 
-  function moveTaskUp(id: number) {
+  function editTask(id: number) {
     const index = tasks.findIndex((task) => task.id === id);
     if (index > 0) {
       const updatedTasks = [...tasks];
@@ -43,73 +43,73 @@ export function Tasks() {
       setTasks(updatedTasks);
     }
   }
-
-  function moveTaskDown(id: number) {
-    const index = tasks.findIndex((task) => task.id === id);
-    if (index < tasks.length - 1) {
-      const updatedTasks = [...tasks];
-      [updatedTasks[index], updatedTasks[index + 1]] = [
-        updatedTasks[index + 1],
-        updatedTasks[index],
-      ];
-      setTasks(updatedTasks);
-    }
-  }
-
+//min-h-screen flex items-center justify-center
+//min-h-screen items-center justify-center
+//max-w-md mx-auto bg-white rounded-lg shadow-md p-6
   return (
     <>
-    <Header />
-      <div className="bg-slate-400 justify-center mx-auto">
-        <h1>Tasks</h1>
-        <div>
-          <div className="flex flex-row justify-center gap-10 p-5" >
+    <Header/>
+      <div className="max-w-md my-5 mx-auto bg-slate-200 rounded-lg shadow-md p-6">
+        <form>
+        <h1 className="text-x1 font-semibold">Assign Tasks</h1>
+        <div className="flex flex-col justify-center">
+          <form className="flex flex-row justify-center gap-10 p-5"/>
             <div className="flex flex-col">
-              <label htmlFor="new_task">Task Title:</label>
+              <label htmlFor="new_task">Task Subject:</label>
                 <input
                   type="text"
-                  placeholder="Enter title"
+                  placeholder="Enter subject"
                   value={newTask}
                   onChange={handleInputChange}
                 />
             </div>
 
-            <div className="flex flex-col">
+            <div className="flex flex-col my-3">
               <label htmlFor="task_description">Task Description:</label>
-              <textarea placeholder="Type description here..." name="task_description" required/>
+              <textarea placeholder="Enter description" name="task_description" required/>
             </div>
 
-            <div className="mx-auto text-center justify-center pb-5">
+            <div className="mx-auto text-center justify-center">
             <button type="submit" className="bg-orange-300 rounded p-4" onClick={createTask}>Create Task</button>
             </div>
 
+        </div>
+        </form>
+
+      </div>
+
+      <div className="max-w-md mx-auto bg-slate-100 rounded-lg shadow-md p-6">
+        <form>
+        <h1 className="text-x1 font-semibold">Task Progress and Updates</h1>
+        <div>
+          <div className="flex flex-row justify-center gap-10 p-5">
+            <div className="flex flex-col">
+              <select className="w-full p-2 border rounded">
+                <option value="">Select Task</option>
+              </select>
+            </div>
           </div>
         </div>
 
-        <ol>
-          {tasks.map((task) => (
-            <li key={task.id}>
-              <span className="text">{task.text}</span>
-              <button
-                className="delete-button"
-                onClick={() => deleteTask(task.id)}
-              >
-                Delete
-              </button>
-              <button
-                className="move-button"
-                onClick={() => moveTaskUp(task.id)}
-              >
-                Up
-              </button>
-              <button
-                className="move-button"
-                onClick={() => moveTaskDown(task.id)}
-              >
-                Down
-              </button>
-            </li>
-          ))}
-        </ol>
+        <div className="flex flex-col">
+          <label htmlFor="edit_task">Task Subject:</label>
+            <input
+              type="text"
+              placeholder="Edit subject"
+              onChange={handleInputChange}
+            />
+        </div>
+
+        <div className="flex flex-col my-3">
+          <label htmlFor="edit_description">Task Description:</label>
+          <textarea placeholder="Edit description" name="task_description" required/>
+        </div>
+
+        <div className="mx-auto text-center justify-center">
+        <button type="submit" className="bg-orange-300 rounded p-4" onClick={createTask}>Update Task</button>
+        </div>
+
+        </form>
       </div>
     </>
   );
