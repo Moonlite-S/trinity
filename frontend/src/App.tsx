@@ -7,6 +7,7 @@ import { CreateProject, UpdateProject, UpdateProjectList, ProjectStatusReport } 
 import { checkUser } from './api/auth'
 import { Tasks } from './components/Tasks';
 import { CreateEmployee, EmployeeList } from './components/Employee'
+import { Calendar } from './components/Calendar';
 
 // Main Router for the application
 export default function App() {
@@ -29,6 +30,7 @@ export default function App() {
               <Route path='/create_employee' element={<CreateEmployee />} />
               <Route path='/employee' element={<EmployeeList />} />
               <Route path='/project/:id/delete' element={<UpdateProjectList />} />
+              <Route path='/calendar' element={<Calendar />} />
 
             </Route>
 
