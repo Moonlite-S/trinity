@@ -64,15 +64,16 @@ export async function getEmployeeNameList(): Promise<string[]> {
         }
 
         const data = await response.json();
-        console.log("Got data", data);
-        return data;
+
+        const to_string:string[] = data.map((obj: { name: string }) => obj.name); // Gotta convert it to a string array
+
+        return to_string
     } catch (e) {
         console.error("Error getting employee list:", e);
         const error = {
             status: 500
         }
         return JSON.parse(JSON.stringify(error))
-        throw error; // Re-throw the error so the caller can handle it if needed
     }
 }
 

@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { Header, Route_Button } from "./misc";
+import { Error_Component, Header, Route_Button } from "./misc";
 import { createProject, getProjectList, getProject } from "../api/projects";
 import { useNavigate, useParams } from "react-router-dom";
 import DataTable, { Direction, TableColumn } from "react-data-table-component";
-import { FilterProps, ProjectFormMiddleProps, ProjectFormProps, ProjectManagerCustomerCityProps, ProjectNameIDProps, ProjectStatus, ProjectStatusAndDateProps, UpdateProjectProps } from "../interfaces/project_types";
+import { FilterProps, ProjectFormMiddleProps, ProjectFormProps, ProjectManagerCustomerCityProps, ProjectNameIDProps, ProjectStatusAndDateProps, UpdateProjectProps } from "../interfaces/project_types";
+import { getEmployeeNameList } from "../api/employee";
 
 /**
  * ### [Route for ('/create_project')]
@@ -19,8 +20,6 @@ export function CreateProject() {
 
         const formData = new FormData(event.target)
         const data = Object.fromEntries(formData)
-
-        console.log("Sending data:", data);
 
         try {
             await createProject(data)
@@ -121,6 +120,8 @@ export function UpdateProject() {
     const { id } = useParams<string>()
     const [projectManager, setProjectManagers] = useState<string[]>([])
     const [currentProject, setCurrentProject] = useState<UpdateProjectProps>()
+    const [errorString, setErrorString] = useState<string>()
+    const [loading, setLoading] = useState<boolean>(true)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -130,7 +131,19 @@ export function UpdateProject() {
 
             try {
                 const data = await getProject(id)
+                const managers = await getEmployeeNameList()
+
+                if (data.manager && !managers.includes(data.manager)) {
+                    console.error("There's no mangaer with that name: ", data.manager)
+                    console.error("We will automatically include it, but please create the employee before creating a project")
+
+                    setErrorString("There is no manager with that name. \n We will automatically include it, but please create the employee before creating a project.")
+                    managers.push(data.manager)
+                }
+
                 setCurrentProject(data)
+                setProjectManagers(managers)
+                setLoading(false)
             } catch (error) {
                 console.error("Error fetching project:", error);
                 navigate("/main_menu") // SEND'EM BACK
@@ -138,8 +151,6 @@ export function UpdateProject() {
         }
 
         project()
-
-        setProjectManagers(['Sean', 'Israel', 'Leo', 'Matt'])
     }, [])
 
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -151,8 +162,11 @@ export function UpdateProject() {
         <>
             <Header />
 
-            <ProjectForm button_text="Update Project" projectManagerList={projectManager} onSubmit={onSubmit} formProps={currentProject}/>
+            {errorString && <Error_Component errorString={errorString} />}
 
+            {loading ? <div>Loading...</div> 
+            : 
+            <ProjectForm button_text="Update Project" projectManagerList={projectManager} onSubmit={onSubmit} formProps={currentProject} />}
         </>
     )
 }
@@ -219,17 +233,18 @@ function ProjectForm(
         project_name = '',
         manager = '',
         city = '',
+        status = 'NOT STARTED',
         client_name = '',
         start_date = '',
         end_date = '',
-        status = ProjectStatus.NOT_STARTED,
         description = '',
     } = formProps ?? {}
 
     // Uhh maybe there's a better way to refactor than prop drilling?
     // useContext? Maybe a free library?
     return (
-        <form id="project_creation" onSubmit={onSubmit}  method="post">
+    <>
+    <form id="project_creation" onSubmit={onSubmit}  method="post">
 
         <div className="flex flex-col gap-10 p-24 mx-auto max-w-screen-lg bg-zinc-50" >
 
@@ -261,6 +276,7 @@ function ProjectForm(
         <MainMenuFormButton button_text={button_text} route="/update_project"/>}
 
     </form>
+    </>
 
     )
 }
@@ -354,7 +370,6 @@ function ProjectStatusAndDate({
     project_status,
     start_date 
 }: ProjectStatusAndDateProps) {
-    console.log(project_status)
     return (
     <>
         <div className="flex flex-row justify-between gap-5">
@@ -362,10 +377,10 @@ function ProjectStatusAndDate({
             <label htmlFor="status">Project Status:</label>
             <select defaultValue={project_status} name="status">
 
-                <option value={ProjectStatus.ACTIVE}>Active</option>
-                <option value={ProjectStatus.COMPLETED}>Completed</option>
-                <option value={ProjectStatus.CANCELLED}>Cancelled</option>
-                <option value={ProjectStatus.NOT_STARTED}>Not Started</option>
+                <option value={'ACTIVE'}>Active</option>
+                <option value={'COMPLETED'}>Completed</option>
+                <option value={'CANCELLED'}>Cancelled</option>
+                <option value={'NOT STARTED'}>Not Started</option>
 
             </select>
             

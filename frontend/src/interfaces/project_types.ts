@@ -1,11 +1,11 @@
 import { FormEvent } from "react"
 
-export enum ProjectStatus {
-    ACTIVE = "ACTIVE",
-    NOT_STARTED = "NOT_STARTED",
-    COMPLETED = "COMPLETED",
-    CANCELLED = "CANCELLED",
-}
+export type ProjectStatus = 
+    "ACTIVE" |
+    "NOT STARTED" |
+    "COMPLETED" |
+    "CANCELLED"
+
 
 export type UpdateProjectProps = {
     project_id: string

@@ -25,3 +25,11 @@ export function Route_Button({route, text}: {route: string, text: string}) {
     <button className='bg-orange-300 rounded p-4 m-2' onClick={() =>navigate(route)}>{text}</button>
   )
 }
+
+export function Error_Component({ errorString }: { errorString: string }) {
+  return (
+      <div className="justify-center mx-auto p-5 bg-red-500">
+          <p className="text-white">{errorString}</p>
+      </div>
+  )
+}
