@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import { BrowserRouter as Router, Route, Routes, Outlet } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Routes, Outlet, useLocation } from 'react-router-dom'
 import { MainMenu } from './components/MainMenu'
 import Home from './components/Home'
 import './App.css'
-import { CreateProject, UpdateProject, UpdateProjectList } from './components/Project'
+import { CreateProject, UpdateProject, UpdateProjectList, ProjectStatusReport } from './components/Project'
 import { checkUser } from './api/auth'
 import { Tasks } from './components/Tasks';
+import { CreateEmployee, EmployeeList } from './components/Employee'
 
 // Main Router for the application
 export default function App() {
@@ -16,13 +17,17 @@ export default function App() {
 
             <Route path='/' element={<Home />} />
 
+            {/* All routes here are checked for authentication. */}
             <Route element={<Verification />}>
 
-              <Route path='/main_menu' element={<MainMenu />} />
+              <Route path='/main_menu' element={<MainMenu/>} />
               <Route path='/create_project' element={<CreateProject />} />
               <Route path='/update_project' element={<UpdateProjectList />} />
               <Route path='/update_project/:id' element={<UpdateProject />} />
+              <Route path='/project_status_report/:id' element={<ProjectStatusReport />} />
               <Route path='/task' element={<Tasks />} />
+              <Route path='/create_employee' element={<CreateEmployee />} />
+              <Route path='/employee' element={<EmployeeList />} />
 
             </Route>
 
@@ -39,20 +44,59 @@ export default function App() {
  * 
  * if so, go to where the user wants to go
  * 
- * if not, redirect to login
+ * if not, redirect to login.
+ * 
+ * #### This component triggers EVERY time the user navigates anywhere in it's children.
  * 
  * @param isAuth: boolean
  * @param redirectPath: string
  */
 export function Verification() {
-    const [auth, isAuth] = useState<boolean>(true)
+    const [auth, isAuth] = useState<boolean>(false)
+    const [loading, setLoading] = useState<boolean>(true)
+    const location = useLocation()
 
     useEffect(() => {
       // Check if user is logged in
-      checkUser()
-      isAuth(true)
+      const checkForValidation = async () => {
+        setLoading(true)
+        try {
+          const reponse_code = await checkUser()
+          
+          if (reponse_code === 200) {
+            console.log("User verified")
+            isAuth(true)
+          }
+        } catch (error) {
+          console.error("Error checking user:", error);
+          isAuth(false)
+        } finally {
+          setLoading(false)
+        }
+      }
+      
       console.log("Checking..")
-    }, []);
+
+      checkForValidation()
+
+    }, [location]);
+    
+    // Change this to a custom loading screen
+    if (loading) {
+      return <LoadingComponent />
+    }
 
     return (auth ? <Outlet/> : <Home />)
+}
+
+/**
+ * Maybe add some flair to this later
+ * 
+ */
+function LoadingComponent() {
+  return (
+    <div className='mx-auto flex justify-center'>
+      <h1>Loading...</h1>
+    </div>
+  )
 }

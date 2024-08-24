@@ -7,9 +7,9 @@ export function Header() {
   const navigate = useNavigate();
 
   return(
-    <header className='w-screen h-32 relative'>
+    <header className='w-full h-32 relative'>
 
-      <div className='h-4 w-screen bg-orange-400 absolute -z-10' />
+      <div className='h-4 w-full bg-orange-400 absolute -z-10' />
 
       <img src={logo} alt='Trinity MEP Logo' className="h-32 cursor-pointer" onClick={() => navigate('/main_menu')}/>
 
@@ -17,13 +17,11 @@ export function Header() {
   )
 }
 
-type Back_Button_Props = {
-  route: string
-}
-export function Back_Button({route}: Back_Button_Props) {
+/** General Orange button */
+export function Route_Button({route, text}: {route: string, text: string}) {
   const navigate = useNavigate();
 
   return(
-    <button className='bg-orange-300 rounded p-4' onClick={() =>navigate(route)}>Back</button>
+    <button className='bg-orange-300 rounded p-4 m-2' onClick={() =>navigate(route)}>{text}</button>
   )
 }

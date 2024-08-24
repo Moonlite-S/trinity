@@ -5,3 +5,4 @@ django-rest-framework
 openai
 python-dotenv
 django-cors-headers == 4.4.0
+pyJWT
