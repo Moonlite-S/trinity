@@ -18,11 +18,13 @@ export function Header() {
 }
 
 /** General Orange button */
-export function Route_Button({route, text}: {route: string, text: string}) {
+export function Route_Button({route, text, isDelete}: {route: string, text: string, isDelete?: boolean}) {
   const navigate = useNavigate();
+  const css = isDelete ? 'bg-red-300 rounded p-4 my-2 hover:bg-red-400 transition' : 
+  'bg-orange-300 rounded p-4 my-2 hover:bg-orange-400 transition';
 
   return(
-    <button className='bg-orange-300 rounded p-4 m-2' onClick={() =>navigate(route)}>{text}</button>
+    <button className={css} onClick={() =>navigate(route)}>{text}</button>
   )
 }
 

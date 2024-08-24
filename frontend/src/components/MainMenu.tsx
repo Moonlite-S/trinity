@@ -50,31 +50,11 @@ export function MainMenu({ error='' } : MainMenuProps) {
                 <h2>Main Menu</h2>
             </div>
 
-            <div className="flex flex-row w-full bg-gray-50">
 
-                <div className='p-2 flex flex-col justify-items-center'>
-
-                    <Button_Card text="Create Project" route="/create_project" />
-                    <Button_Card text="Update Project" route="/update_project" />
-                    <Button_Card text="Project Status Report" route="/" />
-                    <Button_Card text="Tasks" route="/task" />
-                    <Button_Card text="Report" route="/" />
-                    <Button_Card text="Submittal" route="/" />
-                    <Button_Card text="Proposal" route="/" />
-                    <Button_Card text="Calendar" route="/" />
-                    <Button_Card text="Calls" route="/" />
-                    <Button_Card text="Create Employee" route="/create_employee" />
-                    <Button_Card text="Employee List" route="/employee" />
-
-                    <LogOut />
-
-                </div>
-
-                <MainMenuQuickBar
-                    name={user.name}
-                    role={user.role}
-                />
-            </div>
+            <MainNavBar
+            user={user}
+            />
+        
         </>
     )
 }
@@ -213,6 +193,41 @@ return (
 
         </div>
 
+    </div>
+    );
+}
+
+type MainNavBarProps =  {
+    user: UserProps;
+};
+
+function MainNavBar({ user }: MainNavBarProps) {
+    return (
+    <div className="flex flex-row w-full bg-gray-50">
+
+        <div className='p-2 flex flex-col justify-items-center'>
+
+            <Button_Card text="Create Project" route="/create_project" />
+            <Button_Card text="Update Project" route="/update_project" />
+            <Button_Card text="Project Status Report" route="/" />
+            <Button_Card text="Tasks" route="/task" />
+            <Button_Card text="Report" route="/" />
+            <Button_Card text="Submittal" route="/" />
+            <Button_Card text="Proposal" route="/" />
+            <Button_Card text="Calendar" route="/" />
+            <Button_Card text="Calls" route="/" />
+            <Button_Card text="Create Employee" route="/create_employee" />
+            <Button_Card text="Employee List" route="/employee" />
+
+            <LogOut />
+
+        </div>
+
+        <MainMenuQuickBar
+            name={user.name}
+            role={user.role}
+        />
+            
     </div>
     );
 }

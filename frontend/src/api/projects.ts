@@ -95,9 +95,9 @@ export async function createProject(project_data: { [key: string]: FormDataEntry
     }
 }
 
-export async function updateProject(project_data: { [key: string]: FormDataEntryValue }, id: string): Promise<number> {
+export async function updateProject(project_data: { [key: string]: FormDataEntryValue }, id: string | undefined): Promise<number> {
     try {
-        const response = await fetch('http://localhost:8000/api/projects/' + id + '/', {
+        const response = await fetch('http://localhost:8000/api/projects/id/' + id, {
             method: 'PUT',
             mode: 'cors',
             credentials: 'include',

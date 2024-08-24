@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Error_Component, Header, Route_Button } from "./misc";
-import { createProject, getProjectList, getProject } from "../api/projects";
+import { createProject, getProjectList, getProject, updateProject } from "../api/projects";
 import { useNavigate, useParams } from "react-router-dom";
 import DataTable, { Direction, TableColumn } from "react-data-table-component";
 import { FilterProps, ProjectFormMiddleProps, ProjectFormProps, ProjectManagerCustomerCityProps, ProjectNameIDProps, ProjectStatusAndDateProps, UpdateProjectProps } from "../interfaces/project_types";
@@ -13,6 +13,7 @@ import { getEmployeeNameList } from "../api/employee";
  */
 export function CreateProject() {
     const [projectManagers, setProjectManagers] = useState<string[]>([])
+    const [errorString, setErrorString] = useState<string>()
     const navigate = useNavigate()
 
     const onSubmit = async (event: any) => {
@@ -28,35 +29,32 @@ export function CreateProject() {
             navigate("/main_menu")
         } catch (error) {
             console.error("Error creating project:", error);
-            throw error; // Re-throw the error so the caller can handle it if needed
+            setErrorString("Error creating project: " + error)
         }
     }
 
     useEffect(() => {
-        // [TODO]:
-        // We need to fetch a list of project managers
+        const get_managers = async () => {
+            try {
+                const managers = await getEmployeeNameList()
+                setProjectManagers(managers)
+            } catch (error) {
+                console.error("Error fetching managers:", error);
+                setErrorString("Error fetching managers: " + error)
+            }
+        }
 
-        // fetch('/get_project_managers', {
-        //     method: 'GET',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        // }).then(
-        //     (response) => {
-        //         response.json()
-        // }
-        // ).catch((error) => console.log(error))
-
-        setProjectManagers(['Sean', 'Israel', 'Leo'])
-
+        get_managers()
     }, [])
     return (
         <>
             <Header />
 
+            {errorString && <Error_Component errorString={errorString} />}
+
             <div className="justify-center mx-auto p-5">
 
-                <h2 className="text-center">Create Project:</h2>
+                <h2>Create Project:</h2>
 
             </div>
 
@@ -137,7 +135,7 @@ export function UpdateProject() {
                     console.error("There's no mangaer with that name: ", data.manager)
                     console.error("We will automatically include it, but please create the employee before creating a project")
 
-                    setErrorString("There is no manager with that name. \n We will automatically include it, but please create the employee before creating a project.")
+                    setErrorString("There is no manager in the database with that name. \n We will automatically include it, but please create the employee before creating a project.")
                     managers.push(data.manager)
                 }
 
@@ -153,9 +151,33 @@ export function UpdateProject() {
         project()
     }, [])
 
-    const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const onSubmit = async(event: any) => {
         event.preventDefault()
-        console.log("We got here")
+        
+        try {
+            const form_data = new FormData(event.target)
+            const data = Object.fromEntries(form_data)
+            const response = await updateProject(data, id)
+
+            switch (response) {
+                case 200:
+                    alert("Project updated successfully!")
+                    navigate("/update_project")
+                    break;
+                case 403:
+                    setErrorString("Failed to update project. Error code: " + response + " Forbidden. Only the current project manager can update the project.")
+                    break;
+                case 404:
+                    setErrorString("Failed to update project. Error code: " + response + " Not Found")
+                    break;
+                default:    
+                    setErrorString("Failed to update project. Error code: " + response)
+            }
+
+        } catch (error) {
+            console.error("Error updating project:", error);
+            throw error; // Re-throw the error so the caller can handle it if needed
+        }
     }
 
     return (
@@ -218,7 +240,6 @@ function ProjectManager(name: string, id: number) {
     )
 }
 
-
 /**
  * This component shows the user the form to create a new project.
  * 
@@ -269,11 +290,10 @@ function ProjectForm(
 
         </div>
 
-        {/* Swtiches button route based on button_text 
-        CREATE PROJECT => Main Menu / UPDATE PROJECT => Update Project List */}
-        {button_text === "Create Project" ? <MainMenuFormButton button_text={button_text} route="/main_menu"/>
-        : 
-        <MainMenuFormButton button_text={button_text} route="/update_project"/>}
+        {button_text === "Create Project" ? 
+        <BottomFormButton button_text={button_text} route_back="/main_menu"/>
+        :
+        <BottomFormButton button_text={button_text} route_back="/update_project"/>}
 
     </form>
     </>
@@ -301,8 +321,6 @@ function ProjectTop({ project_id, project_name }: ProjectNameIDProps) {
     );
 }
 
-
-    
 /**
  * Renders the middle section of the form.
  * 
@@ -438,10 +456,10 @@ function ProjectManagerCustomerCity({
         </div>
     </>
       );
-    }
+}
 
 /**
- * For use in the MainMenu component
+ * For use in both the CreateProjectForm and UpdateProjectForm components
  *  
  * There are two buttons: One that goes back to the main menu and one that creates or updates a project
  * 
@@ -449,12 +467,12 @@ function ProjectManagerCustomerCity({
  * @params route The route of the back button (Either "/main_menu" or "/update_project")
  * This is usually either "Create Project" or "Update Project"
  */
-function MainMenuFormButton({ button_text, route }: { button_text: string, route: string }) {
+function BottomFormButton({ button_text, route_back }: { button_text: string, route_back: string }) {
     const navigate = useNavigate();
     return (
     <div className="mx-auto text-center justify-center pt-5">
 
-        <button className='bg-orange-300 rounded p-4' onClick={() =>navigate(route)}>Back</button>
+        <button className='bg-orange-300 rounded p-4' onClick={() =>navigate(route_back)}>Back</button>
         
         <button type="submit" className="bg-orange-300 rounded p-4 ml-5">
             {button_text}
@@ -506,8 +524,20 @@ const ExpandableRowComponent = ({ data }: { data: UpdateProjectProps }) => (
 
         <Route_Button route={"/update_project/" + data.project_id} text="Edit"/>
         <Route_Button route="/project_report" text="Report"/>
+        <Route_Button route="/project_report" text="Open Folder"/>
+        <Route_Button route="/project_delete" text="Delete" isDelete/>
     </div>
 )
+
+function ProjectDeleteConfimation({ project_id }: { project_id: string }) {
+    const navigate = useNavigate();
+    return (
+        <div className="flex flex-row justify-between gap-5">
+            <p>Are you sure you want to delete this project?</p>
+            <Route_Button route="/project_delete" text="Delete" isDelete/>
+        </div>
+    )
+}
 
 /**
  * The Table Component that lists the projects
@@ -519,7 +549,7 @@ const ExpandableRowComponent = ({ data }: { data: UpdateProjectProps }) => (
  */
 function ProjectUpdateTable({ projectList, projectLoaded }: { projectList: UpdateProjectProps[], projectLoaded: boolean }) {
     const [filterText, setFilterText] = useState<string>('')
-    const [resetPaginationToggle, setResetPaginationToggle] = useState<boolean>(false);
+    const [resetPaginationToggle, setResetPaginationToggle] = useState<boolean>(false)
 
     const filteredProjects: UpdateProjectProps[] = projectList.filter(item => item.project_name.toLowerCase().includes(filterText.toLowerCase()))
 

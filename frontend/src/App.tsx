@@ -28,6 +28,7 @@ export default function App() {
               <Route path='/task' element={<Tasks />} />
               <Route path='/create_employee' element={<CreateEmployee />} />
               <Route path='/employee' element={<EmployeeList />} />
+              <Route path='/project/:id/delete' element={<UpdateProjectList />} />
 
             </Route>
 
