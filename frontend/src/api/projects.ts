@@ -119,3 +119,27 @@ export async function updateProject(project_data: { [key: string]: FormDataEntry
         return 500
     }
 }
+
+export async function deleteProject(id: string | undefined): Promise<number> {
+    try {
+        const response = await fetch('http://localhost:8000/api/projects/id/' + id, {
+            method: 'DELETE',
+            mode: 'cors',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+
+        if (!response.ok) {  
+            console.log("Error: ", response)
+            return response.status
+        }
+
+        return response.status
+
+    } catch (error) {
+        console.error("Error deleting project:", error);
+        return 500
+    }
+}

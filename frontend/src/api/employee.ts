@@ -2,6 +2,8 @@ type EmployeeProps = {
     name: string;
     email: string;
     password: string;
+    username: string;
+    role: string;
 }
 
 /**
@@ -12,7 +14,7 @@ type EmployeeProps = {
  * @returns Code 200 if successful and error if not
  * 
  */
-export async function createEmployee({name, email, password} : EmployeeProps): Promise<number> {
+export async function createEmployee({name, email, password, role} : EmployeeProps): Promise<number> {
     try {
         const response = await fetch('http://localhost:8000/api/register', {
             method: 'POST',
@@ -23,7 +25,9 @@ export async function createEmployee({name, email, password} : EmployeeProps): P
             body: JSON.stringify({
                 name: name,
                 email: email,
-                password: password
+                password: password,
+                username: name,
+                role: role
             }),
         });
 

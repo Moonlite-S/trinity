@@ -3,10 +3,13 @@ import { BrowserRouter as Router, Route, Routes, Outlet, useLocation } from 'rea
 import { MainMenu } from './components/MainMenu'
 import Home from './components/Home'
 import './App.css'
-import { CreateProject, UpdateProject, UpdateProjectList, ProjectStatusReport } from './components/Project'
+import { CreateProject, UpdateProject, UpdateProjectList, ProjectStatusReport, ProjectDeleteConfimation, CreateProjectTemplateAsk } from './components/Project'
 import { checkUser } from './api/auth'
 import { Tasks } from './components/Tasks';
 import { CreateEmployee, EmployeeList } from './components/Employee'
+import { TemplateList } from './components/Template'
+import { ErrorPage } from './components/Error'
+import { Header } from './components/misc'
 
 // Main Router for the application
 export default function App() {
@@ -21,16 +24,22 @@ export default function App() {
             <Route element={<Verification />}>
 
               <Route path='/main_menu' element={<MainMenu/>} />
-              <Route path='/create_project' element={<CreateProject />} />
-              <Route path='/update_project' element={<UpdateProjectList />} />
-              <Route path='/update_project/:id' element={<UpdateProject />} />
-              <Route path='/project_status_report/:id' element={<ProjectStatusReport />} />
+
+              <Route path='/projects/' element={<UpdateProjectList />} />
+              <Route path='/projects/create_init' element={<CreateProjectTemplateAsk />} />
+              <Route path='/projects/create_project' element={<CreateProject />} />
+              <Route path='/projects/update_project/:id' element={<UpdateProject />} />
+              <Route path='/projects/project_status_report/:id' element={<ProjectStatusReport />} />
+              <Route path='/projects/delete/:id' element={<ProjectDeleteConfimation />} />
+
               <Route path='/task' element={<Tasks />} />
-              <Route path='/create_employee' element={<CreateEmployee />} />
-              <Route path='/employee' element={<EmployeeList />} />
-              <Route path='/project/:id/delete' element={<UpdateProjectList />} />
+              <Route path='/employees/' element={<EmployeeList />} />
+              <Route path='/employees/create_employee' element={<CreateEmployee />} />
+              <Route path='/template_list/' element={<TemplateList />} />
 
             </Route>
+
+              <Route path='*' element={<ErrorPage />} />
 
         </Routes>
 
@@ -96,8 +105,11 @@ export function Verification() {
  */
 function LoadingComponent() {
   return (
+    <>
+    <Header />
     <div className='mx-auto flex justify-center'>
       <h1>Loading...</h1>
     </div>
+    </>
   )
 }

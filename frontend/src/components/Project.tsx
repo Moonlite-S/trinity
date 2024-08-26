@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Error_Component, Header, Route_Button } from "./misc";
-import { createProject, getProjectList, getProject, updateProject } from "../api/projects";
+import { createProject, getProjectList, getProject, updateProject, deleteProject } from "../api/projects";
 import { useNavigate, useParams } from "react-router-dom";
 import DataTable, { Direction, TableColumn } from "react-data-table-component";
 import { FilterProps, ProjectFormMiddleProps, ProjectFormProps, ProjectManagerCustomerCityProps, ProjectNameIDProps, ProjectStatusAndDateProps, UpdateProjectProps } from "../interfaces/project_types";
@@ -26,7 +26,7 @@ export function CreateProject() {
             await createProject(data)
             // Component that signals that a project has been created
             alert("Project created successfully!")
-            navigate("/main_menu")
+            navigate("/projects")
         } catch (error) {
             console.error("Error creating project:", error);
             setErrorString("Error creating project: " + error)
@@ -58,9 +58,34 @@ export function CreateProject() {
 
             </div>
 
-                <ProjectForm button_text="Create Project" projectManagerList={projectManagers} onSubmit={onSubmit} />
+            <ProjectForm button_text="Create Project" projectManagerList={projectManagers} onSubmit={onSubmit} />
 
         </>
+    )
+}
+
+/**
+ * ### [Route for ('/create_init')]
+ * 
+ * Asks the user is they want to use a temlate before designing their project.
+ * 
+ */
+export function CreateProjectTemplateAsk( ){
+    return (
+    <>
+        <Header />
+
+        <h1 className="text-center">Start from a Template Project?</h1>
+
+        <div className="flex flex-row justify-center m-5 gap-5">
+            <Route_Button route="/projects/create_init" text="Start from Template" />
+            <Route_Button route="/projects/create_project" text="Start from Scratch" />
+        </div>
+
+        <div className="flex flex-row justify-center m-5 gap-5">
+            <Route_Button route="/main_menu" text="Main Menu" />
+        </div>
+    </>
     )
 }
 
@@ -144,7 +169,7 @@ export function UpdateProject() {
                 setLoading(false)
             } catch (error) {
                 console.error("Error fetching project:", error);
-                navigate("/main_menu") // SEND'EM BACK
+                navigate("/*")
             }
         }
 
@@ -287,20 +312,22 @@ function ProjectForm(
             <ProjectFormBottom
                 project_description={description}
             />
+            
+            <label htmlFor="project_files">(Optional): Upload Project Files</label>
+            <input type="file" id="project_files" name="project_files"/>
 
         </div>
 
         {button_text === "Create Project" ? 
         <BottomFormButton button_text={button_text} route_back="/main_menu"/>
         :
-        <BottomFormButton button_text={button_text} route_back="/update_project"/>}
+        <BottomFormButton button_text={button_text} route_back="/projects/"/>}
 
     </form>
     </>
 
     )
 }
-
 
 /**
  * Renders the top section of the form.
@@ -519,25 +546,32 @@ const FilterComponent = ({ filterText, onFilter, onClear }: FilterProps) => (
  * 
  */
 const ExpandableRowComponent = ({ data }: { data: UpdateProjectProps }) => (
-    <div className="flex flex-row gap-5 bg-slate-50">
-        {data.description && <p>{data.description}</p>}
+    <div className="flex flex-col gap-5 bg-slate-50">
+        
+        <div className="p-5 flex flex-row gap-5">
 
-        <Route_Button route={"/update_project/" + data.project_id} text="Edit"/>
-        <Route_Button route="/project_report" text="Report"/>
-        <Route_Button route="/project_report" text="Open Folder"/>
-        <Route_Button route="/project_delete" text="Delete" isDelete/>
+            <div>
+                <h3>Description:</h3>
+                {data.description && <p>{data.description}</p>}
+            </div>
+
+            <div>
+                <h3>Tasks:</h3>
+                <p>(This is where ongoing tasks come in)</p>
+            </div>
+
+        </div>
+
+        <div className="flex flex-row gap-5 m-5">
+            <Route_Button route={"/projects/update_project/" + data.project_id} text="Edit"/>
+            <Route_Button route={"/projects/project_status_report/" + data.project_id} text="Report"/>
+            <Route_Button route="/main_menu" text="Open Folder"/>
+            <Route_Button route={"/create_template"} text="Create Template"/>
+            <Route_Button route={"/projects/delete/" + data.project_id} text="Delete" isDelete/>
+        </div>
+
     </div>
 )
-
-function ProjectDeleteConfimation({ project_id }: { project_id: string }) {
-    const navigate = useNavigate();
-    return (
-        <div className="flex flex-row justify-between gap-5">
-            <p>Are you sure you want to delete this project?</p>
-            <Route_Button route="/project_delete" text="Delete" isDelete/>
-        </div>
-    )
-}
 
 /**
  * The Table Component that lists the projects
@@ -597,5 +631,37 @@ function ProjectUpdateTable({ projectList, projectLoaded }: { projectList: Updat
         pagination
         subHeader
         />        
+    )
+}
+
+/**
+ * Delete Confirmation Page for Projects
+ * 
+ * Need to make have a sort of backup before deleting the project
+ * or have multiple confirmation pages
+ * 
+ */
+export function ProjectDeleteConfimation() {
+    const { id } = useParams<string>();
+    const navigate = useNavigate();
+
+    const handleClick = async() => {
+        await deleteProject(id);
+        navigate("/projects");
+    }
+    return (
+        <>
+        <Header />
+
+        <div className="p-20 text-center">
+            <p>Are you sure you want to delete this project?</p>
+
+            <div className="flex flex-row justify-center gap-5">
+                <Route_Button route="/projects/" text="Back" />
+                <button className="bg-red-300 rounded p-4 my-2 hover:bg-red-400 transition" onClick={handleClick}>Yes</button>
+            </div>
+        </div>
+        </>
+
     )
 }
