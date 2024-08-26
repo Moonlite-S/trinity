@@ -200,7 +200,7 @@ type MainNavBarProps =  {
     user: UserProps;
 };
 
-function MainNavBar({ user }: MainNavBarProps) {
+export function MainNavBar({ user }: MainNavBarProps) {
     return (
     <div className="flex flex-row w-full bg-gray-50">
 
@@ -214,7 +214,7 @@ function MainNavBar({ user }: MainNavBarProps) {
             <Button_Card text="Report" route="/" />
             <Button_Card text="Submittal" route="/" />
             <Button_Card text="Proposal" route="/" />
-            <Button_Card text="Calendar" route="/" />
+            <Button_Card text="Calendar" route="/calendar" />
             <Button_Card text="Calls" route="/" />
             <Button_Card text="Employee List" route="/employees/" />
             <Button_Card text="Create Employee" route="/employees/create_employee" />

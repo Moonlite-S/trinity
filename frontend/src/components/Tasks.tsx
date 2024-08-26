@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Header } from './misc';
+import { MainNavBar } from './MainMenu'
 
 //To prevent errors; assigns properties to the tasks to maintain consistency
 interface Task {

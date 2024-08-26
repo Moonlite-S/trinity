@@ -9,6 +9,7 @@ import { Tasks } from './components/Tasks';
 import { CreateEmployee, EmployeeList } from './components/Employee'
 import { TemplateList } from './components/Template'
 import { ErrorPage } from './components/Error'
+import { Calendar } from './components/Calendar';
 import { Header } from './components/misc'
 
 // Main Router for the application
@@ -36,6 +37,7 @@ export default function App() {
               <Route path='/employees/' element={<EmployeeList />} />
               <Route path='/employees/create_employee' element={<CreateEmployee />} />
               <Route path='/template_list/' element={<TemplateList />} />
+              <Route path='/calendar' element={<Calendar />} />
 
             </Route>
 
