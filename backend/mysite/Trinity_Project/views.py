@@ -47,6 +47,7 @@ class LoginView(APIView):
         payload = {
             'id': user.id,
             'name': user.name,
+            'is_superuser':user.is_superuser,
             'exp': datetime.now(timezone.utc) + timedelta(minutes=60),
             'iat': datetime.now(timezone.utc)
         }
@@ -120,7 +121,7 @@ def project_detail(request, project_id):
         serializer = ProjectSerializer(project)
         return Response(serializer.data)
     elif request.method == 'PUT':
-        if project.manager != payload['name']:
+        if project.manager != payload['name'] and not payload['is_superuser']:
             raise PermissionDenied("You do not have permission to edit this project.")
         serializer = ProjectSerializer(project, data=request.data)
         if serializer.is_valid():
@@ -128,7 +129,7 @@ def project_detail(request, project_id):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
-        if project.manager != payload['name']:
+        if project.manager != payload['name'] and not payload['is_superuser']:
             raise PermissionDenied("You do not have permission to delete this project.")
         project.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
