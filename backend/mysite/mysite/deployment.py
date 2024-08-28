@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 from .settings import *
 from .settings import BASE_DIR
 
-load_dotenv(dotenv_path=BASE_DIR / '.env')
 ALLOWED_HOSTS = [os.environ["WEBSITE_HOSTNAME"]]
 CSRF_TRUSTED_ORIGINS = ['https://'+ os.environ["CSRF"]]
 DEBUG = False
@@ -34,7 +33,7 @@ STORAGES = {
     }
 }
 
-CONNECTION  = os.getenv("AZURE_MYSQL_CONNECTIONSSTRING")
+CONNECTION  = os.environ["AZURE_MYSQL_CONNECTIONSSTRING"]
 CONNECTION_STRING = {pair.split('=')[0]: pair.split('=')[1] for pair in CONNECTION.split(' ')}
 
 DATABASES = {
