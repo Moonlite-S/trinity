@@ -42,6 +42,9 @@ DATABASES = {
         "USER": os.getenv("MY_SQL_USER"),
         "PASSWORD": os.getenv("MY_SQL_PASSWORD"),
         "HOST": os.getenv("MY_SQL_HOST"),  
+        "OPTIONS": {
+            "ssl": {"ca": "DigiCertGlobalRootCA.crt.pem"}
+        }
     }
 }
 
