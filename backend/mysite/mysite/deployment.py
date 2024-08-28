@@ -40,8 +40,8 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
         "NAME": CONNECTION_STRING['Database'],
-        "USER": CONNECTION_STRING['User Id'],
-        "PASSWORD": CONNECTION_STRING['Password'],
+        "USER": os.getenv("MY_SQL_USER"),
+        "PASSWORD": os.getenv("MY_SQL_PASSWORD"),
         "HOST": CONNECTION_STRING['Server'],  
     }
 }
