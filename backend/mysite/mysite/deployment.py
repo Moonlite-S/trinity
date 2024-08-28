@@ -33,7 +33,7 @@ STORAGES = {
     }
 }
 
-CONNECTION  = os.environ["AZURE_MYSQL_CONNECTIONSTRING"]
+CONNECTION  = os.getenv("AZURE_MYSQL_CONNECTIONSTRING")
 CONNECTION_STRING = {pair.split('=')[0]: pair.split('=')[1] for pair in CONNECTION.split(' ')}
 
 DATABASES = {
