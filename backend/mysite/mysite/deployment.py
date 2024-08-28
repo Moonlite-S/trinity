@@ -39,10 +39,10 @@ CONNECTION_STRING = {pair.split('=')[0]: pair.split('=')[1] for pair in CONNECTI
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": CONNECTION_STRING['dbname'],
-        "USER": CONNECTION_STRING['user'],
-        "PASSWORD": CONNECTION_STRING['password'],
-        "HOST": CONNECTION_STRING['host'],
+        "NAME": CONNECTION_STRING['Database'],
+        "USER": CONNECTION_STRING['User Id'],
+        "PASSWORD": CONNECTION_STRING['Password'],
+        "HOST": CONNECTION_STRING['Server'],  
     }
 }
 
