@@ -6,3 +6,6 @@ openai
 python-dotenv
 django-cors-headers == 4.4.0
 pyJWT
+azure-storage-file-share == 12.17.0
+whitenoise == 6.7.0
+psycopg2 == 2.9.9
