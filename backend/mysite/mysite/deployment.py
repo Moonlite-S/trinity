@@ -34,15 +34,14 @@ STORAGES = {
 }
 
 CONNECTION  = os.getenv("AZURE_MYSQL_CONNECTIONSTRING")
-CONNECTION_STRING = {pair.split('=')[0]: pair.split('=')[1] for pair in CONNECTION.split(' ')}
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": CONNECTION_STRING['Database'],
+        "NAME": os.getenv("MY_SQL_NAME"),
         "USER": os.getenv("MY_SQL_USER"),
         "PASSWORD": os.getenv("MY_SQL_PASSWORD"),
-        "HOST": CONNECTION_STRING['Server'],  
+        "HOST": os.getenv("MY_SQL_HOST"),  
     }
 }
 
