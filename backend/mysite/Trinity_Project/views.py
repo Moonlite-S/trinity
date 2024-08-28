@@ -6,6 +6,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated
+
+from .azure_file_share import create_folder_in_file_share
 from .models import Project
 from .models import User
 from .serializers import ProjectSerializer, UserNameSerializer, UserSerializer
@@ -17,7 +19,6 @@ from rest_framework.authentication import BaseAuthentication
 from django.contrib.auth import get_user_model
 from .utils import authenticate_jwt
 from rest_framework.exceptions import PermissionDenied
-
 
 #from backend.mysite.Trinity_Project import serializers
 
@@ -166,3 +167,12 @@ def user_list(request):
     users = User.objects.all()
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
+
+
+@api_view(['POST'])
+def create_azure_file_share_folder_view(request):
+    folder_name = request.POST.get('folder_name', 'default_folder')
+    
+    create_folder_in_file_share(folder_name)
+    
+    return JsonResponse({'message': f'Folder "{folder_name}" created successfully in Azure File Share!'})
