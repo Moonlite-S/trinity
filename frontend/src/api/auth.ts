@@ -10,7 +10,7 @@ import AxiosInstance from '../components/Axios';
  */
 export async function checkUser(): Promise<number> {
     try {
-      const response = await AxiosInstance.get('/api/user')
+      const response = await AxiosInstance.get('api/user')
 
       const data = response.data
 
@@ -45,7 +45,7 @@ type LoginProps = {
  */
 export async function login({email, password }: LoginProps): Promise<number> {
     try {
-      const response = await AxiosInstance.post('/api/login', {
+      const response = await AxiosInstance.post('api/login', {
         email: email,
         password: password
       })
@@ -76,7 +76,7 @@ export async function login({email, password }: LoginProps): Promise<number> {
  */
 export async function logout(): Promise<number> {
     try {
-      const response = await AxiosInstance.post('/api/logout', {})
+      const response = await AxiosInstance.post('api/logout', {})
 
       const data = response.data
 

@@ -9,7 +9,7 @@ import AxiosInstance from "../components/Axios";
  */
 export async function getProjectList(): Promise<UpdateProjectProps[]> {
     try {
-        const response = await AxiosInstance.get('/api/projects')
+        const response = await AxiosInstance.get('api/projects')
 
         if (response.status === 200) {
             console.log(response)
@@ -32,7 +32,7 @@ export async function getProjectList(): Promise<UpdateProjectProps[]> {
  */
 export async function getProject(id: string): Promise<UpdateProjectProps> {
     try {
-        const response = await AxiosInstance.get('/api/projects/id/' + id)
+        const response = await AxiosInstance.get('api/projects/id/' + id)
 
         if (response.data) {
             console.log(response)
@@ -59,7 +59,7 @@ export async function getProject(id: string): Promise<UpdateProjectProps> {
  */
 export async function createProject(project_data: { [key: string]: FormDataEntryValue }): Promise<UpdateProjectProps> {
     try {
-        const response = await AxiosInstance.post('/api/projects/', project_data)
+        const response = await AxiosInstance.post('api/projects/', project_data)
 
         console.log(response)
 
@@ -77,7 +77,7 @@ export async function createProject(project_data: { [key: string]: FormDataEntry
 
 export async function updateProject(project_data: { [key: string]: FormDataEntryValue }, id: string | undefined): Promise<number> {
     try {
-        const response = await AxiosInstance.put('/api/projects/id/' + id, project_data)
+        const response = await AxiosInstance.put('api/projects/id/' + id, project_data)
 
         console.log(response)
 
@@ -99,7 +99,7 @@ export async function updateProject(project_data: { [key: string]: FormDataEntry
 
 export async function deleteProject(id: string | undefined): Promise<number> {
     try {
-        const response = await AxiosInstance.delete('/api/projects/id/' + id)
+        const response = await AxiosInstance.delete('api/projects/id/' + id)
 
         console.log(response)
 

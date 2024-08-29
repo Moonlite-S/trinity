@@ -18,7 +18,7 @@ type EmployeeProps = {
  */
 export async function createEmployee({name, email, password, role} : EmployeeProps): Promise<number> {
     try {
-        const response = await AxiosInstance.post('/api/register', {
+        const response = await AxiosInstance.post('api/register', {
             name: name,
             email: email,
             password: password,
@@ -45,7 +45,7 @@ export async function createEmployee({name, email, password, role} : EmployeePro
  */
 export async function getEmployeeNameList(): Promise<string[]> {
     try {
-        const response = await AxiosInstance.get('/api/user/all_users_names')
+        const response = await AxiosInstance.get('api/user/all_users_names')
 
         console.log(response)
 
@@ -67,7 +67,7 @@ export async function getEmployeeNameList(): Promise<string[]> {
  */
 export async function getOneEmployee(email: string): Promise<any> {
     try {
-        const response = await AxiosInstance.get('/api/user/:id' + email)
+        const response = await AxiosInstance.get('api/user/:id' + email)
 
         console.log(response)
 
@@ -89,7 +89,7 @@ export async function getOneEmployee(email: string): Promise<any> {
  */
 export async function getAllEmployeeData(): Promise<EmployeeProps[]>  {
     try {
-        const response = await AxiosInstance.get('/api/user/all_users')
+        const response = await AxiosInstance.get('api/user/all_users')
 
         console.log(response)
 

@@ -1,5 +1,4 @@
 import os
-from dotenv import load_dotenv
 from .settings import *
 from .settings import BASE_DIR
 
@@ -22,7 +21,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "https://yellow-sea-07d8df30f.5.azurestaticapps.net/",
+    "https://yellow-sea-07d8df30f.5.azurestaticapps.net",
 ]
 
 STORAGES = {
