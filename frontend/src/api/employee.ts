@@ -47,10 +47,11 @@ export async function getEmployeeNameList(): Promise<string[]> {
     try {
         const response = await AxiosInstance.get('api/user/all_users_names')
 
-        console.log(response)
 
         if (response.status === 200) {
-            return response.data
+            const names: string[] = response.data.map((employee: { name: string }) => employee.name)
+
+            return names
         } else {
             throw new Error('Error getting employee list')
         }

@@ -12,7 +12,6 @@ export async function getProjectList(): Promise<UpdateProjectProps[]> {
         const response = await AxiosInstance.get('api/projects')
 
         if (response.status === 200) {
-            console.log(response)
             return response.data
         } else {
             throw new Error('Error fetching projects')
