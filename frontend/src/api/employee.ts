@@ -1,3 +1,5 @@
+import AxiosInstance from "../components/Axios";
+
 type EmployeeProps = {
     name: string;
     email: string;
@@ -16,32 +18,25 @@ type EmployeeProps = {
  */
 export async function createEmployee({name, email, password, role} : EmployeeProps): Promise<number> {
     try {
-        const response = await fetch('http://localhost:8000/api/register', {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                name: name,
-                email: email,
-                password: password,
-                username: name,
-                role: role
-            }),
+        const response = await AxiosInstance.post('/api/register', {
+            name: name,
+            email: email,
+            password: password,
+            username: name,
+            role: role
         });
+        
+        console.log(response)
 
-        if (!response.ok) {
-            console.log("Error: " + response.status)
+        if (response.status === 200) {
             return response.status
+        } else {
+            throw new Error('Error creating employee')
         }
 
-        const data = await response.json();
-        console.log("Got data", data);
-        return response.status;
     } catch (error) {
-        console.error("Error creating employee:", error);
-        throw error; // Re-throw the error so the caller can handle it if needed
+        console.error("Server Error: ",error)
+        throw error
     }
 }
 
@@ -50,34 +45,19 @@ export async function createEmployee({name, email, password, role} : EmployeePro
  */
 export async function getEmployeeNameList(): Promise<string[]> {
     try {
-        const response = await fetch('http://localhost:8000/api/user/all_users_names', {
-            method: 'GET',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        });
+        const response = await AxiosInstance.get('/api/user/all_users_names')
 
-        if (!response.ok) {
-            console.log("Error: " + response.status)
-            const error = {
-                status: response.status
-            }
+        console.log(response)
 
-            return JSON.parse(JSON.stringify(error))
+        if (response.status === 200) {
+            return response.data
+        } else {
+            throw new Error('Error getting employee list')
         }
 
-        const data = await response.json();
-
-        const to_string:string[] = data.map((obj: { name: string }) => obj.name); // Gotta convert it to a string array
-
-        return to_string
-    } catch (e) {
-        console.error("Error getting employee list:", e);
-        const error = {
-            status: 500
-        }
-        return JSON.parse(JSON.stringify(error))
+    } catch (error) {
+        console.error("Server Error: ",error)
+        throw error
     }
 }
 
@@ -87,56 +67,40 @@ export async function getEmployeeNameList(): Promise<string[]> {
  */
 export async function getOneEmployee(email: string): Promise<any> {
     try {
-        const response = await fetch('http://localhost:8000/api/user/:id' + email, {
-            method: 'GET',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        });
+        const response = await AxiosInstance.get('/api/user/:id' + email)
 
-        if (!response.ok) {
-            console.log("Error: " + response.status)
-            return response.status
+        console.log(response)
+
+        if (response.status === 200) {
+            return response.data
+        } else {
+            throw new Error('Error getting employee')
         }
 
-        const data = await response.json();
-        console.log("Got data", data);
-        return data;
     } catch (error) {
-        console.error("Error getting employee list:", error);
-        throw error; // Re-throw the error so the caller can handle it if needed
+        console.error("Server Error: ",error)
+        throw error
     }
 }
 
+/**
+ * Send a GET request to the backend and get all employees
+ * 
+ */
 export async function getAllEmployeeData(): Promise<EmployeeProps[]>  {
     try {
-        const response = await fetch('http://localhost:8000/api/user/all_users', {
-            method: 'GET',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        });
+        const response = await AxiosInstance.get('/api/user/all_users')
 
-        if (!response.ok) {
-            console.log("Error: " + response.status)
-            const error = {
-                status: response.status
-            }
+        console.log(response)
 
-            return JSON.parse(JSON.stringify(error))
+        if (response.status === 200) {
+            return response.data
+        } else {
+            throw new Error('Error getting employee list')
         }
 
-        const data = await response.json();
-        console.log("Got data", data);
-        return data;
-    } catch (e) {
-        console.error("Error getting employee list:", e);
-        const error = {
-            status: 500
-        }
-        return JSON.parse(JSON.stringify(error))
+    } catch (error) {
+        console.error("Server Error: ",error)
+        throw error
     }
-        
 }

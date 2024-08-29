@@ -187,7 +187,7 @@ export function UpdateProject() {
             switch (response) {
                 case 200:
                     alert("Project updated successfully!")
-                    navigate("/update_project")
+                    navigate("/projects")
                     break;
                 case 403:
                     setErrorString("Failed to update project. Error code: " + response + " Forbidden. Only the current project manager can update the project.")
