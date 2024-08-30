@@ -35,7 +35,7 @@ STORAGES = {
         },
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+        "BACKEND": "storages.backends.azure_storage.AzureStorage",
     }
 }
 
