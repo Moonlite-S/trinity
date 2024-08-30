@@ -9,7 +9,6 @@ development.py IS USED FOR PROD
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-from azure.identity import DefaultAzureCredential
 
 # Load .env file
 env_path = Path('..')/'..' /'.env'
