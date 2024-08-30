@@ -118,6 +118,12 @@ STORAGES = {
     },
     "staticfiles": {
         "BACKEND": "storages.backends.azure_storage.AzureStorage",
+        "OPTIONS": {
+            "token_credential": DefaultAzureCredential(),
+            "account_name": os.getenv("AZURE_ACCOUNT_NAME"),
+            "account_string" : os.getenv("AZURE_ACCOUNT_KEY"),
+            "connection_string" : os.getenv("AZURE_STORAGE_CONNECTION_STRING"),
+        },
     }
 }
 
