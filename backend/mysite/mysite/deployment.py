@@ -25,6 +25,8 @@ CORS_ALLOWED_ORIGINS = [
     "https://yellow-sea-07d8df30f.5.azurestaticapps.net",
 ]
 
+AZURE_FILE_SHARE_CONNECTION_STRING = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+AZURE_FILE_SHARE_NAME = os.getenv("AZURE_FILE_SHARE_NAME")
 
 STORAGES = {
     "default": {
@@ -37,7 +39,7 @@ STORAGES = {
         },
     },
     "staticfiles": {
-        "BACKEND": "storages.backends.azure_storage.AzureStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     }
 }
 
