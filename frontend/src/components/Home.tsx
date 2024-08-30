@@ -1,7 +1,7 @@
 import React from "react"
 import { useNavigate } from "react-router-dom"
 import { Header } from "./misc"
-import { login } from "../api/auth"
+import { login, test_file } from "../api/auth"
 
 /**
  * Index Home Page
@@ -129,6 +129,15 @@ function Login(){
     }
   }
 
+  const handleTest = async () => {
+    try {
+      const response = await test_file()
+      console.log(response + "test from frontend")
+    } catch (error) {
+      console.error("Network Error: ",error)
+    }
+  }
+
   return(
     <div className='m-5'>
 
@@ -151,6 +160,8 @@ function Login(){
         {error && <p className='mt-3 text-red-500'>{errorCode}</p>}
       
       </form>
+
+      <button onClick={handleTest}>Test File Share</button>
 
     </div>
   )

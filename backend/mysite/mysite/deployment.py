@@ -26,7 +26,13 @@ CORS_ALLOWED_ORIGINS = [
 
 STORAGES = {
     "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "BACKEND": "storages.backends.azure_storage.AzureStorage",
+        "OPTIONS": {
+            "token_credential": DefaultAzureCredential(),
+            "account_name": os.getenv("AZURE_ACCOUNT_NAME"),
+            "account_string" : os.getenv("AZURE_ACCOUNT_KEY"),
+            "connection_string" : os.getenv("AZURE_STORAGE_CONNECTION_STRING"),
+        },
     },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
@@ -45,7 +51,8 @@ DATABASES = {
         "OPTIONS": {
             "ssl": {"ca": "DigiCertGlobalRootCA.crt.pem"}
         }
-    }
+    },
+
 }
 
 STATIC_ROOT = BASE_DIR/'staticfiles'

@@ -96,3 +96,12 @@ export async function logout(): Promise<number> {
       return 500
     }
 }
+
+export async function test_file() {
+    try {
+      const response = await AxiosInstance.get('api/projects/folder_generations')
+      console.log(response)
+    } catch (error) {
+      console.error("Network Error: ",error)
+    }
+}

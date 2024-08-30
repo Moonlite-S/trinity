@@ -110,7 +110,6 @@ DATABASES = {
 AZURE_FILE_SHARE_CONNECTION_STRING = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
 AZURE_FILE_SHARE_NAME = os.getenv("AZURE_FILE_SHARE_NAME")
 
-
 STORAGES = {
     "default": {
         "BACKEND": "storages.backends.azure_storage.AzureStorage",
@@ -125,7 +124,6 @@ STORAGES = {
         "BACKEND": "storages.backends.azure_storage.AzureStorage",
     },
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
