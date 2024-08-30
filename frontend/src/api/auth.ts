@@ -99,7 +99,7 @@ export async function logout(): Promise<number> {
 
 export async function test_file() {
     try {
-      const response = await AxiosInstance.get('api/projects/folder_generations')
+      const response = await AxiosInstance.post('api/projects/folder_generations')
       console.log(response)
     } catch (error) {
       console.error("Network Error: ",error)
