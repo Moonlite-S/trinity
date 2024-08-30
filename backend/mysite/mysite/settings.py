@@ -9,6 +9,7 @@ development.py IS USED FOR PROD
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from azure.identity import DefaultAzureCredential
 
 # Load .env file
 env_path = Path('..')/'..' /'.env'
@@ -99,6 +100,24 @@ DATABASES = {
         "PASSWORD": os.getenv("DATABASE_PASSWORD_DEV"),
         "HOST": os.getenv("DATABASE_HOST_DEV"),
         "PORT": os.getenv("DATABASE_PORT_DEV"),        
+    }
+}
+
+AZURE_FILE_SHARE_CONNECTION_STRING = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+AZURE_FILE_SHARE_NAME = os.getenv("AZURE_FILE_SHARE_NAME")
+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.azure_storage.AzureStorage",
+        "OPTIONS": {
+            "token_credential": DefaultAzureCredential(),
+            "account_name": os.getenv("AZURE_ACCOUNT_NAME"),
+            "account_string" : os.getenv("AZURE_ACCOUNT_KEY"),
+            "connection_string" : os.getenv("AZURE_STORAGE_CONNECTION_STRING"),
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "storages.backends.azure_storage.AzureStorage",
     }
 }
 

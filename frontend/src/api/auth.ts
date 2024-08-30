@@ -76,7 +76,7 @@ export async function login({email, password }: LoginProps): Promise<number> {
  */
 export async function logout(): Promise<number> {
     try {
-      const response = await AxiosInstance.post('api/logout', {})
+      const response = await AxiosInstance.post('api/logout')
 
       const data = response.data
 
@@ -98,8 +98,11 @@ export async function logout(): Promise<number> {
 }
 
 export async function test_file() {
+  const random = Math.random()
     try {
-      const response = await AxiosInstance.post('api/projects/folder_generations', {})
+      const response = await AxiosInstance.post('api/projects/folder_generations', {
+        "folder_name": "random_" + random,
+      })
       console.log(response)
     } catch (error) {
       console.error("Network Error: ",error)

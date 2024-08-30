@@ -171,8 +171,11 @@ def user_list(request):
 
 @api_view(['POST'])
 def create_azure_file_share_folder_view(request):
-    folder_name = request.POST.get('folder_name', 'default_folder')
+    folder_name = request.POST.get('folder_name', 'default_folder') # This ONLY handles form data
+    print(f"heres e: {request.POST}") # Will print nothing as the frontend is currently not using forms for this
+    print(request.data) # This WILL print out the request body as an Object
+    print(folder_name) 
     
-    create_folder_in_file_share(folder_name)
+    create_folder_in_file_share(request.data['folder_name']) # Request only needs one field, folder_name, maybe later, we can specify it's location
     
     return JsonResponse({'message': f'Folder "{folder_name}" created successfully in Azure File Share!'})
