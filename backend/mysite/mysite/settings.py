@@ -103,8 +103,10 @@ DATABASES = {
     }
 }
 
-AZURE_FILE_SHARE_CONNECTION_STRING = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
-AZURE_FILE_SHARE_NAME = os.getenv("AZURE_FILE_SHARE_NAME")
+if DEBUG:
+    AZURE_CONTAINER = os.getenv("AZURE_FILE_SHARE_NAME_DEV")
+else: 
+    AZURE_CONTAINER = os.getenv("AZURE_FILE_SHARE_NAME_PROD")
 
 STORAGES = {
     "default": {
@@ -114,6 +116,7 @@ STORAGES = {
             "account_name": os.getenv("AZURE_ACCOUNT_NAME"),
             "account_string" : os.getenv("AZURE_ACCOUNT_KEY"),
             "connection_string" : os.getenv("AZURE_STORAGE_CONNECTION_STRING"),
+            "container": AZURE_CONTAINER
         },
     },
     "staticfiles": {
