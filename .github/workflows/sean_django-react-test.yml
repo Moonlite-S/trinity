@@ -33,13 +33,6 @@ jobs:
           cd backend/mysite
           pip install -r requirements.txt
 
-      - name: Set up Azure Credentials
-        env:
-          AZURE_ACCOUNT_NAME: ${{ secrets.AZURE_ACCOUNT_NAME }}
-          AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
-        run: |
-          echo "Setting up Azure Credentials"
-
       - name: Collect Static Files
         run: |
           cd backend/mysite
