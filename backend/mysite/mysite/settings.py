@@ -103,28 +103,24 @@ DATABASES = {
     }
 }
 
-# AZURE_FILE_SHARE_CONNECTION_STRING = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
-# AZURE_FILE_SHARE_NAME = os.getenv("AZURE_FILE_SHARE_NAME")
+AZURE_FILE_SHARE_CONNECTION_STRING = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+AZURE_FILE_SHARE_NAME = os.getenv("AZURE_FILE_SHARE_NAME")
 
-# STORAGES = {
-#     "default": {
-#         "BACKEND": "storages.backends.azure_storage.AzureStorage",
-#         "OPTIONS": {
-#             "token_credential": DefaultAzureCredential(),
-#             "account_name": os.getenv("AZURE_ACCOUNT_NAME"),
-#             "account_string" : os.getenv("AZURE_ACCOUNT_KEY"),
-#             "connection_string" : os.getenv("AZURE_STORAGE_CONNECTION_STRING"),
-#         },
-#     },
-#     "staticfiles": {
-#         "BACKEND": "storages.backends.azure_storage.AzureStorage",
-#         "OPTIONS": {
-#             "token_credential": DefaultAzureCredential(),
-#             "account_name": os.getenv("AZURE_ACCOUNT_NAME"),
-#             "azure_container": "static",
-#         },
-#     }
-# }
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.azure_storage.AzureStorage",
+        "OPTIONS": {
+            "token_credential": DefaultAzureCredential(),
+            "account_name": os.getenv("AZURE_ACCOUNT_NAME"),
+            "account_string" : os.getenv("AZURE_ACCOUNT_KEY"),
+            "connection_string" : os.getenv("AZURE_STORAGE_CONNECTION_STRING"),
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    }
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
