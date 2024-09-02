@@ -33,17 +33,17 @@ export function Tasks() {
   //   setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
   // }
 
-  // function editTask(id: number) {
-  //   const index = tasks.findIndex((task) => task.id === id);
-  //   if (index > 0) {
-  //     const updatedTasks = [...tasks];
-  //     [updatedTasks[index], updatedTasks[index - 1]] = [
-  //       updatedTasks[index - 1],
-  //       updatedTasks[index],
-  //     ];
-  //     setTasks(updatedTasks);
-  //   }
-  // }
+  function editTask(id: number) {
+    const index = tasks.findIndex((task) => task.id === id);
+    if (index > 0) {
+      const updatedTasks = [...tasks];
+      [updatedTasks[index], updatedTasks[index - 1]] = [
+        updatedTasks[index - 1],
+        updatedTasks[index],
+      ];
+      setTasks(updatedTasks);
+    }
+  }
 //min-h-screen flex items-center justify-center
 //min-h-screen items-center justify-center
 //max-w-md mx-auto bg-white rounded-lg shadow-md p-6
