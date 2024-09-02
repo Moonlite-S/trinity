@@ -6,16 +6,22 @@ export type ProjectStatus =
     "COMPLETED" |
     "CANCELLED"
 
+export type quarter = 
+    "Q1" |
+    "Q2" |
+    "Q3" |
+    "Q4"
 
 export type UpdateProjectProps = {
     project_id: string
     project_name: string
     manager: string
     city: string
+    quarter: quarter
     client_name: string
     start_date: string
     end_date: string
-    description?: string
+    notes?: string
     status: ProjectStatus
 }
 
