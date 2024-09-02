@@ -11,6 +11,7 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
+# This changes depending if using dev mode or prod mode
 settings_module = 'mysite.deployment' if 'WEBSITE_HOSTNAME' in os.environ else 'mysite.settings'
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", settings_module)
