@@ -16,8 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from two_factor.urls import urlpatterns as tf_urls
+from . import views
 
 urlpatterns = [
+    path('', include(tf_urls)),
     path("api/", include("Trinity_Project.urls")),
     path("admin/", admin.site.urls),
+    path('account/logout/',views.logout_view),
 ]

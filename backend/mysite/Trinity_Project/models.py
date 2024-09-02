@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
+import random
+from phonenumber_field.modelfields import PhoneNumberField
+
 
 # Create your models here.
 class CustomUserManager(BaseUserManager):
@@ -44,6 +47,7 @@ class User(AbstractUser):
     password=models.CharField(max_length=255)
     role=models.CharField(max_length=50)
     date_joined=models.DateField(auto_now_add=True)
+    phone_number= PhoneNumberField(("Phone number"), blank=True, null=True)
     username= None
 
     objects = CustomUserManager()
@@ -54,3 +58,23 @@ class User(AbstractUser):
     def __str__(self):
         return f"{self.name} | {self.email}"
 
+class Tasks(models.Model):
+    pass
+
+class VerificationCode(models.Model):
+    number = models.CharField(max_length=5, blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return str(self.number)
+    
+    def save(self, *args, **kwargs):
+        number_list = [x for x in range(10)]
+        code_items = []
+        
+        for i in range(5):
+            num = random.choice(number_list)
+            code_items.append(num)
+        code_string="".join(str(item) for item in code_items)
+        self.number = code_string
+        super().save(*args, **kwargs)

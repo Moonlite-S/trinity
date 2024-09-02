@@ -48,7 +48,15 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "corsheaders",
-    "Trinity_Project", 
+    "Trinity_Project",
+    "phonenumber_field",
+    'django_otp',
+    'django_otp.plugins.otp_static',
+    'django_otp.plugins.otp_totp',
+    'django_otp.plugins.otp_email',  # <- if you want email capability.
+    'two_factor',
+    'two_factor.plugins.phonenumber',  # <- if you want phone number capability.
+    'two_factor.plugins.email',  # <- if you want email capability.     
 ]
 
 MIDDLEWARE = [
@@ -61,6 +69,12 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_otp.middleware.OTPMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_otp.middleware.OTPMiddleware',
+    'django_auto_logout.middleware.auto_logout',
+    'two_factor.middleware.threadlocals.ThreadLocals',
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -77,7 +91,7 @@ CSRF_TRUSTED_ORIGINS = [
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": ['templates'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -85,6 +99,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                'django_auto_logout.context_processors.auto_logout_client',
             ],
         },
     },
@@ -107,25 +122,12 @@ DATABASES = {
     }
 }
 
-AZURE_FILE_SHARE_CONNECTION_STRING = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+AZURE_FILE_SHARE_CONNECTION_STRING = os.getenv("AZURE_FILE_SHARE_CONNECTION_STRING")
 AZURE_FILE_SHARE_NAME = os.getenv("AZURE_FILE_SHARE_NAME")
 
-
-STORAGES = {
-    "default": {
-        "BACKEND": "storages.backends.azure_storage.AzureStorage",
-        "OPTIONS": {
-            "token_credential": DefaultAzureCredential(),
-            "account_name": os.getenv("AZURE_ACCOUNT_NAME"),
-            "account_string" : os.getenv("AZURE_ACCOUNT_KEY"),
-            "connection_string" : os.getenv("AZURE_STORAGE_CONNECTION_STRING"),
-        },
-    },
-        "staticfiles": {
-        "BACKEND": "storages.backends.azure_storage.AzureStorage",
-    },
-}
-
+ACCOUNT_SID = os.getenv("account_sid")
+AUTH_TOKEN =  os.getenv("auth_token")
+PHONE_NUMBER = os.getenv("phone_number")
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -173,4 +175,10 @@ AUTH_USER_MODEL = 'Trinity_Project.User'
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
+LOGIN_URL = "two_factor:login"
 
+AUTO_LOGOUT = {
+    'IDLE_TIME': 600, 
+    'REDIRECT_TO_LOGIN_IMMEDIATELY': True,
+    'MESSAGE': 'The session has expired. Please login again to continue.',
+    } 
