@@ -1,7 +1,11 @@
+'''
+This file overwrites certain variable settings in settings.py for production.
+ALL ENVIRONMENT VARIABLES ARE ADDED IN AZURE. No need to add them here.
+'''
+
 import os
 from .settings import *
 from .settings import BASE_DIR
-from azure.identity import DefaultAzureCredential
 
 ALLOWED_HOSTS = [os.environ["WEBSITE_HOSTNAME"]]
 CSRF_TRUSTED_ORIGINS = ['https://'+ os.environ["WEBSITE_HOSTNAME"]]
