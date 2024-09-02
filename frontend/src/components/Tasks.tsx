@@ -44,9 +44,7 @@ export function Tasks() {
       setTasks(updatedTasks);
     }
   }
-//min-h-screen flex items-center justify-center
-//min-h-screen items-center justify-center
-//max-w-md mx-auto bg-white rounded-lg shadow-md p-6
+
   return (
     <>
     <Header/>
