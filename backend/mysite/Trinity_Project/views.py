@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render #added 'redirect' for graph api
 from django.http import HttpResponse, JsonResponse
 from openai import AuthenticationError
 from rest_framework.decorators import api_view, permission_classes
@@ -17,7 +17,36 @@ from rest_framework.authentication import BaseAuthentication
 from django.contrib.auth import get_user_model
 from .utils import authenticate_jwt
 from rest_framework.exceptions import PermissionDenied
+# Microsoft GRAPH API connection
+import os
+import sys
+import msal
+import requests
+import graphapi
 
+print("Current working directory:", os.getcwd())
+print("Python path:", sys.path)
+
+redirect_uri = 'http:localhost:8000/getAToken'
+
+def home(request):
+    auth_url = graphapi.get_auth_url(redirect_uri)
+    return render(request, 'home.html', {'auth_url': auth_url})
+
+def get_a_token(request):
+    code = request.GET.get('code')
+    result = graphapi.acquire_token_by_code(code, redirect_uri)
+    if "access_token" in result:
+        access_token = result["access_token"]
+        response = graphapi.get_user_profile(access_token)
+        if response.status_code == 200:
+            return JsonResponse(response.json())
+        else:
+            return JsonResponse({'error': response.status_code, 'message': response.text})
+    else:
+        return JsonResponse({'error': result.get('error_description')})
+
+# End of Microsoft Graph API connection
 
 #from backend.mysite.Trinity_Project import serializers
 
