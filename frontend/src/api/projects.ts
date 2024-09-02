@@ -1,4 +1,6 @@
 import { UpdateProjectProps } from "../interfaces/project_types";
+import AxiosInstance from "../components/Axios";
+
 /**
  * Fetches a list of projects
  * 
@@ -7,25 +9,16 @@ import { UpdateProjectProps } from "../interfaces/project_types";
  */
 export async function getProjectList(): Promise<UpdateProjectProps[]> {
     try {
-        const response = await fetch('http://localhost:8000/api/projects', {
-            method: 'GET',
-            mode: 'cors',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
+        const response = await AxiosInstance.get('api/projects')
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`)
+        if (response.status === 200) {
+            return response.data
+        } else {
+            throw new Error('Error fetching projects')
         }
 
-        const data = await response.json()
-
-        return data
-
     } catch (error) {
-        console.error("Error: ",error)
+        console.error("Server Error: ",error)
         throw error
     }
 }
@@ -38,29 +31,20 @@ export async function getProjectList(): Promise<UpdateProjectProps[]> {
  */
 export async function getProject(id: string): Promise<UpdateProjectProps> {
     try {
-        const response = await fetch('http://localhost:8000/api/projects/id/' + id, {
-            method: 'GET',
-            credentials: 'include',
-            headers: {
-            'Content-Type': 'application/json'
-            },
-        })
+        const response = await AxiosInstance.get('api/projects/id/' + id)
 
-        if (!response.ok){  
-            const text = response.text();
-            throw new Error(`HTTP error! status: ${response.status}, body: ${text}`)
+        if (response.data) {
+            console.log(response)
+            return response.data
+        } else {
+            throw new Error('Error fetching project')
         }
 
-        const data = await response.json()
-        console.log("Got data", data)
-        return data
-    }
-    catch (error) {
-        console.error("Error getting project:", error)
+    } catch (error) {
+        console.error("Error: ",error)
         throw error
     }
 }
-
 /**
  * Creates a Trinity Project
  * 
@@ -68,54 +52,68 @@ export async function getProject(id: string): Promise<UpdateProjectProps> {
  * 
  * { project_id: number, project_name: string, project_description: string, current_manager: string, customer_name: string, city: string, start_date: string, end_date: string }
  * @returns Code 200 if successful and error if not
+ * 
+ * TODO: 
+ * - Backend needs to perform a check to make sure the project doesn't already exist
  */
 export async function createProject(project_data: { [key: string]: FormDataEntryValue }): Promise<UpdateProjectProps> {
     try {
-        const response = await fetch('http://localhost:8000/api/projects/', {
-            method: 'POST',
-            mode: 'cors',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(project_data)
-        })
+        const response = await AxiosInstance.post('api/projects/', project_data)
 
-        if (!response.ok){  
-            throw new Error(`HTTP error! status: ${response.status}`);
+        console.log(response)
+
+        if (response.status === 201) {
+            return response.data
+        } else {
+            throw new Error('Error creating project')
         }
 
-        const data = await response.json()
-        console.log("Got data", data)
-        return data
-    }
-    catch (error) {
-        console.error("Error creating project:", error);
-        throw error; // Re-throw the error so the caller can handle it if needed
+    } catch (error) {
+        console.error("Server Error: ",error)
+        throw error
     }
 }
 
 export async function updateProject(project_data: { [key: string]: FormDataEntryValue }, id: string | undefined): Promise<number> {
     try {
-        const response = await fetch('http://localhost:8000/api/projects/id/' + id, {
-            method: 'PUT',
-            mode: 'cors',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(project_data)
-        })
+        const response = await AxiosInstance.put('api/projects/id/' + id, project_data)
 
-        if (!response.ok) {  
-            console.log("Error: ", response)
+        console.log(response)
+
+        if (response.status === 200) {
             return response.status
+        } else if (response.status === 403) {
+            // You have no permissions
+            console.error("Forbidden. Error", response.status)
+            return response.status
+        } else {
+            throw new Error('Error updating project')
         }
 
-        return response.status
+    } catch (error) {
+        console.error("Server Error: ",error)
+        throw error
+    }
+}
+
+export async function deleteProject(id: string | undefined): Promise<number> {
+    try {
+        const response = await AxiosInstance.delete('api/projects/id/' + id)
+
+        console.log(response)
+
+        if (response.status === 204) {
+            return response.status
+        } else if (response.status === 403) {
+            // You have no permissions
+            console.error("Forbidden. Error", response.status)
+            return response.status
+        } else {
+            throw new Error('Error deleting project')
+        }
 
     } catch (error) {
-        console.error("Error updating project:", error);
-        return 500
+        console.error("Server Error: ",error)
+        throw error
     }
 }

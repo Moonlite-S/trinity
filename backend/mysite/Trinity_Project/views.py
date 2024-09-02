@@ -6,6 +6,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated
+
+from .azure_file_share import create_folder_in_file_share
 from .models import Project
 from .models import User
 from .serializers import ProjectSerializer, UserNameSerializer, UserSerializer
@@ -76,6 +78,7 @@ class LoginView(APIView):
         payload = {
             'id': user.id,
             'name': user.name,
+            'is_superuser':user.is_superuser,
             'exp': datetime.now(timezone.utc) + timedelta(minutes=60),
             'iat': datetime.now(timezone.utc)
         }
@@ -84,7 +87,7 @@ class LoginView(APIView):
         
         response =Response()
         
-        response.set_cookie(key='jwt', value=token, httponly=True)
+        response.set_cookie(key='jwt', value=token, httponly=True, samesite='None', secure=True)
         response.data = {
             'jwt': token
         }
@@ -149,7 +152,7 @@ def project_detail(request, project_id):
         serializer = ProjectSerializer(project)
         return Response(serializer.data)
     elif request.method == 'PUT':
-        if project.manager != payload['name']:
+        if project.manager != payload['name'] and not payload['is_superuser']:
             raise PermissionDenied("You do not have permission to edit this project.")
         serializer = ProjectSerializer(project, data=request.data)
         if serializer.is_valid():
@@ -157,7 +160,7 @@ def project_detail(request, project_id):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
-        if project.manager != payload['name']:
+        if project.manager != payload['name'] and not payload['is_superuser']:
             raise PermissionDenied("You do not have permission to delete this project.")
         project.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -194,3 +197,15 @@ def user_list(request):
     users = User.objects.all()
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
+
+
+@api_view(['POST'])
+def create_azure_file_share_folder_view(request):
+    folder_name = request.POST.get('folder_name', 'default_folder') # This ONLY handles form data
+    print(f"heres e: {request.POST}") # Will print nothing as the frontend is currently not using forms for this
+    print(request.data) # This WILL print out the request body as an Object
+    print(folder_name) 
+    
+    create_folder_in_file_share(request.data['folder_name']) # Request only needs one field, folder_name, maybe later, we can specify it's location
+    
+    return JsonResponse({'message': f'Folder "{folder_name}" created successfully in Azure File Share!'})

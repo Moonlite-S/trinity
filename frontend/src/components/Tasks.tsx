@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { Header } from './misc';
-import { MainNavBar } from './MainMenu'
-
 //To prevent errors; assigns properties to the tasks to maintain consistency
 interface Task {
   id: number;
@@ -18,6 +16,8 @@ export function Tasks() {
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) { //Specifies the parameter
     setNewTask(event.target.value); //DOM element that triggered event, retrieves current value of input field
   }
+  
+  console.log(tasks)  // unused variables casues linting error, so uh yeah i put this here
 
   function createTask() {
     if (newTask.trim() !== '') {
@@ -29,9 +29,9 @@ export function Tasks() {
     }
   }
 
-  function deleteTask(id: number) {
-    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
-  }
+  // function deleteTask(id: number) {
+  //   setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+  // }
 
   function editTask(id: number) {
     const index = tasks.findIndex((task) => task.id === id);
@@ -44,7 +44,9 @@ export function Tasks() {
       setTasks(updatedTasks);
     }
   }
-
+//min-h-screen flex items-center justify-center
+//min-h-screen items-center justify-center
+//max-w-md mx-auto bg-white rounded-lg shadow-md p-6
   return (
     <>
     <Header/>

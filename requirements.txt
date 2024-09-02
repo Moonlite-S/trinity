@@ -1,8 +1,0 @@
-Django==5.1
-mysql-connector-python==9.0.0
-mysqlclient == 2.2.4
-django-rest-framework
-openai
-python-dotenv
-django-cors-headers == 4.4.0
-pyJWT

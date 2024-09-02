@@ -1,3 +1,5 @@
+import AxiosInstance from '../components/Axios';
+
 /**
  * This sends a GET request to the backend and verifies a user's authentication status
  * via the session token / cookie.
@@ -8,35 +10,21 @@
  */
 export async function checkUser(): Promise<number> {
     try {
-      const response = await fetch('http://localhost:8000/api/user', {
-        method: 'GET',
-        credentials: 'include', // This gets the cookies
-        headers: {
-          'Content-Type': 'application/json',
-        }
-        })
+      const response = await AxiosInstance.get('api/user')
 
-        // If user is verified
-        if (response.ok) {
-          const data = await response.json()
-          console.log(data)
+      const data = response.data
 
-          if (data) {
-            console.log("User verified")
-            return response.status
-          } else {
-            console.log("User not verified")
-            return response.status
-          } 
-        }
-        // Any other error
-        else {
-          console.log("Server Error")
-          return response.status 
-        }
-    }
+      console.log(data)
 
-    catch (error) {
+      if (data){
+        console.log("User verified")
+        return 200
+      } else {
+        console.log("User not verified")
+        return 401
+      }
+
+    } catch (error) {
       console.error("Network Error: ",error)
       return 500
     }
@@ -57,31 +45,27 @@ type LoginProps = {
  */
 export async function login({email, password }: LoginProps): Promise<number> {
     try {
-        const response = await fetch('http://localhost:8000/api/login', {
-          method: 'POST',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            email: email,
-            password: password
-          }),
-        });
+      const response = await AxiosInstance.post('api/login', {
+        email: email,
+        password: password
+      })
 
-        if (response.ok) {
-          const data = await response.json()
-          console.log("login successful" + data)
-          return response.status
-        } else {
-          return response.status
-        }
+      const data = response.data
+
+      console.log(data)
+
+      if (data) {
+        console.log("login successful")
+        return 200
+      } else {
+        console.log("login failed")
+        return 401
       }
 
-      catch (error) {
-        console.error("Network Error: ",error)
-        return 500
-      }
+    } catch (error) {
+      console.error("Network Error: ",error)
+      return 500
+    }
 }
 
 /**
@@ -92,23 +76,35 @@ export async function login({email, password }: LoginProps): Promise<number> {
  */
 export async function logout(): Promise<number> {
     try {
-      const response = await fetch('http://localhost:8000/api/logout', {
-          method: 'POST',
-          credentials: 'include',
-          headers: {
-              'Content-Type': 'application/json',
-          }
-      })
+      const response = await AxiosInstance.post('api/logout')
 
-      if (!response.ok) {
-          return response.status
+      const data = response.data
+
+      console.log(data)
+
+
+      if (data.message == 'success') {
+        console.log("Logged out")
+        return 200
+      } else {
+        console.log("Logout failed")
+        return 401
       }
-
-      console.log("Logged out")
-      return response.status
 
     } catch (error) {
       console.error("Network Error: ",error)
       return 500
+    }
+}
+
+export async function test_file() {
+  const random = Math.random()
+    try {
+      const response = await AxiosInstance.post('api/projects/folder_generations', {
+        "folder_name": "random_" + random,
+      })
+      console.log(response)
+    } catch (error) {
+      console.error("Network Error: ",error)
     }
 }

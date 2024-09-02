@@ -33,7 +33,9 @@ export function CreateEmployee() {
             const code = await createEmployee({
                 name: e.target.name.value,
                 email: e.target.email.value,
-                password: e.target.password.value
+                password: e.target.password.value,
+                username: e.target.name.value,
+                role: e.target.role.value
             })
 
             if (code === 200) {
@@ -188,9 +190,11 @@ const FilterComponent = ({ filterText, onFilter, onClear }: FilterProps) => (
  * 
  */
 const ExpandableRowComponent = ({ data }: { data: EmployeeProps }) => (
-    <div className="flex flex-row gap-5 bg-slate-50">
-        <Route_Button route={"/update_project/" + data.id} text="Edit"/>
-        <Route_Button route="/project_report" text="Report"/>
+    <div className="flex flex-col gap-5 bg-slate-50">
+        <div className="flex flex-row gap-5 m-5">
+            <Route_Button route={"/employees/update_employee/" + data.id} text="Edit"/>
+            <Route_Button route={"/employees/delete/" + data.id} text="Delete" isDelete/>
+        </div>
     </div>
 )
 
