@@ -24,7 +24,7 @@ import os
 import sys
 import msal
 import requests
-import graphapi
+from . import graphapi
 
 print("Current working directory:", os.getcwd())
 print("Python path:", sys.path)
