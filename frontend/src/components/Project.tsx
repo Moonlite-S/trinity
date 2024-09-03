@@ -3,13 +3,14 @@ import { Error_Component, Header, Route_Button } from "./misc";
 import { createProject, getProjectList, getProject, updateProject, deleteProject } from "../api/projects";
 import { useNavigate, useParams } from "react-router-dom";
 import DataTable, { Direction, TableColumn } from "react-data-table-component";
-import { FilterProps, ProjectFormMiddleProps, ProjectFormProps, ProjectManagerCustomerCityProps, ProjectNameIDProps, ProjectStatusAndDateProps, UpdateProjectProps } from "../interfaces/project_types";
+import { FilterProps, ProjectFormProps, UpdateProjectProps } from "../interfaces/project_types";
 import { getEmployeeNameList } from "../api/employee";
+import CreatableSelect from "react-select/creatable";
 
 /**
  * ### [Route for ('/create_project')]
  * 
- * This component shows a Form component to create a new project.
+ * This component shows a ProjectForm component to create a new project.
  */
 export function CreateProject() {
     const [projectManagers, setProjectManagers] = useState<string[]>([])
@@ -21,6 +22,8 @@ export function CreateProject() {
 
         const formData = new FormData(event.target)
         const data = Object.fromEntries(formData)
+
+        console.log(data)
 
         try {
             await createProject(data)
@@ -251,24 +254,15 @@ export function ProjectStatusReport() {
 }
 
 /**
- * Small component option tag to be used in the ProjectForm.
- * 
- * Used to combo this with the select tag to list off all possible project managers
- * 
- * @param name name of the manager
- * @param id unique key used for mapping
- * @returns 
- */
-function ProjectManager(name: string, id: number) {
-    return(
-        <option value={name} key={id}>{name}</option>
-    )
-}
-
-/**
  * This component shows the user the form to create a new project.
  * 
  * @param FormProps : ( see type FormProps )  
+ * 
+ * TODO:
+ *  - Project Managers can now have more than one manager [FIX THIS IN THE BACKEND]
+ *  - Folder Name might just be the same for Project ID
+ *  - REFACTOR THIS IN AN EASIER WAY (NO PROP DRILLING)
+ *  - Email the Project Manager(s) when a new project is created
  * 
  */
 function ProjectForm(
@@ -279,43 +273,131 @@ function ProjectForm(
         project_name = '',
         manager = '',
         city = '',
-        status = 'NOT STARTED',
+        quarter = 'Q1',
+        status = 'ACTIVE',
         client_name = '',
-        start_date = '',
+        start_date = new Date().toLocaleDateString("en-CA"),
         end_date = '',
-        description = '',
+        notes = '',
     } = formProps ?? {}
 
-    // Uhh maybe there's a better way to refactor than prop drilling?
-    // useContext? Maybe a free library?
+    const cityOptions = [
+        { value: 'San Diego', label: 'San Diego' },
+        { value: 'Los Angeles', label: 'Los Angeles' },
+        { value: 'San Francisco', label: 'San Francisco' },
+        { value: 'Oakland', label: 'Oakland' },
+    ]
+
+    const [ProjectID, setProjectID] = useState(project_id)
+
+    const projectManagerListOptions = projectManagerList?.map((value: string) => {
+        return { value: value, label: value }
+    })
+
+    const customerNameOptions = [
+        { value: 'Client 1', label: 'Client 1' },
+        { value: 'Client 2', label: 'Client 2' },
+    ]
+
+    const onProjectIDChange = (event: any) => {
+        setProjectID(event.target.value)
+    }
+
+    // Change the project ID to the first two letters of the project name
+    const onProjectNameChange = (event: any) => {
+        let project_name_local: string = event.target.value.toUpperCase()
+        let project_name_split = project_name_local.split(" ")
+        let project_name_final = (project_name_split ? project_name_split[0].charAt(0) : "") + (project_name_split.length > 1 ? project_name_split[1].charAt(0) : "")
+        setProjectID(project_name_final)
+    }
+
+    const onQuarterChange = (event: any) => {
+        setProjectID(event.target.value)
+    }
+
     return (
     <>
     <form id="project_creation" onSubmit={onSubmit}  method="post">
-
         <div className="flex flex-col gap-10 p-24 mx-auto max-w-screen-lg bg-zinc-50" >
+            <div className="flex flex-row justify-center gap-5">
+                <label className="py-2">Project ID:</label>
+                <input onChange={onProjectIDChange} value={ProjectID} className="bg-slate-200 rounded-md border-zinc-500 border" type="text" name="project_id" />
+                
+                <label htmlFor="project_name" className="py-2" >Project Name:</label>
+                <input defaultValue={project_name} onChange={onProjectNameChange} className="bg-white border border-zinc-500 rounded-md focus:outline-none focus:ring focus:ring-orange-400" type="text" name="project_name" autoFocus required/>
 
-            <ProjectTop
-                project_id={project_id}
-                project_name={project_name}
-            />
+                <label className="py-2">Quarter:</label>
+                <select onChange={onQuarterChange} defaultValue={quarter} name="quarter" className="bg-white p-2 rounded-md border border-zinc-500">
+                    <option value={'Q1'}>Q1</option>
+                    <option value={'Q2'}>Q2</option>
+                    <option value={'Q3'}>Q3</option>
+                    <option value={'Q4'}>Q4</option>
+                </select>
+            </div>
         
-            <ProjectFormMiddle
-                city={city}
-                current_manager={manager}
-                customer_name={client_name}
-                end_date={end_date}
-                project_status={status}
-                projectManagerList={projectManagerList}
-                start_date={start_date}
-            />
+            <div className="flex flex-row gap-5 justify-between">
+                <div className="flex flex-col gap-5 justify-between">
+                    <div className="flex flex-row justify-between gap-5">
+                        <label htmlFor="status" className="py-2">Project Status:</label>
+                        <select defaultValue={status} name="status" className="bg-white rounded-md p-2 border border-zinc-500">
+                            <option value={'ACTIVE'}>Active</option>
+                            <option value={'COMPLETED'}>Completed</option>
+                            <option value={'CANCELLED'}>Cancelled</option>
+                            <option value={'NOT STARTED'}>Not Started</option>
+                        </select>
+                    </div>
 
-            <ProjectFormBottom
-                project_description={description}
-            />
+                    <div className="flex flex-row justify-between gap-5">
+                        <label htmlFor="start_date" className="py-2">Date Created:</label>
+                        <input defaultValue={start_date} className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="date" name="start_date" required/>
+                    </div>
+
+                    <div className="flex flex-row justify-between gap-5">
+                        <label htmlFor="end_date" className="py-2">Due Date:</label>
+                        <input defaultValue={end_date} className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="date" name="end_date" required/>
+                    </div>
+
+                </div>
+
+                <div className="flex flex-col gap-5 justify-between">
+                    <div className="flex flex-row justify-between gap-5">
+                        <label htmlFor="manager" >Project Manager:</label>
+                        <SelectionComponent defaultValue={manager} options={projectManagerListOptions} name="manager"/>
+                    </div>
+
+                    <div className="flex flex-row justify-between gap-5">
+                        <label >Client Name</label>
+                        <SelectionComponent defaultValue={client_name} options={customerNameOptions} name="client_name"/>
+                    </div>
+                    
+                    <div className="flex flex-row justify-between gap-5">
+                        <label >City</label>
+                        <SelectionComponent defaultValue={city} options={cityOptions} name="city"/>
+                    </div>
+                </div>
+            </div> 
             
-            <label htmlFor="project_files">(Optional): Upload Project Files</label>
-            <input type="file" id="project_files" name="project_files"/>
+            <div className="flex flex-row gap-5 justify-between">
+                <div className="flex flex-row ">
+                    <label htmlFor="Folder_Name" className="py-2">Folder Name:</label>
+                    <input className="mx-2 p-2 bg-slate-200 border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="text" name="Folder_Name" />
+                </div>
 
+                <div title="This will send an email to any project manager(s) assigned to the project. If the user is one of the project managers, they will not receive an email.">
+                    <label htmlFor="notify_manager" className="py-2" >Notify Manager(s):</label>
+                    <input type="checkbox" name="notify_manager" className="mx-2 bg-slate-200 border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" />
+                </div>
+            </div>
+
+            <div className="flex flex-col ">
+                <label htmlFor="project_files">(Optional): Upload Project Files</label>
+                <input type="file" id="project_files" name="project_files"/>
+            </div>
+
+            <div className="flex flex-col gap-5">
+                <label  htmlFor="notes">Project Notes:</label>
+                <textarea defaultValue={notes} className="bg-white border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" placeholder="Enter notes or other details" name="description" required/>
+            </div>
         </div>
 
         {button_text === "Create Project" ? 
@@ -329,160 +411,39 @@ function ProjectForm(
     )
 }
 
-/**
- * Renders the top section of the form.
- * 
- * Consists of Project Name and Project ID
- */
-function ProjectTop({ project_id, project_name }: ProjectNameIDProps) {
+type SelectionComponentProps = {
+    defaultValue: string,
+    multiple?: boolean,
+    options: { value: string, label: string }[] | undefined,
+    name: string    
+}
+function SelectionComponent({defaultValue = '', multiple, options, name}: SelectionComponentProps){
+    if (!options) {
+        options = [{value: '', label: ''}];
+    }
+
     return (
-        <div className="flex flex-row justify-center gap-5">
+        <CreatableSelect defaultInputValue={defaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
+        styles = {{
+            control: (baseStyles: any, state: any) => ({
+                ...baseStyles,
+                borderColor: state.isFocused ? 'orange' : 'gray',
+                boxShadow: state.isFocused ? '0 0 0 2px orange' : 'none',
+                '&:hover': {
+                    borderColor: state.isFocused ? 'orange' : 'gray',
+                },
+            }),
+            option: () => ({
+                padding: '5px 10px',
+                rounded: '5px',
+                '&:hover': {
+                    backgroundColor: '#cacacc',
+                },
+                
+            })
 
-            <label htmlFor="project_name">Project Name:</label>
-            <input defaultValue={project_name} className="bg-slate-100 border border-zinc-300" type="text" name="project_name" autoFocus required/>
-
-            <label >Project ID:</label>
-            <input defaultValue={project_id} className="bg-slate-100 border-zinc-300" type="text" name="project_id"/>
-
-        </div>
-    );
-}
-
-/**
- * Renders the middle section of the form.
- * 
- * Consists of two inner components: ProjectStatusAndDate and ProjectManagerCustomerCity
- * 
- */
-function ProjectFormMiddle({ 
-    city,
-    current_manager,
-    customer_name,
-    end_date,
-    project_status,
-    projectManagerList,
-    start_date 
-}: ProjectFormMiddleProps) {
-      return (
-        <div className="flex flex-row gap-5 justify-between">
-
-            <div className="flex flex-col gap-5 justify-between">
-
-                <ProjectStatusAndDate
-                    end_date={end_date}
-                    project_status={project_status}
-                    start_date={start_date}
-                />
-
-            </div>
-
-            <div className="flex flex-col gap-5 justify-between">
-                                
-                <ProjectManagerCustomerCity
-                    city={city}
-                    current_manager={current_manager}
-                    customer_name={customer_name}
-                    projectManagerList={projectManagerList}
-                    />
-
-            </div>
-
-        </div>  
-    );
-}
-
-/**
- * Renders the bottom section of the form. 
- * 
- * Consists of ProjectDescription
- */
-function ProjectFormBottom({ project_description }: { project_description: string }) {
-    return (
-        <div className="flex flex-col gap-5">
-
-            <label  htmlFor="description">Project Description:</label>
-            <textarea defaultValue={project_description} className="bg-slate-100 border border-zinc-300" placeholder="Enter Project Description" name="description" required/>
-            
-        </div>
-    );
-}
-
-/**
- * For the ProjectMiddle component. 
- */
-function ProjectStatusAndDate({ 
-    end_date,
-    project_status,
-    start_date 
-}: ProjectStatusAndDateProps) {
-    return (
-    <>
-        <div className="flex flex-row justify-between gap-5">
-
-            <label htmlFor="status">Project Status:</label>
-            <select defaultValue={project_status} name="status">
-
-                <option value={'ACTIVE'}>Active</option>
-                <option value={'COMPLETED'}>Completed</option>
-                <option value={'CANCELLED'}>Cancelled</option>
-                <option value={'NOT STARTED'}>Not Started</option>
-
-            </select>
-            
-        </div>
-
-        <div className="flex flex-row justify-between gap-5">
-
-            <label  htmlFor="start_date">Date Created:</label>
-            <input defaultValue={start_date} className="bg-slate-100 border border-zinc-300" type="date" name="start_date" required/>
-        
-        </div>
-
-        <div className="flex flex-row justify-between gap-5">
-
-            <label  htmlFor="end_date">Date Ended:</label>
-            <input defaultValue={end_date} className="bg-slate-100 border border-zinc-300" type="date" name="end_date" required/>
-        
-        </div>
-    </>
-    );
-}
-
-/**
- * For use in the ProjectFormMiddle component
- */
-function ProjectManagerCustomerCity({ 
-    city,
-    current_manager,
-    customer_name,
-    projectManagerList 
-}: ProjectManagerCustomerCityProps) {
-      return (
-    <>
-        <div className="flex flex-row justify-between gap-5">
-
-            <label  htmlFor="manager" >Project Manager:</label>
-            <select defaultValue={current_manager} name="manager" form="project_creation" required>
-                {projectManagerList &&projectManagerList.map((projectManager, index) => ProjectManager(projectManager, index))}
-            </select>
-        
-        </div>
-
-        <div className="flex flex-row justify-between gap-5">
-
-            <label >Customer Name</label>
-            <input defaultValue={customer_name} className="bg-slate-100 border border-zinc-300" type="text" name="client_name"/>
-        
-        </div>
-        
-        <div className="flex flex-row justify-between gap-5">
-
-            <label >City</label>
-            <input defaultValue={city} className="bg-slate-100 border border-zinc-300" type="text" name="city"/>
-        
-        </div>
-    </>
-      );
+        }}/>
+    )
 }
 
 /**
@@ -552,7 +513,7 @@ const ExpandableRowComponent = ({ data }: { data: UpdateProjectProps }) => (
 
             <div>
                 <h3>Description:</h3>
-                {data.description && <p>{data.description}</p>}
+                {data.notes && <p>{data.notes}</p>}
             </div>
 
             <div>
