@@ -114,11 +114,11 @@ export function UpdateProjectList() {
                 
                 setProjectList(data)
                 setProjectLoaded(true)
-           }
+            }
            catch (error) {
                console.error("Error fetching projects:", error);
                throw error; // Re-throw the error so the caller can handle it if needed
-           }
+            }
         }
 
         fetchProjects()
@@ -279,6 +279,7 @@ function ProjectForm(
         start_date = new Date().toLocaleDateString("en-CA"),
         end_date = '',
         notes = '',
+        folder_location = '',
     } = formProps ?? {}
 
     const cityOptions = [
@@ -379,8 +380,8 @@ function ProjectForm(
             
             <div className="flex flex-row gap-5 justify-between">
                 <div className="flex flex-row ">
-                    <label htmlFor="Folder_Name" className="py-2">Folder Name:</label>
-                    <input className="mx-2 p-2 bg-slate-200 border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="text" name="Folder_Name" />
+                    <label htmlFor="folder_location" className="py-2">Folder Name:</label>
+                    <input defaultValue={folder_location} className="mx-2 p-2 bg-slate-200 border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="text" name="folder_location" />
                 </div>
 
                 <div title="This will send an email to any project manager(s) assigned to the project. If the user is one of the project managers, they will not receive an email.">
@@ -396,7 +397,7 @@ function ProjectForm(
 
             <div className="flex flex-col gap-5">
                 <label  htmlFor="notes">Project Notes:</label>
-                <textarea defaultValue={notes} className="bg-white border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" placeholder="Enter notes or other details" name="description" required/>
+                <textarea defaultValue={notes} className="bg-white border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" placeholder="Enter notes or other details" name="description"/>
             </div>
         </div>
 
@@ -558,6 +559,7 @@ function ProjectUpdateTable({ projectList, projectLoaded }: { projectList: Updat
         { name: "City", selector: row => row.city, sortable: true },
         { name: "Date Created", selector: row => row.start_date, sortable: true },
         { name: "Date Ended", selector: row => row.end_date, sortable: true },
+        { name: "Folder Location", selector: row => row.folder_location, sortable: true },
     ]
 
     // For the filter function
