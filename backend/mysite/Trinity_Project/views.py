@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated
 
-from .azure_file_share import create_folder_in_file_share
+from .azure_file_share import create_folder_in_file_share, create_project_in_file_share
 from .models import Project
 from .models import User
 from .serializers import ProjectSerializer, UserNameSerializer, UserSerializer
@@ -103,6 +103,9 @@ def project_list(request):
             print("Valid data:", serializer.validated_data) # Debug
             serializer.save()
             print("Serializer errors:", serializer.errors) # Debug
+
+            create_project_in_file_share(serializer.data['folder_location']) # Creates the test folders in the file share
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -172,9 +175,9 @@ def user_list(request):
 @api_view(['POST'])
 def create_azure_file_share_folder_view(request):
     folder_name = request.POST.get('folder_name', 'default_folder') # This ONLY handles form data
-    print(f"heres e: {request.POST}") # Will print nothing as the frontend is currently not using forms for this
+    # print(f"heres e: {request.POST}") # Will print nothing as the frontend is currently not using forms for this
+    #print(folder_name) 
     print(request.data) # This WILL print out the request body as an Object
-    print(folder_name) 
     
     create_folder_in_file_share(request.data['folder_name']) # Request only needs one field, folder_name, maybe later, we can specify it's location
     

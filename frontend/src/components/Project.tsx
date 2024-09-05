@@ -390,11 +390,6 @@ function ProjectForm(
                 </div>
             </div>
 
-            <div className="flex flex-col ">
-                <label htmlFor="project_files">(Optional): Upload Project Files</label>
-                <input type="file" id="project_files" name="project_files"/>
-            </div>
-
             <div className="flex flex-col gap-5">
                 <label  htmlFor="notes">Project Notes:</label>
                 <textarea defaultValue={notes} className="bg-white border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" placeholder="Enter notes or other details" name="description"/>
