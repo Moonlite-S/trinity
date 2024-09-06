@@ -35,6 +35,7 @@ class Project(models.Model):
     notes=models.TextField(blank=True)
     status=models.CharField(max_length=50)
     folder_location=models.CharField(max_length=255)
+    template=models.CharField(max_length=255, blank=True)
     
     def __str__(self):
         return f"ID: {self.project_id} | {self.project_name} | {self.client_name}"

@@ -18,8 +18,9 @@ export type UpdateProjectProps = {
     start_date: string
     end_date: string
     notes?: string
-    status: ProjectStatus,
+    status: ProjectStatus
     folder_location: string
+    project_template: string
 }
 
 export type FilterProps = {
