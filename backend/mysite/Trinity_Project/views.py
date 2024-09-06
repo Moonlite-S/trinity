@@ -5,7 +5,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from two_factor.views import LoginView
 
 from .azure_file_share import create_folder_in_file_share, copy_template_folder
 from .models import Project, VerificationCode
@@ -22,10 +23,14 @@ from .utils import authenticate_jwt, send_sms
 from rest_framework.exceptions import PermissionDenied
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import VerificationCodeForm
+from django_otp.plugins.otp_totp.models import TOTPDevice
+from django.contrib.auth.models import AnonymousUser
+
 #from backend.mysite.Trinity_Project import serializers
 
 
 # Create your views here.
+
 
 class RegisterView(APIView):
     def post(self,request):
@@ -35,21 +40,24 @@ class RegisterView(APIView):
         return Response(serializer.data)
         
 
-# @api_view(['POST'])
-# def login_view(request):
-#     email = request.data['email']
-#     password = request.data['password']
+@api_view(['POST'])
+def login_view(request):
+    email = request.data['email']
+    password = request.data['password']
     
-#     user = authenticate(request, email=email, password = password)
+    user = authenticate(request, email=email, password = password)
     
-#     if user is not None:
-#         login(request, user)
+    if user is not None:
+        login(request, user)
     
-#     elif not user.check_password(password):
-#         raise AuthenticationFailed('Incorrect password!')
+    elif not user.check_password(password):
+        raise AuthenticationFailed('Incorrect password!')
     
-#     else:
-#         raise AuthenticationFailed('User not found!')
+    else:
+        raise AuthenticationFailed('User not found!')
+    
+    return Response({"message": "Successfully logged in."}, status=200)
+
 @login_required
 @api_view(['GET'])    
 def user_view(request):
@@ -57,9 +65,10 @@ def user_view(request):
     serializers = UserSerializer(user)
     return Response(serializers.data)
 
-# @api_view(['POST'])
-# def logout_view(request):
-#     logout(request)
+@api_view(['POST'])
+def logout_view(request):
+    logout(request)
+    return Response({"message": "Successfully logged out."}, status=200)
 
 def index(request):
     return HttpResponse("Hello, world. You're at the Project index.")

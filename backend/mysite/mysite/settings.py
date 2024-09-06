@@ -77,6 +77,13 @@ MIDDLEWARE = [
     'two_factor.middleware.threadlocals.ThreadLocals',
 ]
 
+REST_FRAMEWORK = {
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ]
+}
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173", # Local development
 ]
@@ -175,10 +182,16 @@ AUTH_USER_MODEL = 'Trinity_Project.User'
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
-LOGIN_URL = "two_factor:login"
+#LOGIN_URL = "two_factor:login"
+LOGIN_URL = "api/login"
 
 AUTO_LOGOUT = {
-    'IDLE_TIME': 600, 
+    'IDLE_TIME': 6000, 
     'REDIRECT_TO_LOGIN_IMMEDIATELY': True,
     'MESSAGE': 'The session has expired. Please login again to continue.',
     } 
+
+
+SESSION_COOKIE_SECURE = False  
+CSRF_COOKIE_SECURE = False     
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'

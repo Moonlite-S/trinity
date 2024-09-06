@@ -4,6 +4,8 @@ from django.contrib.auth.base_user import BaseUserManager
 import random
 from phonenumber_field.modelfields import PhoneNumberField
 
+#from backend.mysite.Trinity_Project import generate_id
+
 
 # Create your models here.
 class CustomUserManager(BaseUserManager):
@@ -41,6 +43,11 @@ class Project(models.Model):
     def __str__(self):
         return f"ID: {self.project_id} | {self.project_name} | {self.client_name}"
     
+    # def save(self, *args, **kwargs):
+    #     if not self.id:
+    #         self.id = generate_id()
+    #     super().save(*args, **kwargs)
+        
 class User(AbstractUser):
     name=models.CharField(max_length=50)
     email=models.EmailField(max_length=50, unique=True)
