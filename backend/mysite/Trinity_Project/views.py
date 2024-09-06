@@ -9,9 +9,8 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from two_factor.views import LoginView
 
 from .azure_file_share import create_folder_in_file_share, copy_template_folder
-from .models import Project, VerificationCode
-from .models import User
-from .serializers import ProjectSerializer, UserNameSerializer, UserSerializer
+from .models import Project, VerificationCode, User,Task
+from .serializers import ProjectSerializer, UserNameSerializer, UserSerializer,TaskSerializer
 from rest_framework.views import APIView
 import jwt, datetime
 from datetime import datetime,timezone,timedelta
@@ -139,6 +138,21 @@ def project_filter_by_manager(request, manager):
             serializer = ProjectSerializer(project,many=True)
         return Response(serializer.data)    
 
+@login_required 
+@api_view(['GET'])   
+def project_filter_by_status(request, project_status):
+    try:
+        project=Project.objects.filter(status=project_status)
+    except Project.DoesNotExist:
+        return Response(http_status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        if project.count() == 1:
+            serializer = ProjectSerializer(project.first())
+        else:
+            serializer = ProjectSerializer(project,many=True)
+        return Response(serializer.data)    
+
 @login_required
 @api_view(['GET'])
 def return_all_users_names(request):    
@@ -198,4 +212,56 @@ def verify_view(request):
                     '' : f"Verification failed"
                 })
             
+@login_required
+@api_view(['GET','POST'])
+def task_list(request):
     
+    if request.method == 'GET':    
+        tasks = Task.objects.all()
+        serializer = TaskSerializer(tasks, many=True)
+        return Response(serializer.data)
+    
+    if request.method == 'POST':
+        serializer = TaskSerializer(data=request.data)
+        
+
+        if serializer.is_valid():
+            print("Valid data:", serializer.validated_data) # Debug
+            serializer.save()
+            print("Serializer errors:", serializer.errors) # Debug
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+@login_required
+@api_view(['GET','PUT','DELETE'])
+def task_detail(request, task_id):
+    
+    try:
+        task=Task.objects.get(task_id=task_id)
+    except Task.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    #get project manager name from project_id
+    project=Project.objects.get(project_id=task.project_id)
+    manager=project.manager
+    
+    user = request.user
+    
+    if request.method == 'GET':
+        serializer = TaskSerializer(task)
+        return Response(serializer.data)
+    
+    elif request.method == 'PUT':
+        if manager != user.name and not user.is_superuser:
+            raise PermissionDenied("You do not have permission to edit this task.")
+        serializer = TaskSerializer(task, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    elif request.method == 'DELETE':
+        if manager != user.name and not user.is_superuser:
+            raise PermissionDenied("You do not have permission to delete this task.")
+        task.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

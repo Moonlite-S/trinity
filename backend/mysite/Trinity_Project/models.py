@@ -65,8 +65,14 @@ class User(AbstractUser):
     def __str__(self):
         return f"{self.name} | {self.email}"
 
-class Tasks(models.Model):
-    pass
+class Task(models.Model):
+    task_id=models.CharField(max_length=50, unique=True)
+    title=models.CharField(max_length=50)
+    description=models.CharField(max_length=50)
+    assigned_to=models.CharField(max_length=50)
+    project_id=models.CharField(max_length=50)
+    due_date=models.DateField()
+
 
 class VerificationCode(models.Model):
     number = models.CharField(max_length=5, blank=True)
@@ -85,3 +91,4 @@ class VerificationCode(models.Model):
         code_string="".join(str(item) for item in code_items)
         self.number = code_string
         super().save(*args, **kwargs)
+        
