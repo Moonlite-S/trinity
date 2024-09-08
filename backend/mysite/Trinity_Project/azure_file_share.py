@@ -1,5 +1,5 @@
 from azure.storage.fileshare import ShareServiceClient, ShareClient, ShareDirectoryClient
-from azure.core.exceptions import ResourceExistsError
+from azure.core.exceptions import ResourceExistsError, ResourceNotFoundError
 from django.conf import settings
 
 class AzureFileShareClient:
@@ -105,9 +105,22 @@ class AzureFileShareClient:
             The name of the template to use
         '''
         template_dir = self.file_share_client.get_directory_client(self.DEFAULT_TEMPLATE_PATH + template_name + "/")
-        dest_folder = self.create_folder_directory(folder_path_name)
 
-        self.recursively_create_template_project_folder(folder_path_name, template_dir, dest_folder)
+        if not template_dir.exists():
+            print(f"Template '{template_name}' does not exist! Aborting...")
+            raise ResourceNotFoundError(f"Template '{template_name}' does not exist!")
+        
+        try:
+            dest_folder = self.create_folder_directory(folder_path_name)
+            self.recursively_create_template_project_folder(folder_path_name, template_dir, dest_folder)
+
+        except ResourceExistsError:
+            print(f"Folder '{folder_path_name}' already exists in this directory! Skipping...")
+            
+        except Exception as ex:
+            print(f"An error occurred while creating the project: {ex}. Deleting project folder...")
+            self.delete_project_folder(folder_path_name)
+            raise ex
 
     def recursively_create_template_project_folder(self, folder_path_name: str, template_dir: ShareDirectoryClient, dest_folder: ShareDirectoryClient) -> None:
         files = template_dir.list_directories_and_files()
@@ -128,3 +141,31 @@ class AzureFileShareClient:
                 dest_file = dest_folder.get_file_client(file.name)
 
                 dest_file.start_copy_from_url(template_file.url)
+
+    def delete_project_folder(self, folder_path_name: str) -> None:
+        try:
+            self.recursively_delete_project_folder(self.BASE_PATH + folder_path_name)
+
+            print(f"Folder '{folder_path_name}' deleted successfully in Azure File Share!")
+
+        except ResourceNotFoundError:
+            print(f"Folder '{folder_path_name}' does not exist! Maybe it was already deleted...")
+
+        except Exception:
+            raise Exception(f"An error occurred while deleting folder '{folder_path_name}' in Azure File Share!")
+        
+    def recursively_delete_project_folder(self, folder_path_name: str) -> None:
+        folder_to_delete = self.file_share_client.get_directory_client(folder_path_name)
+        files = folder_to_delete.list_directories_and_files()
+
+        # Base Case
+        if not files:
+            return
+
+        for file in files:
+            if file.is_directory:
+                self.recursively_delete_project_folder(folder_path_name + "/" + file.name)
+            else:
+                folder_to_delete.delete_file(file.name)
+
+        folder_to_delete.delete_directory()

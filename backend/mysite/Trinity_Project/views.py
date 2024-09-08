@@ -98,19 +98,32 @@ def project_list(request):
     
     if request.method == 'POST':
         serializer = ProjectSerializer(data=request.data)
+        folder = AzureFileShareClient()
 
         if serializer.is_valid():
-            print("Valid data:", serializer.validated_data) # Debug
-            serializer.save()
-            print("Serializer errors:", serializer.errors) # Debug
+            try:
+                serializer.save()
 
-            folder = AzureFileShareClient()
-            if serializer.data['template'] == '':
-                folder.create_empty_project_folder(serializer.data['folder_location'])
-            else:
-                folder.create_template_project_folder(serializer.data['folder_location'], serializer.data['template'])
+                if serializer.data['template'] == '':
+                    folder.create_empty_project_folder(serializer.data['folder_location'])
+                else:
+                    folder.create_template_project_folder(serializer.data['folder_location'], serializer.data['template'])
+                
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            
+            except Exception as ex:
+                print(f"An error occurred while creating the project: {ex} Deleting project...")
+                
+                folder.delete_project_folder(serializer.data['folder_location'])
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+                try:
+                    Project.objects.get(project_id=serializer.data['project_id']).delete()
+
+                except Exception as ex:
+                    print(f"Error while deleting project (maybe already deleted): {ex}")
+
+                return Response(serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -139,8 +152,18 @@ def project_detail(request, project_id):
     elif request.method == 'DELETE':
         if project.manager != payload['name'] and not payload['is_superuser']:
             raise PermissionDenied("You do not have permission to delete this project.")
-        project.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        
+        try:
+            folder = AzureFileShareClient()
+            folder.delete_project_folder(project.folder_location)
+
+            project.delete()
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        
+        except Exception as e:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     
 @api_view(['GET'])    
 def project_filter_by_manager(request, manager):
