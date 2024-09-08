@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Outlet, useLocation } from 'rea
 import { MainMenu } from './components/MainMenu'
 import Home from './components/Home'
 import './App.css'
-import { CreateProject, UpdateProject, UpdateProjectList, ProjectStatusReport, ProjectDeleteConfimation, CreateProjectTemplateAsk } from './components/Project'
+import { CreateProject, UpdateProject, UpdateProjectList, ProjectStatusReport, ProjectDeleteConfimation } from './components/Project'
 import { checkUser } from './api/auth'
 import { Tasks } from './components/Tasks';
 import { CreateEmployee, EmployeeList } from './components/Employee'
@@ -27,10 +27,9 @@ export default function App() {
               <Route path='/main_menu' element={<MainMenu/>} />
 
               <Route path='/projects/' element={<UpdateProjectList />} />
-              <Route path='/projects/create_init' element={<CreateProjectTemplateAsk />} />
               <Route path='/projects/create_project' element={<CreateProject />} />
               <Route path='/projects/update_project/:id' element={<UpdateProject />} />
-              <Route path='/projects/project_status_report/:id' element={<ProjectStatusReport />} />
+              <Route path='/projects/project_status_report' element={<ProjectStatusReport />} />
               <Route path='/projects/delete/:id' element={<ProjectDeleteConfimation />} />
 
               <Route path='/task' element={<Tasks />} />

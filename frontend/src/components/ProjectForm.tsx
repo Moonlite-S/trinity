@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { ProjectFormProps } from "../interfaces/project_types"
 import CreatableSelect from "react-select/creatable";
+import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 
 /**
@@ -120,17 +121,17 @@ export function ProjectForm(
                 <div className="flex flex-col gap-5 justify-between">
                     <div className="flex flex-row justify-between gap-5">
                         <label htmlFor="manager" >Project Manager:</label>
-                        <SelectionComponent defaultValue={manager} options={projectManagerListOptions} name="manager"/>
+                        <CreateableSelectionComponent defaultValue={manager} options={projectManagerListOptions} name="manager"/>
                     </div>
 
                     <div className="flex flex-row justify-between gap-5">
                         <label >Client Name</label>
-                        <SelectionComponent defaultValue={client_name} options={customerNameOptions} name="client_name"/>
+                        <CreateableSelectionComponent defaultValue={client_name} options={customerNameOptions} name="client_name"/>
                     </div>
                     
                     <div className="flex flex-row justify-between gap-5">
                         <label >City</label>
-                        <SelectionComponent defaultValue={city} options={cityOptions} name="city"/>
+                        <CreateableSelectionComponent defaultValue={city} options={cityOptions} name="city"/>
                     </div>
                 </div>
             </div> 
@@ -201,13 +202,42 @@ type SelectionComponentProps = {
     name: string    
 }
 
-function SelectionComponent({defaultValue = '', multiple, options, name}: SelectionComponentProps){
+function CreateableSelectionComponent({defaultValue = '', multiple, options, name}: SelectionComponentProps){
     if (!options) {
         options = [{value: '', label: ''}];
     }
 
     return (
         <CreatableSelect defaultInputValue={defaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
+        styles = {{
+            control: (baseStyles: any, state: any) => ({
+                ...baseStyles,
+                borderColor: state.isFocused ? 'orange' : 'gray',
+                boxShadow: state.isFocused ? '0 0 0 2px orange' : 'none',
+                '&:hover': {
+                    borderColor: state.isFocused ? 'orange' : 'gray',
+                },
+            }),
+            option: () => ({
+                padding: '5px 10px',
+                rounded: '5px',
+                '&:hover': {
+                    backgroundColor: '#cacacc',
+                },
+                
+            })
+
+        }}/>
+    )
+}
+
+function SelectionComponent({defaultValue = '', multiple, options, name}: SelectionComponentProps){
+    if (!options) {
+        options = [{value: '', label: ''}];
+    }
+
+    return (
+        <Select defaultInputValue={defaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
         styles = {{
             control: (baseStyles: any, state: any) => ({
                 ...baseStyles,

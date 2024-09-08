@@ -68,31 +68,6 @@ export function CreateProject() {
 }
 
 /**
- * ### [Route for ('/create_init')]
- * 
- * Asks the user is they want to use a temlate before designing their project.
- * 
- */
-export function CreateProjectTemplateAsk(){
-    return (
-    <>
-        <Header />
-
-        <h1 className="text-center">Start from a Template Project?</h1>
-
-        <div className="flex flex-row justify-center m-5 gap-5">
-            <Route_Button route="/projects/create_init" text="Start from Template" />
-            <Route_Button route="/projects/create_project" text="Start from Scratch" />
-        </div>
-
-        <div className="flex flex-row justify-center m-5 gap-5">
-            <Route_Button route="/main_menu" text="Main Menu" />
-        </div>
-    </>
-    )
-}
-
-/**
  * ### [Route for ('/update_project')]
  * 
  * This component fetches a list of projects and shows them in a table.
@@ -227,20 +202,9 @@ export function UpdateProject() {
  * This component shows the status of a project based on the project id.
  */
 export function ProjectStatusReport() {
-    // Maybe this is about showing the status of the project
-    const { id } = useParams<string>()
     const [project, setProject] = useState<UpdateProjectProps>()
 
     useEffect(() => {
-        const reponse = async () => {
-            if (!id) return
-
-            const data = await getProject(id)
-            console.log(data)
-            setProject(data)
-        }
-
-        reponse()
     }, [])
 
     return(
