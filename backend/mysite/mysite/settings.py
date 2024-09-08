@@ -61,6 +61,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173", # Local development
+    "https://web.postman.co",
 ]
 
 ROOT_URLCONF = "mysite.urls"
@@ -168,3 +169,6 @@ AUTH_USER_MODEL = 'Trinity_Project.User'
 CORS_ALLOW_CREDENTIALS = True
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = 'None'

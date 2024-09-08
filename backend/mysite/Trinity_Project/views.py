@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated
 
-from .azure_file_share import create_folder_in_file_share
+from .azure_file_share import AzureFileShareClient
 from .models import Project
 from .models import User
 from .serializers import ProjectSerializer, UserNameSerializer, UserSerializer
@@ -98,12 +98,32 @@ def project_list(request):
     
     if request.method == 'POST':
         serializer = ProjectSerializer(data=request.data)
+        folder = AzureFileShareClient()
 
         if serializer.is_valid():
-            print("Valid data:", serializer.validated_data) # Debug
-            serializer.save()
-            print("Serializer errors:", serializer.errors) # Debug
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            try:
+                serializer.save()
+
+                if serializer.data['template'] == '':
+                    folder.create_empty_project_folder(serializer.data['folder_location'])
+                else:
+                    folder.create_template_project_folder(serializer.data['folder_location'], serializer.data['template'])
+                
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            
+            except Exception as ex:
+                print(f"An error occurred while creating the project: {ex} Deleting project...")
+                
+                folder.delete_project_folder(serializer.data['folder_location'])
+
+                try:
+                    Project.objects.get(project_id=serializer.data['project_id']).delete()
+
+                except Exception as ex:
+                    print(f"Error while deleting project (maybe already deleted): {ex}")
+
+                return Response(serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -132,8 +152,18 @@ def project_detail(request, project_id):
     elif request.method == 'DELETE':
         if project.manager != payload['name'] and not payload['is_superuser']:
             raise PermissionDenied("You do not have permission to delete this project.")
-        project.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        
+        try:
+            folder = AzureFileShareClient()
+            folder.delete_project_folder(project.folder_location)
+
+            project.delete()
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        
+        except Exception as e:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     
 @api_view(['GET'])    
 def project_filter_by_manager(request, manager):
@@ -172,10 +202,10 @@ def user_list(request):
 @api_view(['POST'])
 def create_azure_file_share_folder_view(request):
     folder_name = request.POST.get('folder_name', 'default_folder') # This ONLY handles form data
-    print(f"heres e: {request.POST}") # Will print nothing as the frontend is currently not using forms for this
+    # print(f"heres e: {request.POST}") # Will print nothing as the frontend is currently not using forms for this
+    #print(folder_name) 
     print(request.data) # This WILL print out the request body as an Object
-    print(folder_name) 
     
-    create_folder_in_file_share(request.data['folder_name']) # Request only needs one field, folder_name, maybe later, we can specify it's location
+    # create_folder_in_file_share(request.data['folder_name']) # Request only needs one field, folder_name, maybe later, we can specify it's location
     
     return JsonResponse({'message': f'Folder "{folder_name}" created successfully in Azure File Share!'})
