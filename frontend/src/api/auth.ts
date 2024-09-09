@@ -97,14 +97,3 @@ export async function logout(): Promise<number> {
     }
 }
 
-export async function test_file() {
-  const random = Math.random()
-    try {
-      const response = await AxiosInstance.post('api/projects/folder_generations', {
-        "folder_name": "random_" + random,
-      })
-      console.log(response)
-    } catch (error) {
-      console.error("Network Error: ",error)
-    }
-}
