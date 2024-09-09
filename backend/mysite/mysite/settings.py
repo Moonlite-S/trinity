@@ -158,7 +158,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "/static/" #Added a '/' behind the original 'static/
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')] #Added this too
+
+# Currently this gives a warning that the static files folder is not found.
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')] #Added this too
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -170,6 +172,3 @@ AUTH_USER_MODEL = 'Trinity_Project.User'
 CORS_ALLOW_CREDENTIALS = True
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-CSRF_COOKIE_SAMESITE = 'None'
-SESSION_COOKIE_SAMESITE = 'None'
