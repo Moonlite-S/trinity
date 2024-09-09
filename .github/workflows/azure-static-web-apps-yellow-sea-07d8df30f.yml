@@ -3,11 +3,11 @@ name: Azure Frontend Static App CI/CD
 on:
   push:
     branches:
-      - prod
+      - sean
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
-      - prod
+      - sean
 
 jobs:
   build_and_deploy_job:
