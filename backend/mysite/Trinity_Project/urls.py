@@ -12,6 +12,7 @@ urlpatterns = [
     path("login", views.login_view),
     path('logout', views.logout_view),
     #path("2fa",views.TwoFactorAPIView.as_view()),
+    path("user/email/<str:user_email>",views.user_edit),
     path("user",views.user_view),
     path("user/all_users_names",views.return_all_users_names),
     path("user/all_users",views.user_list),    
