@@ -15,5 +15,7 @@ urlpatterns = [
     path("user/all_users_names",views.return_all_users_names),
     path("user/all_users",views.user_list),
     path('', views.home, name='home'),
-    path('getAToken', views.get_a_token, name='get_a_token')
+    path('getAToken', views.get_a_token, name='get_a_token'),
+    path("task/",views.task_list),
+    path("task/id/<str:task_id>",views.task_detail),
 ]

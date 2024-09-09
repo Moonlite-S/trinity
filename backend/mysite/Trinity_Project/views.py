@@ -7,13 +7,14 @@ from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated
 
-from .azure_file_share import create_folder_in_file_share
-from .models import Project
+from .azure_file_share import AzureFileShareClient
+from .models import Project, Task
 from .models import User
-from .serializers import ProjectSerializer, UserNameSerializer, UserSerializer
+from .serializers import ProjectSerializer, TaskSerializer, UserNameSerializer, UserSerializer
 from rest_framework.views import APIView
 import jwt, datetime
 from datetime import datetime,timezone,timedelta
+from django.contrib.auth.decorators import login_required
 from rest_framework.authentication import BaseAuthentication
 #from django.conf import setting
 from django.contrib.auth import get_user_model
@@ -128,12 +129,32 @@ def project_list(request):
     
     if request.method == 'POST':
         serializer = ProjectSerializer(data=request.data)
+        folder = AzureFileShareClient()
 
         if serializer.is_valid():
-            print("Valid data:", serializer.validated_data) # Debug
-            serializer.save()
-            print("Serializer errors:", serializer.errors) # Debug
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            try:
+                serializer.save()
+
+                if serializer.data['template'] == '':
+                    folder.create_empty_project_folder(serializer.data['folder_location'])
+                else:
+                    folder.create_template_project_folder(serializer.data['folder_location'], serializer.data['template'])
+                
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            
+            except Exception as ex:
+                print(f"An error occurred while creating the project: {ex} Deleting project...")
+                
+                folder.delete_project_folder(serializer.data['folder_location'])
+
+                try:
+                    Project.objects.get(project_id=serializer.data['project_id']).delete()
+
+                except Exception as ex:
+                    print(f"Error while deleting project (maybe already deleted): {ex}")
+
+                return Response(serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -162,8 +183,18 @@ def project_detail(request, project_id):
     elif request.method == 'DELETE':
         if project.manager != payload['name'] and not payload['is_superuser']:
             raise PermissionDenied("You do not have permission to delete this project.")
-        project.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        
+        try:
+            folder = AzureFileShareClient()
+            folder.delete_project_folder(project.folder_location)
+
+            project.delete()
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        
+        except Exception as e:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     
 @api_view(['GET'])    
 def project_filter_by_manager(request, manager):
@@ -202,10 +233,64 @@ def user_list(request):
 @api_view(['POST'])
 def create_azure_file_share_folder_view(request):
     folder_name = request.POST.get('folder_name', 'default_folder') # This ONLY handles form data
-    print(f"heres e: {request.POST}") # Will print nothing as the frontend is currently not using forms for this
+    # print(f"heres e: {request.POST}") # Will print nothing as the frontend is currently not using forms for this
+    #print(folder_name) 
     print(request.data) # This WILL print out the request body as an Object
-    print(folder_name) 
     
-    create_folder_in_file_share(request.data['folder_name']) # Request only needs one field, folder_name, maybe later, we can specify it's location
+    # create_folder_in_file_share(request.data['folder_name']) # Request only needs one field, folder_name, maybe later, we can specify it's location
     
     return JsonResponse({'message': f'Folder "{folder_name}" created successfully in Azure File Share!'})
+
+@login_required
+@api_view(['GET','POST'])
+def task_list(request):
+    
+    if request.method == 'GET':    
+        tasks = Task.objects.all()
+        serializer = TaskSerializer(tasks, many=True)
+        return Response(serializer.data)
+    
+    if request.method == 'POST':
+        serializer = TaskSerializer(data=request.data)
+        
+
+        if serializer.is_valid():
+            print("Valid data:", serializer.validated_data) # Debug
+            serializer.save()
+            print("Serializer errors:", serializer.errors) # Debug
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+@login_required
+@api_view(['GET','PUT','DELETE'])
+def task_detail(request, task_id):
+    
+    try:
+        task=Task.objects.get(task_id=task_id)
+    except Task.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    #get project manager name from project_id
+    project=Project.objects.get(project_id=task.project_id)
+    manager=project.manager
+    
+    user = request.user
+    
+    if request.method == 'GET':
+        serializer = TaskSerializer(task)
+        return Response(serializer.data)
+    
+    elif request.method == 'PUT':
+        if manager != user.name and not user.is_superuser:
+            raise PermissionDenied("You do not have permission to edit this task.")
+        serializer = TaskSerializer(task, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    elif request.method == 'DELETE':
+        if manager != user.name and not user.is_superuser:
+            raise PermissionDenied("You do not have permission to delete this task.")
+        task.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

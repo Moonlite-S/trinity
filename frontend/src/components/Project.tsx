@@ -3,9 +3,9 @@ import { Error_Component, Header, Route_Button } from "./misc";
 import { createProject, getProjectList, getProject, updateProject, deleteProject } from "../api/projects";
 import { useNavigate, useParams } from "react-router-dom";
 import DataTable, { Direction, TableColumn } from "react-data-table-component";
-import { FilterProps, ProjectFormProps, UpdateProjectProps } from "../interfaces/project_types";
+import { FilterProps, UpdateProjectProps } from "../interfaces/project_types";
 import { getEmployeeNameList } from "../api/employee";
-import CreatableSelect from "react-select/creatable";
+import { ProjectForm } from "./ProjectForm";
 
 /**
  * ### [Route for ('/create_project')]
@@ -22,6 +22,8 @@ export function CreateProject() {
 
         const formData = new FormData(event.target)
         const data = Object.fromEntries(formData)
+
+        console.log(data)
 
         try {
             await createProject(data)
@@ -66,31 +68,6 @@ export function CreateProject() {
 }
 
 /**
- * ### [Route for ('/create_init')]
- * 
- * Asks the user is they want to use a temlate before designing their project.
- * 
- */
-export function CreateProjectTemplateAsk( ){
-    return (
-    <>
-        <Header />
-
-        <h1 className="text-center">Start from a Template Project?</h1>
-
-        <div className="flex flex-row justify-center m-5 gap-5">
-            <Route_Button route="/projects/create_init" text="Start from Template" />
-            <Route_Button route="/projects/create_project" text="Start from Scratch" />
-        </div>
-
-        <div className="flex flex-row justify-center m-5 gap-5">
-            <Route_Button route="/main_menu" text="Main Menu" />
-        </div>
-    </>
-    )
-}
-
-/**
  * ### [Route for ('/update_project')]
  * 
  * This component fetches a list of projects and shows them in a table.
@@ -112,11 +89,11 @@ export function UpdateProjectList() {
                 
                 setProjectList(data)
                 setProjectLoaded(true)
-           }
+            }
            catch (error) {
                console.error("Error fetching projects:", error);
                throw error; // Re-throw the error so the caller can handle it if needed
-           }
+            }
         }
 
         fetchProjects()
@@ -225,263 +202,80 @@ export function UpdateProject() {
  * This component shows the status of a project based on the project id.
  */
 export function ProjectStatusReport() {
-    // Maybe this is about showing the status of the project
-    const { id } = useParams<string>()
-    const [project, setProject] = useState<UpdateProjectProps>()
+    /**
+     * TODO:
+     * - Make the page printable
+     */
+    const [project, setProject] = useState<UpdateProjectProps[]>()
+    const [manager, setManagers] = useState<string[]>([])
 
     useEffect(() => {
-        const reponse = async () => {
-            if (!id) return
+        const get_data = async () => {
+            const response = await getProjectList()
 
-            const data = await getProject(id)
-            console.log(data)
-            setProject(data)
+            if (!response) {
+                throw new Error("Error fetching project list")
+            }
+
+            const unique_managers = [...new Set(response.map(project => project.manager))]
+
+            setManagers(unique_managers)
+            
+            setProject(response)
         }
 
-        reponse()
+        get_data()
     }, [])
 
     return(
         <>
             <Header />
 
-            <h1 className="mb-5">Project Status Report</h1>
-            {project?.project_name}
+            <h1 className="mb-5 px-2">Project Status Report</h1>
+
+            {project && project.length === 0 && <h1 className="flex justify-center py-2">No projects found</h1>}
+
+            {manager && manager.map(manager => 
+            <div key={manager} className="my-5">
+                <h4 className="px-2">Total Projects: {project && project.filter(project => project.manager === manager).length}</h4>
+                <div className="grid grid-cols-5 p-4 border-b-2 bg-slate-50">
+                    <h3>{manager}</h3>
+                    <h3>Project ID</h3>
+                    <h3>Project Name</h3>
+                    <h3>Client Name</h3>
+                    <h3>On-Going Status</h3>
+                </div>
+
+                <div>
+                    {project && project.filter(project => project.manager === manager).map(project => 
+                    <div key={project.project_id} className="grid grid-cols-5 px-2 py-4 hover:bg-slate-100 transition border-b">
+                        <div>
+                            
+                        </div>
+                        <div>
+                            {project && project.project_id}
+                        </div>
+                        <div>
+                            {project && project.project_name}
+                        </div>
+                        <div>
+                            {project && project.client_name}
+                        </div>
+                        <div>
+                            {project && project.notes}
+                        </div>
+                    </div>
+                    )}
+                </div>
+            </div>
+            )}
+
+            <div className="flex justify-center">
+                <Route_Button route="/main_menu" text="Back to Projects" />
+            </div>
         </>
     )
 }
-
-/**
- * This component shows the user the form to create a new project.
- * 
- * @param FormProps : ( see type FormProps )  
- * 
- */
-function ProjectForm(
-    {button_text, projectManagerList, onSubmit, formProps}: ProjectFormProps
-) { 
-    const {
-        project_id = '',
-        project_name = '',
-        manager = '',
-        city = '',
-        quarter = 'Q1',
-        status = 'ACTIVE',
-        client_name = '',
-        start_date = '',
-        end_date = '',
-        notes = '',
-    } = formProps ?? {}
-
-    const cityOptions = [
-        { value: 'San Diego', label: 'San Diego' },
-        { value: 'Los Angeles', label: 'Los Angeles' },
-        { value: 'San Francisco', label: 'San Francisco' },
-        { value: 'Oakland', label: 'Oakland' },
-    ]
-
-    const [ProjectID, setProjectID] = useState(project_id)
-
-    const projectManagerListOptions = projectManagerList?.map((value: string) => {
-        return { value: value, label: value }
-    })
-
-    const customerNameOptions = [
-        { value: 'Customer 1', label: 'Customer 1' },
-        { value: 'Customer 2', label: 'Customer 2' },
-    ]
-
-    const onProjectIDChange = (event: any) => {
-
-    }
-
-    // Change the project ID to the first two letters of the project name
-    const onProjectNameChange = (event: any) => {
-        let project_name_local: string = event.target.value.toUpperCase()
-        let project_name_split = project_name_local.split(" ")
-        let project_name_final = (project_name_split ? project_name_split[0].charAt(0) : "") + (project_name_split.length > 1 ? project_name_split[1].charAt(0) : "")
-        setProjectID(project_name_final)
-    }
-
-    const onQuarterChange = (event: any) => {
-        setProjectID(event.target.value)
-    }
-
-    const onDateChange = (event: any) => {
-        
-    }
-
-    const onCityChange = (event: any) => {
-        
-    }
-
-
-    return (
-    <>
-    <form id="project_creation" onSubmit={onSubmit}  method="post">
-
-        <div className="flex flex-col gap-10 p-24 mx-auto max-w-screen-lg bg-zinc-50" >
-
-            <div className="flex flex-row justify-center gap-5">
-
-                <label className="py-2">Project ID:</label>
-                <input onChange={onProjectIDChange} value={ProjectID} className="bg-slate-200 border-zinc-300 border" type="text" name="project_id" disabled/>
-                
-                <label htmlFor="project_name" className="py-2" >Project Name:</label>
-                <input defaultValue={project_name} onChange={onProjectNameChange} className="bg-white border border-zinc-300" type="text" name="project_name" autoFocus required/>
-
-                <label className="py-2">Quarter:</label>
-                <select onChange={onQuarterChange} defaultValue={quarter} name="quarter" className="bg-white p-2 rounded-md border border-zinc-500">
-
-                    <option value={'Q1'}>Q1</option>
-                    <option value={'Q2'}>Q2</option>
-                    <option value={'Q3'}>Q3</option>
-                    <option value={'Q4'}>Q4</option>
-
-                </select>
-
-            </div>
-        
-            <div className="flex flex-row gap-5 justify-between">
-
-                <div className="flex flex-col gap-5 justify-between">
-
-                    <div className="flex flex-row justify-between gap-5">
-
-                        <label htmlFor="status">Project Status:</label>
-
-                        <select defaultValue={status} name="status" className="bg-white border border-zinc-300">
-
-                            <option value={'ACTIVE'}>Active</option>
-                            <option value={'COMPLETED'}>Completed</option>
-                            <option value={'CANCELLED'}>Cancelled</option>
-                            <option value={'NOT STARTED'}>Not Started</option>
-
-                        </select>
-                        
-                    </div>
-
-                    <div className="flex flex-row justify-between gap-5">
-
-                        <label  htmlFor="start_date">Date Created:</label>
-                        <input defaultValue={start_date} className="bg-white border border-zinc-300" type="date" name="start_date" required/>
-                    
-                    </div>
-
-                    <div className="flex flex-row justify-between gap-5">
-
-                        <label htmlFor="end_date">Due Date:</label>
-                        <input defaultValue={end_date} className="bg-white border border-zinc-300" type="date" name="end_date" required/>
-                    
-                    </div>
-
-                </div>
-
-                <div className="flex flex-col gap-5 justify-between">
-                                    
-                    <div className="flex flex-row justify-between gap-5">
-
-                        <label  htmlFor="manager" >Project Manager:</label>
-                        <SelectionComponent defaultValue={manager} options={projectManagerListOptions}/>
-                    
-                    </div>
-
-                    <div className="flex flex-row justify-between gap-5">
-
-                        <label >Client Name</label>
-                        <SelectionComponent defaultValue={client_name} options={customerNameOptions}/>
-                    
-                    </div>
-                    
-                    <div className="flex flex-row justify-between gap-5">
-
-                        <label >City</label>
-                        <SelectionComponent defaultValue={city} options={cityOptions}/>
-                    
-                    </div>
-
-                </div>
-
-            </div> 
-
-            <div className="flex flex-col gap-5">
-
-                <label  htmlFor="description">Project Notes:</label>
-                <textarea defaultValue={notes} className="bg-white border border-zinc-300" placeholder="Enter notes or other details" name="description" required/>
-                
-            </div>
-            
-            <label htmlFor="project_files">(Optional): Upload Project Files</label>
-            <input type="file" id="project_files" name="project_files"/>
-
-        </div>
-
-        {button_text === "Create Project" ? 
-        <BottomFormButton button_text={button_text} route_back="/main_menu"/>
-        :
-        <BottomFormButton button_text={button_text} route_back="/projects/"/>}
-
-    </form>
-    </>
-
-    )
-}
-
-type SelectionComponentProps = {
-    defaultValue: string,
-    options: { value: string, label: string }[] | undefined,
-}
-function SelectionComponent({defaultValue = '', options}: SelectionComponentProps){
-    if (!options) {
-        options = [{value: '', label: ''}];
-    }
-    return (
-        <CreatableSelect defaultInputValue={defaultValue} options={options} name="city" placeholder="Search" isClearable 
-        styles = {{
-            control: (baseStyles: any, state: any) => ({
-                ...baseStyles,
-                borderColor: state.isFocused ? 'orange' : 'gray',
-                boxShadow: state.isFocused ? '0 0 0 2px orange' : 'none',
-                '&:hover': {
-                    borderColor: state.isFocused ? 'orange' : 'gray',
-                },
-            }),
-            option: (baseStyles: any) => ({
-                ...baseStyles,
-                '&:hover': {
-                    backgroundColor: 'orange',
-                },
-                
-            })
-
-        }}/>
-    )
-}
-
-/**
- * For use in both the CreateProjectForm and UpdateProjectForm components
- *  
- * There are two buttons: One that goes back to the main menu and one that creates or updates a project
- * 
- * @params button_text The text of the second button (Either "Create Project" or "Update Project")
- * @params route The route of the back button (Either "/main_menu" or "/update_project")
- * This is usually either "Create Project" or "Update Project"
- */
-function BottomFormButton({ button_text, route_back }: { button_text: string, route_back: string }) {
-    const navigate = useNavigate();
-    return (
-    <div className="mx-auto text-center justify-center pt-5">
-
-        <button className='bg-orange-300 rounded p-4' onClick={() =>navigate(route_back)}>Back</button>
-        
-        <button type="submit" className="bg-orange-300 rounded p-4 ml-5">
-            {button_text}
-        </button>
-
-    </div>
-    );
-}
-
 
 /**
  * Helper Component for ProjectUpdateTable
@@ -538,7 +332,6 @@ const ExpandableRowComponent = ({ data }: { data: UpdateProjectProps }) => (
         <div className="flex flex-row gap-5 m-5">
             <Route_Button route={"/projects/update_project/" + data.project_id} text="Edit"/>
             <Route_Button route={"/projects/project_status_report/" + data.project_id} text="Report"/>
-            <Route_Button route="/main_menu" text="Open Folder"/>
             <Route_Button route={"/create_template"} text="Create Template"/>
             <Route_Button route={"/projects/delete/" + data.project_id} text="Delete" isDelete/>
         </div>
@@ -570,6 +363,7 @@ function ProjectUpdateTable({ projectList, projectLoaded }: { projectList: Updat
         { name: "City", selector: row => row.city, sortable: true },
         { name: "Date Created", selector: row => row.start_date, sortable: true },
         { name: "Date Ended", selector: row => row.end_date, sortable: true },
+        { name: "Folder Location", selector: row => row.folder_location, sortable: true },
     ]
 
     // For the filter function
