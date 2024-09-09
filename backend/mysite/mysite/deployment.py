@@ -47,7 +47,7 @@ DATABASES = {
 
 }
 
-STATIC_ROOT = BASE_DIR/'staticfiles'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_URL = "static/"
 
 SESSION_COOKIE_SECURE = True
