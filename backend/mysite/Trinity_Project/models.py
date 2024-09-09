@@ -56,3 +56,13 @@ class User(AbstractUser):
     def __str__(self):
         return f"{self.name} | {self.email}"
 
+class Task(models.Model):
+    task_id=models.CharField(max_length=50, unique=True)
+    title=models.CharField(max_length=50)
+    description=models.CharField(max_length=50)
+    assigned_to=models.CharField(max_length=50)
+    project_id=models.CharField(max_length=50)
+    due_date=models.DateField()
+
+    def __str__(self):
+        return f"ID: {self.task_id} | {self.title} | {self.assigned_to}"
