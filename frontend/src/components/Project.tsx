@@ -202,17 +202,75 @@ export function UpdateProject() {
  * This component shows the status of a project based on the project id.
  */
 export function ProjectStatusReport() {
-    const [project, setProject] = useState<UpdateProjectProps>()
+    /**
+     * TODO:
+     * - Make the page printable
+     */
+    const [project, setProject] = useState<UpdateProjectProps[]>()
+    const [manager, setManagers] = useState<string[]>([])
 
     useEffect(() => {
+        const get_data = async () => {
+            const response = await getProjectList()
+
+            if (!response) {
+                throw new Error("Error fetching project list")
+            }
+
+            const unique_managers = [...new Set(response.map(project => project.manager))]
+
+            setManagers(unique_managers)
+            
+            setProject(response)
+        }
+
+        get_data()
     }, [])
 
     return(
         <>
             <Header />
 
-            <h1 className="mb-5">Project Status Report</h1>
-            {project?.project_name}
+            <h1 className="mb-5 px-2">Project Status Report</h1>
+
+            {manager && manager.map(manager => 
+            <div key={manager} className="my-5">
+                <h4 className="px-2">Total Projects: {project && project.filter(project => project.manager === manager).length}</h4>
+                <div className="grid grid-cols-5 p-4 border-b-2 bg-slate-50">
+                    <h3>{manager}</h3>
+                    <h3>Project ID</h3>
+                    <h3>Project Name</h3>
+                    <h3>Client Name</h3>
+                    <h3>On-Going Status</h3>
+                </div>
+
+                <div>
+                    {project && project.filter(project => project.manager === manager).map(project => 
+                    <div key={project.project_id} className="grid grid-cols-5 px-2 py-4 hover:bg-slate-100 transition border-b">
+                        <div>
+                            
+                        </div>
+                        <div>
+                            {project && project.project_id}
+                        </div>
+                        <div>
+                            {project && project.project_name}
+                        </div>
+                        <div>
+                            {project && project.client_name}
+                        </div>
+                        <div>
+                            {project && project.notes}
+                        </div>
+                    </div>
+                    )}
+                </div>
+            </div>
+            )}
+
+            <div className="flex justify-center">
+                <Route_Button route="/main_menu" text="Back to Projects" />
+            </div>
         </>
     )
 }

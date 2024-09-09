@@ -208,7 +208,7 @@ export function MainNavBar({ user }: MainNavBarProps) {
 
             <Button_Card text="Create Project" route="/projects/create_project" />
             <Button_Card text="Update Project" route="/projects/" />
-            <Button_Card text="Project Status Report" route="/projects/" />
+            <Button_Card text="Project Status Report" route="/projects/project_status_report" />
             <Button_Card text="Import Projects" route="/projects/" />
             <Button_Card text="Tasks" route="/task" />
             <Button_Card text="Report" route="/" />
