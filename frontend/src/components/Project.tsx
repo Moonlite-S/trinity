@@ -233,6 +233,8 @@ export function ProjectStatusReport() {
 
             <h1 className="mb-5 px-2">Project Status Report</h1>
 
+            {project && project.length === 0 && <h1 className="flex justify-center py-2">No projects found</h1>}
+
             {manager && manager.map(manager => 
             <div key={manager} className="my-5">
                 <h4 className="px-2">Total Projects: {project && project.filter(project => project.manager === manager).length}</h4>
