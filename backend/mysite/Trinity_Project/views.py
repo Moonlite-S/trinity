@@ -85,15 +85,53 @@ class LogoutView(APIView):
 def index(request):
     return HttpResponse("Hello, world. You're at the Project index.")
 
+@api_view(['GET'])
+def project_creation_data(request):
+    '''
+    ### This API returns neccessary data for project creation
+
+    @return a JSON object with the following data:
+    - `project_count`: number of projects created this month and year
+    - `users`: list of ProjectManager
+    - `client_name`: list of client names
+    - `city`: list of cities
+
+    TODO:
+    - Filter users by manager and admin roles only
+    '''
+    data_to_send = {}
+
+    today_year = datetime.now().year
+    today_month = datetime.now().month
+
+    projects = Project.objects.filter(
+        start_date__year=today_year,
+        start_date__month=today_month
+    )
+
+    data_to_send['project_count'] = projects.count()
+
+    users = User.objects.values_list('name', flat=True)
+    data_to_send['users'] = list(users)
+
+    client_names = Project.objects.values_list('client_name', flat=True).distinct() 
+    data_to_send['client_names'] = list(client_names)
+
+    cities = Project.objects.values_list('city', flat=True).distinct() 
+    data_to_send['cities'] = list(cities)
+
+    return Response(data_to_send, status=status.HTTP_200_OK)
+
 
 @api_view(['GET','POST'])
 #@jwt_required
 def project_list(request):
     
     payload = authenticate_jwt(request)
-    
+
     if request.method == 'GET':    
         projects = Project.objects.all()
+
         serializer = ProjectSerializer(projects, many=True)
         return Response(serializer.data)
     

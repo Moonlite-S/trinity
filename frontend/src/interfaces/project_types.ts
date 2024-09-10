@@ -20,7 +20,7 @@ export type UpdateProjectProps = {
     notes?: string
     status: ProjectStatus
     folder_location: string
-    project_template: string
+    project_template: string,
 }
 
 export type FilterProps = {
@@ -28,19 +28,6 @@ export type FilterProps = {
     onFilter: (e: FormEvent<HTMLInputElement>) => void
     onClear: () => void
 }
-
-export type ProjectManagerCustomerCityProps =  {
-    city: string;
-    current_manager: string;
-    customer_name: string;
-    projectManagerList: string[] | undefined;
-};
-
-export type ProjectStatusAndDateProps =  {
-    end_date: string;
-    project_status: ProjectStatus;
-    start_date: string;
-};
 
 export type ProjectFormProps = {
     button_text: string
@@ -51,17 +38,9 @@ export type ProjectFormProps = {
     formProps?: UpdateProjectProps
 }
 
-export type ProjectNameIDProps =  {
-    project_id: string;
-    project_name: string;
-};
-
-export type ProjectFormMiddleProps =  {
-    city: string;
-    current_manager: string;
-    customer_name: string;
-    end_date: string;
-    project_status: ProjectStatus;
-    projectManagerList?: string[];
-    start_date: string;
-};
+export type ProjectCreationProps = {
+    project_count: number,
+    users: string[]
+    client_names: string[]
+    cities: string[]
+}

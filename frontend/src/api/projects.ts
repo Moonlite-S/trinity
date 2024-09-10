@@ -1,14 +1,15 @@
-import { UpdateProjectProps } from "../interfaces/project_types";
+import { ProjectCreationProps, UpdateProjectProps } from "../interfaces/project_types";
 import AxiosInstance from "../components/Axios";
 
 /**
  * Fetches a list of projects
  * 
- * @ param {string} the user's role so filter out projects they can't see (not yet implemented)
+ * @ filter optional: filters the list of projects based on field
  * @ returns (supposed to be) a list of projects
  */
-export async function getProjectList(): Promise<UpdateProjectProps[]> {
+export async function getProjectList(filter?: string): Promise<UpdateProjectProps[]> {
     try {
+
         const response = await AxiosInstance.get('api/projects')
 
         if (response.status === 200) {
@@ -112,6 +113,21 @@ export async function deleteProject(id: string | undefined): Promise<number> {
             throw new Error('Error deleting project')
         }
 
+    } catch (error) {
+        console.error("Server Error: ",error)
+        throw error
+    }
+}
+
+export async function getDataForProjectCreation(): Promise<ProjectCreationProps> {
+    try {
+        const response = await AxiosInstance.get('api/projects/project_creation')
+
+        if (response.status === 200) {
+            return response.data
+        } else {
+            throw new Error('Error fetching project creation data')
+        }
     } catch (error) {
         console.error("Server Error: ",error)
         throw error

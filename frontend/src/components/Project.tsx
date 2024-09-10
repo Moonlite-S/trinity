@@ -13,7 +13,6 @@ import { ProjectForm } from "./ProjectForm";
  * This component shows a ProjectForm component to create a new project.
  */
 export function CreateProject() {
-    const [projectManagers, setProjectManagers] = useState<string[]>([])
     const [errorString, setErrorString] = useState<string>()
     const navigate = useNavigate()
 
@@ -23,6 +22,16 @@ export function CreateProject() {
         const formData = new FormData(event.target)
         const data = Object.fromEntries(formData)
 
+        if (data.notify_manager === "on") {
+            const to = data.manager // Change this so that it's the user's email
+            const subject = "New Project (" + data.project_name + ") Assigned to you"
+            const body = "You have been assigned a new project, " + data.project_name + ". Please check it out."
+
+            // encodeURIComponent 
+            const mail_url = `mailto:${encodeURIComponent(String(to))}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+
+            window.location.href = mail_url
+        }
         console.log(data)
 
         try {
@@ -36,19 +45,6 @@ export function CreateProject() {
         }
     }
 
-    useEffect(() => {
-        const get_managers = async () => {
-            try {
-                const managers = await getEmployeeNameList()
-                setProjectManagers(managers)
-            } catch (error) {
-                console.error("Error fetching managers:", error);
-                setErrorString("Error fetching managers: " + error)
-            }
-        }
-
-        get_managers()
-    }, [])
     return (
         <>
             <Header />
@@ -61,7 +57,7 @@ export function CreateProject() {
 
             </div>
 
-            <ProjectForm button_text="Create Project" projectManagerList={projectManagers} onSubmit={onSubmit} />
+            <ProjectForm button_text="Create Project" onSubmit={onSubmit} />
 
         </>
     )
@@ -192,6 +188,7 @@ export function UpdateProject() {
             {loading ? <div>Loading...</div> 
             : 
             <ProjectForm button_text="Update Project" projectManagerList={projectManager} onSubmit={onSubmit} formProps={currentProject} />}
+            
         </>
     )
 }
@@ -223,6 +220,7 @@ export function ProjectStatusReport() {
             
             setProject(response)
         }
+
 
         get_data()
     }, [])
