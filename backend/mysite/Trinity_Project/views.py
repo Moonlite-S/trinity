@@ -333,4 +333,29 @@ def task_filter_by_project_id(request, project_id):
         else:
             serializer = TaskSerializer(tasks,many=True)
         return Response(serializer.data)
+
+@login_required
+@api_view(['GET'])
+def project_by_date(request):
     
+    year = request.GET.get('year')
+    month = request.GET.get('month')
+    
+    if not year:
+        return Response({"error": "Year is required."}, status=status.HTTP_400_BAD_REQUEST)
+    
+    elif not month:
+        return Response({"error": "month is required."}, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        project=Project.objects.filter(end_date__year=year,end_date__month=month)
+    except Project.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        if project.count()==1:
+            serializer = ProjectSerializer(project.first())
+        else:
+            serializer = ProjectSerializer(project,many=True)
+            
+        return Response(serializer.data)

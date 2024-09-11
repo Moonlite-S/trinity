@@ -20,6 +20,7 @@ urlpatterns = [
     path("projects/status/<str:project_status>", views.project_filter_by_status),
     path("projects/folder_generations",views.create_azure_file_share_folder_view),
     path("projects/copy_folder",views.copy_template_folder_view),
+    path("projects/by_date/",views.project_by_date),
     path("task/",views.task_list),
     path("task/id/<str:task_id>",views.task_detail),
     path("task/project_id/<str:project_id>",views.task_filter_by_project_id),

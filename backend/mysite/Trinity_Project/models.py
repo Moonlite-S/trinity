@@ -92,3 +92,8 @@ class VerificationCode(models.Model):
         self.number = code_string
         super().save(*args, **kwargs)
         
+# class ChnageLog(models.Model):
+#     project =models.ForeignKey(Project, on_delete=models.CASCADE)
+#     field = models.CharField(max_length=100)
+#     old_value = models.CharField(max_length=100, null=True, blank=True)
+#     new_value = models.CharField
