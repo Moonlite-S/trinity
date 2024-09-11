@@ -132,3 +132,19 @@ export async function getDataForProjectCreation(date: string): Promise<ProjectCr
         throw error
     }
 }
+
+export async function getProjectByDate(year: string, month: string): Promise<UpdateProjectProps[]> {
+    try {
+        const response = await AxiosInstance.get('api/projects/by_date', { params: { year: year, month: month} })
+
+        if (!response) {
+            throw new Error("Error fetching project list")
+        }
+
+        return response.data
+
+    } catch (error) {  
+        console.error("Server Error: ",error)
+        throw error
+    }
+}

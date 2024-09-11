@@ -246,7 +246,6 @@ def user_list(request):
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
 
-@login_required
 @api_view(['GET','POST'])
 def task_list(request):
 
@@ -266,7 +265,6 @@ def task_list(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@login_required
 @api_view(['GET','PUT','DELETE'])
 def task_detail(request, task_id):
 
@@ -300,7 +298,6 @@ def task_detail(request, task_id):
         task.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-@login_required
 @api_view(['GET'])
 def task_filter_by_project_id(request, project_id):
     #project=User.objects.get(project_id=project_id)
@@ -317,7 +314,6 @@ def task_filter_by_project_id(request, project_id):
             serializer = TaskSerializer(tasks,many=True)
         return Response(serializer.data)
     
-@login_required
 @api_view(['GET'])
 def task_filter_by_name(request, name):
 
@@ -335,7 +331,6 @@ def task_filter_by_name(request, name):
     
         return Response(serializer.data)
     
-@login_required
 @api_view(['GET'])
 def project_by_date(request):
     
