@@ -19,8 +19,8 @@ export function Calendar() {
     //max-w-md my-5 mx-auto bg-slate-200 rounded-lg shadow-md p-6
     return (
         <>
-            <Header />
-            <div className="my-5 mx-auto bg-slate-200 rounded-lg shadow-md p-6">
+        <Header />
+        <div className="my-5 mx-auto bg-slate-200 rounded-lg shadow-md p-6">
             <div className="flex justify-between mb-4">
                 <button onClick={handlePrevMonth}>Previous</button>
                 <h2 className="text-lg font-semibold">

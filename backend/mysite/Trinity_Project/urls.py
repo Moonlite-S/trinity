@@ -17,4 +17,6 @@ urlpatterns = [
     path("projects/folder_generations",views.create_azure_file_share_folder_view),
     path("task/",views.task_list),
     path("task/id/<str:task_id>",views.task_detail),
+    path("task/project_id/<str:project_id>",views.task_filter_by_project_id),
+    path("task/assigned_to/<str:name>",views.task_filter_by_name),
 ]
