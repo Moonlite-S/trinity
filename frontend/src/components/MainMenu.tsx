@@ -205,7 +205,7 @@ export function MainNavBar({ user }: MainNavBarProps) {
     <div className="flex flex-row w-full bg-gray-50">
 
         <div className='p-2 flex flex-col justify-items-center'>
-
+            <Button_Card text="Create Client" route="/client/create_client" />
             <Button_Card text="Create Project" route="/projects/create_project" />
             <Button_Card text="Update Project" route="/projects/" />
             <Button_Card text="Project Status Report" route="/projects/project_status_report" />

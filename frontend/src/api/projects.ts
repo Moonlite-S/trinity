@@ -9,7 +9,6 @@ import AxiosInstance from "../components/Axios";
  */
 export async function getProjectList(filter?: string): Promise<UpdateProjectProps[]> {
     try {
-
         const response = await AxiosInstance.get('api/projects')
 
         if (response.status === 200) {
