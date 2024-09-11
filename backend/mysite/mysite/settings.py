@@ -182,8 +182,8 @@ AUTH_USER_MODEL = 'Trinity_Project.User'
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
-#LOGIN_URL = "two_factor:login"
-LOGIN_URL = "api/login"
+LOGIN_URL = "two_factor:login"
+#LOGIN_URL = "api/login"
 
 AUTO_LOGOUT = {
     'IDLE_TIME': 6000, 

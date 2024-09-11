@@ -13,7 +13,7 @@ urlpatterns = [
     path('logout', views.logout_view),
     #path("2fa",views.TwoFactorAPIView.as_view()),
     path("user/email/<str:user_email>",views.user_edit),
-    path("user",views.user_view),
+    #path("user",views.user_view),
     path("user/all_users_names",views.return_all_users_names),
     path("user/all_users",views.user_list),    
     path("projects/name/<str:manager>", views.project_filter_by_manager),
@@ -22,5 +22,7 @@ urlpatterns = [
     path("projects/copy_folder",views.copy_template_folder_view),
     path("task/",views.task_list),
     path("task/id/<str:task_id>",views.task_detail),
+    path("task/project_id/<str:project_id>",views.task_filter_by_project_id),
+    path("task/assigned_to/<str:name>",views.task_filter_by_name),
     path("verify/", views.verify_view)
 ]
