@@ -12,6 +12,7 @@ urlpatterns = [
     path("user",views.UserView.as_view()),    
     path('logout', views.LogoutView.as_view()),
     path("projects/name/<str:manager>", views.project_filter_by_manager),
+    path("projects/by_date/",views.project_by_date),
     path("user/all_users_names",views.return_all_users_names),
     path("user/all_users",views.user_list),
     path("projects/folder_generations",views.create_azure_file_share_folder_view),
