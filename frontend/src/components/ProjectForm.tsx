@@ -4,6 +4,7 @@ import CreatableSelect from "react-select/creatable";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 import { getDataForProjectCreation } from "../api/projects";
+import { Error_Component } from "./misc";
 
 /**
  * This component shows the user the form to create a new project.
@@ -37,6 +38,9 @@ export function ProjectForm(
     const [ProjectManagers, setProjectManagers] = useState<string[]>([])
     const [Clients, setClients] = useState<{ value: string, label: string }[] | undefined>()
     const [Cities, setCities] = useState<{ value: string, label: string }[] | undefined>()
+    const [DateStart, setDateStart] = useState(start_date)
+    const [defaultManager, setDefaultManager] = useState<string>(manager)
+    const [errorString, setErrorString] = useState<string>()
 
     const projectManagerListOptions = ProjectManagers?.map((value: string) => {
         return { value: value, label: value }
@@ -49,17 +53,19 @@ export function ProjectForm(
     useEffect(() => {
         const get_project_data = async () => {
             try {
-                const response = await getDataForProjectCreation()
+                const response = await getDataForProjectCreation(DateStart)
 
                 if (!response) {
                     throw new Error("Error fetching project list")
                 }
 
-                const project_count = String(response.project_count + 1).padStart(3, "0")
+                const project_count = String(response.project_count + 1).padStart(3, "0") 
 
-                if (button_text != "Update Project") {
+                if (button_text === "Create Project") {
                     setProjectID(start_date + "-" + project_count)
+                    setDefaultManager(response.current_user)
                 }
+
                 setProjectManagers(response.users)
                 
                 const obj_client_names = response.client_names.map((value: string) => {
@@ -72,14 +78,38 @@ export function ProjectForm(
                 setCities(obj_cities)
             } catch (error) {
                 console.error("Error fetching project list:", error)
+                setErrorString("Error fetching project list: " + error)
             }
         }
-        
+
         get_project_data()
     },[])
 
+    const onDateStartChange = async(event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value
+        setDateStart(value)
+
+        try {
+            const response = await getDataForProjectCreation(value)
+
+            if (!response) {
+                throw new Error("Error fetching project list")
+            }
+            const project_count = String(response.project_count + 1).padStart(3, "0")
+
+            if (button_text != "Update Project") {
+                setProjectID(value + "-" + project_count)
+            }
+        } catch (error) {
+            console.error("Error fetching project list:", error)
+            setErrorString("Error fetching project list: " + error)
+        }
+    }
+
     return (
     <>
+    {errorString && <Error_Component errorString={errorString} />}
+
     <form id="project_creation" onSubmit={onSubmit}  method="post">
         <div className="flex flex-col gap-10 p-24 mx-auto max-w-screen-lg bg-zinc-50" >
             <div className="flex flex-row justify-center gap-5">
@@ -104,7 +134,7 @@ export function ProjectForm(
 
                     <div className="flex flex-row justify-between gap-5">
                         <label htmlFor="start_date" className="py-2">Date Created:</label>
-                        <input defaultValue={start_date} className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="date" name="start_date" required/>
+                        <input value={DateStart} onChange={onDateStartChange} className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="date" name="start_date" required/>
                     </div>
 
                     <div className="flex flex-row justify-between gap-5">
@@ -116,7 +146,7 @@ export function ProjectForm(
                 <div className="flex flex-col gap-5 justify-between">
                     <div className="flex flex-row justify-between gap-5">
                         <label htmlFor="manager" >Project Manager:</label>
-                        <CreateableSelectionComponent defaultValue={manager} options={projectManagerListOptions} name="manager"/>
+                        {defaultManager && <CreateableSelectionComponent defaultValue={defaultManager} options={projectManagerListOptions} name="manager"/>}
                     </div>
 
                     <div className="flex flex-row justify-between gap-5">
@@ -162,7 +192,6 @@ export function ProjectForm(
 
     </form>
     </>
-
     )
 }
 
@@ -201,15 +230,13 @@ function CreateableSelectionComponent({defaultValue = '', multiple, options, nam
     if (!options) {
         options = [{value: '', label: ''}];
     }
-
+        
     const defaultOption = options.find((option) => option.value === defaultValue)
-
     // Sets default to the defaultOption if it exists
     // if not, uses DefaultValue
     const selectDefaultValue = defaultOption
         ? defaultOption
         : {value: defaultValue, label: defaultValue}
-
 
     return (
         <CreatableSelect defaultValue={selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
@@ -238,8 +265,15 @@ function SelectionComponent({defaultValue = '', multiple, options, name}: Select
         options = [{value: '', label: ''}];
     }
 
+    const defaultOption = options.find((option) => option.value === defaultValue)
+
+    // Sets default to the defaultOption if it exists
+    // if not, uses DefaultValue
+    const selectDefaultValue = defaultOption
+        ? defaultOption
+        : {value: defaultValue, label: defaultValue}
     return (
-        <Select defaultInputValue={defaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
+        <Select defaultValue={selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
         styles = {{
             control: (baseStyles: any, state: any) => ({
                 ...baseStyles,

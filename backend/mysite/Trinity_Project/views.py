@@ -99,24 +99,33 @@ def project_creation_data(request):
     TODO:
     - Filter users by manager and admin roles only
     '''
+    payload = authenticate_jwt(request)
     data_to_send = {}
 
-    today_year = datetime.now().year
-    today_month = datetime.now().month
-
+    # gets projects create with the given date
+    chosen_date = request.GET.get('date')
+    chosen_year = datetime.strptime(chosen_date, '%Y-%m-%d').year
+    chosen_month = datetime.strptime(chosen_date, '%Y-%m-%d').month
     projects = Project.objects.filter(
-        start_date__year=today_year,
-        start_date__month=today_month
+        start_date__year=chosen_year,
+        start_date__month=chosen_month
     )
-
     data_to_send['project_count'] = projects.count()
 
+    # Gets lists of project managers (still need to filter out)
     users = User.objects.values_list('name', flat=True)
     data_to_send['users'] = list(users)
 
+    # Get the current user
+    current_user = User.objects.filter(id=payload['id']).first()
+    current_user = current_user.name
+    data_to_send['current_user'] = current_user
+
+    # Get list of client names
     client_names = Project.objects.values_list('client_name', flat=True).distinct() 
     data_to_send['client_names'] = list(client_names)
 
+    # Get list of cities
     cities = Project.objects.values_list('city', flat=True).distinct() 
     data_to_send['cities'] = list(cities)
 

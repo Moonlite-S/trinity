@@ -43,4 +43,5 @@ export type ProjectCreationProps = {
     users: string[]
     client_names: string[]
     cities: string[]
+    current_user: string
 }

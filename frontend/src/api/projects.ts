@@ -119,9 +119,9 @@ export async function deleteProject(id: string | undefined): Promise<number> {
     }
 }
 
-export async function getDataForProjectCreation(): Promise<ProjectCreationProps> {
+export async function getDataForProjectCreation(date: string): Promise<ProjectCreationProps> {
     try {
-        const response = await AxiosInstance.get('api/projects/project_creation')
+        const response = await AxiosInstance.get('api/projects/project_creation', { params: { date: date } })
 
         if (response.status === 200) {
             return response.data
