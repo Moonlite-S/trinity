@@ -6,6 +6,7 @@ import DataTable, { Direction, TableColumn } from "react-data-table-component";
 import { FilterProps, UpdateProjectProps } from "../interfaces/project_types";
 import { getEmployeeNameList } from "../api/employee";
 import { ProjectForm } from "./ProjectForm";
+import { getCurrentUser } from "../api/auth";
 
 /**
  * ### [Route for ('/create_project')]
@@ -22,14 +23,20 @@ export function CreateProject() {
         const formData = new FormData(event.target)
         const data = Object.fromEntries(formData)
 
-        if (data.notify_manager === "on") {
-            const to = data.manager // Change this so that it's the user's email
-            const subject = "New Project (" + data.project_name + ") Assigned to you"
-            const body = "You have been assigned a new project, " + data.project_name + ". Please check it out."
+        try {
+            const current_user = await getCurrentUser()
 
-            const mail_url = `mailto:${encodeURIComponent(String(to))}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+            if (data.notify_manager === "on" && (data.manager != current_user.name)) {
+                const to = data.manager // Change this so that it's the user's email
+                const subject = "New Project (" + data.project_name + ") Assigned to you"
+                const body = "You have been assigned a new project, " + data.project_name + ". Please check it out."
 
-            window.location.href = mail_url
+                const mail_url = `mailto:${encodeURIComponent(String(to))}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+
+                window.location.href = mail_url
+            }
+        } catch (error) {
+            console.error("Error: ", error)
         }
 
         try {

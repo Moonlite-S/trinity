@@ -1,4 +1,5 @@
 import AxiosInstance from '../components/Axios';
+import { EmployeeProps } from '../interfaces/employee_type';
 
 /**
  * This sends a GET request to the backend and verifies a user's authentication status
@@ -28,6 +29,28 @@ export async function checkUser(): Promise<number> {
       console.error("Network Error: ",error)
       return 500
     }
+}
+
+/**
+ * This sends a GET request to the backend and gets the current user's information
+ * 
+ * @returns the current user's information
+ * 
+ * (Personally I think we can just put this as the checkUser function instead. I'll just need to alter the function that uses it)
+ */
+export async function getCurrentUser(): Promise<EmployeeProps> {
+  try {
+    const response = await AxiosInstance.get('api/user')
+    const data = response.data
+
+    console.log(data)
+
+    return response.data
+
+  } catch (error) {
+    console.error("Network Error: ",error)
+    throw new Error("Network Error")
+  }
 }
 
 type LoginProps = {
