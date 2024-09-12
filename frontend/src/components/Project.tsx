@@ -27,21 +27,37 @@ export function CreateProject() {
             const subject = "New Project (" + data.project_name + ") Assigned to you"
             const body = "You have been assigned a new project, " + data.project_name + ". Please check it out."
 
-            // encodeURIComponent 
             const mail_url = `mailto:${encodeURIComponent(String(to))}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
 
             window.location.href = mail_url
         }
-        console.log(data)
 
         try {
-            await createProject(data)
-            // Component that signals that a project has been created
-            alert("Project created successfully!")
-            navigate("/projects")
-        } catch (error) {
-            console.error("Error creating project:", error);
-            setErrorString("Error creating project: " + error)
+            setErrorString(undefined)
+            const result_code = await createProject(data)
+            
+            console.log(data)
+            console.log(result_code)
+
+            // Error handling
+            switch (result_code) {
+                case 201:
+                    alert("Project created successfully!")
+                    navigate("/projects")
+                    break
+                case 400:
+                    setErrorString("Bad Request: Invalid data. Please make sure all fields are filled out. Error: " + result_code)
+                    break
+                case 403:
+                    setErrorString("Forbidden: You are not authorized to create projects. Error: " + result_code)
+                    break
+                default:
+                    throw new Error("Error creating project: " + result_code)
+            }
+
+        } catch (error: unknown) {
+            console.error("Something went wrong: ", error)
+            setErrorString("Error 500")
         }
     }
 
@@ -329,8 +345,6 @@ const ExpandableRowComponent = ({ data }: { data: UpdateProjectProps }) => (
 
         <div className="flex flex-row gap-5 m-5">
             <Route_Button route={"/projects/update_project/" + data.project_id} text="Edit"/>
-            <Route_Button route={"/projects/project_status_report/" + data.project_id} text="Report"/>
-            <Route_Button route={"/create_template"} text="Create Template"/>
             <Route_Button route={"/projects/delete/" + data.project_id} text="Delete" isDelete/>
         </div>
 

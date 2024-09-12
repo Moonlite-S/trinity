@@ -1,13 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Header } from "./misc";
+import { Header, Route_Button } from "./misc";
 import { format, addMonths, subMonths, getDaysInMonth } from 'date-fns';
 import { UpdateProjectProps } from '../interfaces/project_types';
 import { getProjectByDate } from '../api/projects';
-
-type CalendarProps = {
-    projects?: UpdateProjectProps[]
-    day: number
-}
+import { useNavigate } from 'react-router-dom';
+import { CalendarProps, DayButtonProps } from '../interfaces/calendar_type';
 
 /**
  * ### [Route for ('/calendar')]
@@ -20,7 +17,6 @@ type CalendarProps = {
  */
 export function Calendar() {
 
-    const [projectList, setProjectList] = useState<UpdateProjectProps[]>([]);
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [projectsDueToday, setProjectsDueToday] = useState<CalendarProps[]>([]);
     const daysInMonth = getDaysInMonth(currentMonth);
@@ -41,16 +37,11 @@ export function Calendar() {
                     throw new Error("Error fetching project list")
                 }
 
-                setProjectList(response)
-
                 setProjectsDueToday(Array.from({ length: daysInMonth }, (_, index) => {
                     const projects_due = response.filter(
                         (project) => project.end_date === currentMonth.getFullYear().toString() + "-" + (currentMonth.getMonth() + 1).toString().padStart(2, "0") + "-" + (index + 1).toString()
                     )
 
-                    console.log(currentMonth.getFullYear().toString() + "-" + (currentMonth.getMonth() + 1).toString() + "-" + (index + 1).toString())
-
-                    console.log(projects_due)
                     return {
                         day: index,
                         projects: projects_due
@@ -63,7 +54,6 @@ export function Calendar() {
         fetchProjects()
     }, [currentMonth])
 
-    console.log("projectList: ",projectList)
     //max-w-md my-5 mx-auto bg-slate-200 rounded-lg shadow-md p-6
     return (
         <>
@@ -94,6 +84,11 @@ export function Calendar() {
             </div>
 
             <MonthLayout daysInMonth={daysInMonth} currentMonth={currentMonth} projectList={projectsDueToday}  />
+    
+        </div>
+
+        <div className="flex justify-center mt-4">
+            <Route_Button route="/main_menu" text="Back to Main Menu" />
         </div>
         </>
     )
@@ -136,32 +131,28 @@ function MonthLayout({ currentMonth, projectList }: { daysInMonth: number, curre
             ))}
 
             {projectList.map((project_day, index) => (
-               <DayButton key={index} day_number={project_day.day} projects={project_day.projects} /> 
+               <DayCard key={index} day_number={project_day.day} projects={project_day.projects} /> 
             ))}
         </div>
     )
-}
-
-type DayButtonProps = {
-    day_number: number
-    projects?: UpdateProjectProps[]
 }
 
 /**
  * A component for each day on the calendar
  * @param {number} day_number the day of the month
  */
-function DayButton({ day_number, projects }: DayButtonProps) {
-    console.log("projects on day: ", day_number, projects)
+function DayCard({ day_number, projects }: DayButtonProps) {
     return (
-        <div className="h-52 border border-gray-300  text-center shadow-md">
+        <div className="h-52 border border-gray-300  text-center shadow-md ">
             <div className="text-xl font-bold">
                 {day_number + 1}
             </div>
 
+            <div className="overflow-y-auto h-44">
             {projects && projects.length > 0 && 
                 <ListProjectsOnDay projects={projects} />
             }
+            </div>
         </div>
     )
 }
@@ -171,18 +162,22 @@ function DayButton({ day_number, projects }: DayButtonProps) {
  * @param projects list of projects on a specific day
  */
 function ListProjectsOnDay({ projects }: { projects: UpdateProjectProps[] }) {
+    const navigate = useNavigate();
+
     return(
         <>
         {projects.map((project) => (
-            <div className='group'>
-                <div className='text-lg group-hover:bg-slate-400'>
-                    {project.project_name}
-                </div>
+            <button key={project.project_id} onClick={() =>navigate('/projects/update_project/' + project.project_id)} className='w-full'>
+                <div className='group bg-orange-100 overflow-hidden'>
+                    <div className='text-blue-800 underline font-semibold text-base'>
+                            {project.project_name}
+                    </div>
 
-                <div className='bg-slate-50 p-4 text-sm hidden group-hover:block'>
-                    {project.notes}
+                    <div className='bg-orange-200 text-xs '>
+                        {project.notes}
+                    </div>
                 </div>
-            </div>
+            </button>
         ))
         }
         </>

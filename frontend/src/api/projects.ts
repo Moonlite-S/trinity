@@ -1,5 +1,6 @@
 import { ProjectCreationProps, UpdateProjectProps } from "../interfaces/project_types";
 import AxiosInstance from "../components/Axios";
+import { AxiosError } from "axios";
 
 /**
  * Fetches a list of projects
@@ -55,22 +56,33 @@ export async function getProject(id: string): Promise<UpdateProjectProps> {
  * 
  * TODO: 
  * - Backend needs to perform a check to make sure the project doesn't already exist
+ * - Currently can't catch the error if project_id already existsq
  */
-export async function createProject(project_data: { [key: string]: FormDataEntryValue }): Promise<UpdateProjectProps> {
+export async function createProject(project_data: { [key: string]: FormDataEntryValue }): Promise<Number> {
     try {
         const response = await AxiosInstance.post('api/projects/', project_data)
 
         console.log(response)
 
-        if (response.status === 201) {
-            return response.data
-        } else {
-            throw new Error('Error creating project')
-        }
+        return 201
+    } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+            if (error.response?.status === 400) {
+                if (error.response.data['project_id']) {
+                    // 409 Conflict
+                    return 409
+                } else {
+                    // 400 Bad Request
+                    return 400
+                }
+            } else if (error.response?.status === 403) {
+                // 403 Forbidden
+                return 403
+            }
+        } 
 
-    } catch (error) {
-        console.error("Server Error: ",error)
-        throw error
+        console.error("Server Error: ", error)
+        return 500
     }
 }
 
@@ -80,19 +92,20 @@ export async function updateProject(project_data: { [key: string]: FormDataEntry
 
         console.log(response)
 
-        if (response.status === 200) {
-            return response.status
-        } else if (response.status === 403) {
-            // You have no permissions
-            console.error("Forbidden. Error", response.status)
-            return response.status
-        } else {
-            throw new Error('Error updating project')
-        }
+        return 200
 
-    } catch (error) {
-        console.error("Server Error: ",error)
-        throw error
+    } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+            if (error.response?.status === 400) {
+                // 400 Bad Request
+                return 400
+            } else if (error.response?.status === 403) {
+                // 403 Forbidden
+                return 403
+            }
+        }
+        console.error("Server Error: ", error)
+        return 500
     }
 }
 
@@ -102,19 +115,19 @@ export async function deleteProject(id: string | undefined): Promise<number> {
 
         console.log(response)
 
-        if (response.status === 204) {
-            return response.status
-        } else if (response.status === 403) {
-            // You have no permissions
-            console.error("Forbidden. Error", response.status)
-            return response.status
-        } else {
-            throw new Error('Error deleting project')
+        return 204
+    } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+            if (error.response?.status === 400) {
+                // 400 Bad Request
+                return 400
+            } else if (error.response?.status === 403) {
+                // 403 Forbidden
+                return 403
+            }
         }
-
-    } catch (error) {
-        console.error("Server Error: ",error)
-        throw error
+        console.error("Server Error: ", error)
+        return 500
     }
 }
 

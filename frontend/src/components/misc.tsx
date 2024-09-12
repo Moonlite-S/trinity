@@ -1,5 +1,5 @@
 // For miscelaneous components
-import { useNavigate } from 'react-router-dom';
+import {useNavigate } from 'react-router-dom';
 import logo from '/trinity_logo.png'
 
 // Header Component for all pages
@@ -25,6 +25,16 @@ export function Route_Button({route, text, isDelete}: {route: string, text: stri
 
   return(
     <button className={css} onClick={() =>navigate(route)}>{text}</button>
+  )
+}
+
+/** Goes back a page in the browser */
+export function Back_Button() {
+  const navigate = useNavigate();
+  const css = 'bg-orange-300 rounded p-4 my-2 hover:bg-orange-400 transition'
+
+  return(
+    <button type="button" className={css} onClick={() => navigate(-1)}>Back</button>
   )
 }
 

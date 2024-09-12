@@ -45,3 +45,11 @@ export type ProjectCreationProps = {
     cities: string[]
     current_user: string
 }
+
+
+export type SelectionComponentProps = {
+    defaultValue: string,
+    multiple?: boolean,
+    options: { value: string, label: string }[] | undefined,
+    name: string    
+}

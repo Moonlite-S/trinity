@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react"
-import { ProjectFormProps } from "../interfaces/project_types"
+import { ProjectFormProps, SelectionComponentProps } from "../interfaces/project_types"
 import CreatableSelect from "react-select/creatable";
 import Select from "react-select";
-import { useNavigate } from "react-router-dom";
 import { getDataForProjectCreation } from "../api/projects";
-import { Error_Component } from "./misc";
+import { Back_Button, Error_Component } from "./misc";
 
 /**
  * This component shows the user the form to create a new project.
@@ -114,7 +113,7 @@ export function ProjectForm(
         <div className="flex flex-col gap-10 p-24 mx-auto max-w-screen-lg bg-zinc-50" >
             <div className="flex flex-row justify-center gap-5">
                 <label htmlFor="project_id" className="py-2">Project ID:</label>
-                <input value={ProjectID} className="bg-slate-200 rounded-md border-zinc-500 border" type="text" name="project_id" readOnly/>
+                <input defaultValue={ProjectID} className="bg-slate-200 rounded-md border-zinc-500 border" type="text" name="project_id"/>
                 
                 <label htmlFor="project_name" className="py-2" >Project Name:</label>
                 <input defaultValue={project_name} className="bg-white border border-zinc-500 rounded-md focus:outline-none focus:ring focus:ring-orange-400" type="text" name="project_name" autoFocus required/>
@@ -175,7 +174,7 @@ export function ProjectForm(
 
             <div className="flex flex-col gap-5">
                 <label  htmlFor="notes">Project Notes:</label>
-                <textarea defaultValue={notes} className="bg-white border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" placeholder="Enter notes or other details" name="description"/>
+                <textarea defaultValue={notes} className="bg-white border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" placeholder="Enter notes or other details" name="notes"/>
             </div>
 
             {button_text === "Create Project" && 
@@ -185,10 +184,7 @@ export function ProjectForm(
             </div>}
         </div>
 
-        {button_text === "Create Project" ? 
-        <BottomFormButton button_text={button_text} route_back="/main_menu"/>
-        :
-        <BottomFormButton button_text={button_text} route_back="/projects/"/>}
+        <BottomFormButton button_text={button_text}/>
 
     </form>
     </>
@@ -204,12 +200,11 @@ export function ProjectForm(
  * @params route The route of the back button (Either "/main_menu" or "/update_project")
  * This is usually either "Create Project" or "Update Project"
  */
-export function BottomFormButton({ button_text, route_back }: { button_text: string, route_back: string }) {
-    const navigate = useNavigate();
+export function BottomFormButton({ button_text }: { button_text: string}) {
     return (
     <div className="mx-auto text-center justify-center pt-5">
 
-        <button className='bg-orange-300 rounded p-4' onClick={() =>navigate(route_back)}>Back</button>
+        <Back_Button/>
         
         <button type="submit" className="bg-orange-300 rounded p-4 ml-5">
             {button_text}
@@ -217,13 +212,6 @@ export function BottomFormButton({ button_text, route_back }: { button_text: str
 
     </div>
     );
-}
-
-type SelectionComponentProps = {
-    defaultValue: string,
-    multiple?: boolean,
-    options: { value: string, label: string }[] | undefined,
-    name: string    
 }
 
 function CreateableSelectionComponent({defaultValue = '', multiple, options, name}: SelectionComponentProps){
