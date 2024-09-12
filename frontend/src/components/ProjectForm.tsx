@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react"
-import { ProjectFormProps, SelectionComponentProps } from "../interfaces/project_types"
-import CreatableSelect from "react-select/creatable";
-import Select from "react-select";
+import { ProjectFormProps } from "../interfaces/project_types"
 import { getDataForProjectCreation } from "../api/projects";
-import { Back_Button, Error_Component } from "./misc";
+import { CreateableSelectionComponent, SelectionComponent, BottomFormButton } from "./Buttons";
+import { Error_Component } from "./misc";
 
 /**
  * This component shows the user the form to create a new project.
@@ -191,95 +190,3 @@ export function ProjectForm(
     )
 }
 
-/**
- * For use in both the CreateProjectForm and UpdateProjectForm components
- *  
- * There are two buttons: One that goes back to the main menu and one that creates or updates a project
- * 
- * @params button_text The text of the second button (Either "Create Project" or "Update Project")
- * @params route The route of the back button (Either "/main_menu" or "/update_project")
- * This is usually either "Create Project" or "Update Project"
- */
-export function BottomFormButton({ button_text }: { button_text: string}) {
-    return (
-    <div className="mx-auto text-center justify-center pt-5">
-
-        <Back_Button/>
-        
-        <button type="submit" className="bg-orange-300 rounded p-4 ml-5">
-            {button_text}
-        </button>
-
-    </div>
-    );
-}
-
-function CreateableSelectionComponent({defaultValue = '', multiple, options, name}: SelectionComponentProps){
-    if (!options) {
-        options = [{value: '', label: ''}];
-    }
-        
-    const defaultOption = options.find((option) => option.value === defaultValue)
-    // Sets default to the defaultOption if it exists
-    // if not, uses DefaultValue
-    const selectDefaultValue = defaultOption
-        ? defaultOption
-        : {value: defaultValue, label: defaultValue}
-
-    return (
-        <CreatableSelect defaultValue={selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
-        styles = {{
-            control: (baseStyles: any, state: any) => ({
-                ...baseStyles,
-                borderColor: state.isFocused ? 'orange' : 'gray',
-                boxShadow: state.isFocused ? '0 0 0 2px orange' : 'none',
-                '&:hover': {
-                    borderColor: state.isFocused ? 'orange' : 'gray',
-                },
-            }),
-            option: () => ({
-                padding: '5px 10px',
-                rounded: '5px',
-                '&:hover': {
-                    backgroundColor: '#cacacc',
-                },
-            })
-        }}/>
-    )
-}
-
-function SelectionComponent({defaultValue = '', multiple, options, name}: SelectionComponentProps){
-    if (!options) {
-        options = [{value: '', label: ''}];
-    }
-
-    const defaultOption = options.find((option) => option.value === defaultValue)
-
-    // Sets default to the defaultOption if it exists
-    // if not, uses DefaultValue
-    const selectDefaultValue = defaultOption
-        ? defaultOption
-        : {value: defaultValue, label: defaultValue}
-    return (
-        <Select defaultValue={selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
-        styles = {{
-            control: (baseStyles: any, state: any) => ({
-                ...baseStyles,
-                borderColor: state.isFocused ? 'orange' : 'gray',
-                boxShadow: state.isFocused ? '0 0 0 2px orange' : 'none',
-                '&:hover': {
-                    borderColor: state.isFocused ? 'orange' : 'gray',
-                },
-            }),
-            option: () => ({
-                padding: '5px 10px',
-                rounded: '5px',
-                '&:hover': {
-                    backgroundColor: '#cacacc',
-                },
-                
-            })
-
-        }}/>
-    )
-}

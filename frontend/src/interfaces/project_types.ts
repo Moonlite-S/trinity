@@ -53,3 +53,8 @@ export type SelectionComponentProps = {
     options: { value: string, label: string }[] | undefined,
     name: string    
 }
+
+export type SelectButtonProps = {
+    label: string
+    value: string
+}

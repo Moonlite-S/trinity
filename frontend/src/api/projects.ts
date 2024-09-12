@@ -6,11 +6,11 @@ import { AxiosError } from "axios";
  * Fetches a list of projects
  * 
  * @ filter optional: filters the list of projects based on field
- * @ returns (supposed to be) a list of projects
+ * @ returns (supposed to be) a list of ProjectProps
  */
 export async function getProjectList(filter?: string): Promise<UpdateProjectProps[]> {
     try {
-        const response = await AxiosInstance.get('api/projects')
+        const response = await AxiosInstance.get('api/projects' + (filter ? '/' + filter : ''))
 
         if (response.status === 200) {
             return response.data
