@@ -4,6 +4,7 @@ import { getEmployeeNameList } from '../api/employee';
 import { getProjectList } from '../api/projects';
 import { SelectButtonProps  } from '../interfaces/project_types';
 import { SelectionComponent } from './Buttons';
+import { filterTasksByProject } from '../api/tasks';
 //To prevent errors; assigns properties to the tasks to maintain consistency
 interface Task {
   id: number;
@@ -11,6 +12,7 @@ interface Task {
 }
 
 //*TODO:
+/* - Put all the current tasks when selecting a project on top
 /* - Ask Joey on:
 /* - Do i have to assign a unique id for tasks
 /* - How can i look at tasks through projects
@@ -30,14 +32,13 @@ export function Tasks() {
 
   const [employeeOptions, setEmployeeOptions] = useState<SelectButtonProps[]>([]);
   const [projectOptions, setProjectOptions] = useState<SelectButtonProps[]>([]);
+  const [projectID, setProjectID] = useState<string>("");
 
   //*event* is an object representing the event triggering the function (user typing input field)
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) { //Specifies the parameter
     setNewTask(event.target.value); //DOM element that triggered event, retrieves current value of input field
   }
   
-  console.log(tasks)  // unused variables casues linting error, so uh yeah i put this here
-
   function createTask() {
     if (newTask.trim() !== '') {
       setTasks((prevTasks) => [
@@ -61,6 +62,14 @@ export function Tasks() {
         updatedTasks[index],
       ];
       setTasks(updatedTasks);
+    }
+  }
+
+  const onProjectSelection = async() => {
+    console.log("Selected Project: " + projectID);
+
+    try {
+      const response = await filterTasksByProject(projectID)
     }
   }
 
@@ -95,10 +104,23 @@ export function Tasks() {
     <Header/>
       <h1 className="mx-4 text-x1 font-semibold">Assign Task</h1>
         <form className="max-w-5xl w-full mx-auto my-5 bg-slate-200 rounded-lg shadow-md p-6 ">
-          <div className="grid grid-cols-4 grid-flow-row justify-center gap-4 mb-4">
+          <div className="grid grid-cols-2 grid-flow-row justify-center gap-4 mb-4">
               <div className='grid grid-rows-2'>
                 <label htmlFor="project_id">Project:</label>
                 <SelectionComponent options={projectOptions} defaultValue='' name='project_id'/>
+              </div>
+
+              <div className='grid grid-rows-2'>
+                <label htmlFor="title" className='mr-4'>DEBUG ONLY Project ID:</label>
+                <input
+                  type="text"
+                  placeholder="Enter subject"
+                  value={newTask}
+                  onChange={handleInputChange}
+                  name='title'
+                  required
+                  readOnly
+                />
               </div>
 
               <div className='grid grid-rows-2'>
@@ -109,6 +131,7 @@ export function Tasks() {
                   value={newTask}
                   onChange={handleInputChange}
                   name='title'
+                  required
                 />
               </div>
 
@@ -117,13 +140,12 @@ export function Tasks() {
                 <SelectionComponent options={employeeOptions} defaultValue='' name='assigned_to'/>
               </div>
 
-
               <div className='grid grid-rows-2'>
                 <label htmlFor="title" className='mr-4'>Due Date:</label>
                 <input type="date" name="due_date" required/>
               </div>
 
-              <div className='grid grid-rows-2 col-span-4'>
+              <div className='grid grid-rows-2 col-span-2'>
                 <label htmlFor="task_description">Task Description:</label>
                 <textarea placeholder="Enter description" name="task_description" required/>
               </div>
