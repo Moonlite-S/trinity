@@ -5,6 +5,7 @@ import { TaskProps } from "../interfaces/tasks_types";
 export async function postTask(task: TaskProps): Promise<Number> {
     try {
         await AxiosInstance.post('api/task/', {
+            task_id: task.task_id,
             title: task.title,
             description: task.description,
             assigned_to: task.assigned_to,
@@ -38,6 +39,10 @@ export async function postTask(task: TaskProps): Promise<Number> {
 export async function filterTasksByProject(project_id: string): Promise<TaskProps[]> {
     try {
         const response = await AxiosInstance.get('api/task/project_id/' + project_id)
+
+        if (typeof response.data === 'object' && response.data['task_id']) {
+            return [response.data]
+        }
 
         return response.data
     } catch (error) {

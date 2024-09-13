@@ -5,6 +5,7 @@ import { getProjectList } from '../api/projects';
 import { UpdateProjectProps  } from '../interfaces/project_types';
 import { filterTasksByProject, postTask } from '../api/tasks';
 import { TaskProps } from '../interfaces/tasks_types';
+import { useNavigate } from 'react-router-dom';
 //To prevent errors; assigns properties to the tasks to maintain consistency
 
 //*TODO:
@@ -25,10 +26,11 @@ import { TaskProps } from '../interfaces/tasks_types';
 export function Tasks() {
   const [tasks, setTasks] = useState<TaskProps[]>([]); //Holds an array of tasks, initial value of tasks *empty array*
   const [newTask, setNewTask] = useState(''); //Track input value for new tasks
+  const navigate = useNavigate();
 
   const [employeelist, setEmployeelist] = useState<string[]>([]);
   const [projects, setProjects] = useState<UpdateProjectProps[]>([]);
-  const [formData, setFormData] = useState<TaskProps>({} as TaskProps);
+  const [SelectedProject, setSelectedProject] = useState<UpdateProjectProps>({} as UpdateProjectProps);
   const [taskID, setTaskID] = useState<string>("");
 
   //*event* is an object representing the event triggering the function (user typing input field)
@@ -42,25 +44,43 @@ export function Tasks() {
     // Gets the project id from the selected project
     const project_id = projects.find(project => project.project_name === newProjectName)?.project_id ?? '';
 
-    setFormData(prevData => ({...prevData, project_id: project_id}))
+    setSelectedProject(prevData => ({...prevData, project_id: project_id}))
 
     const tasks = await filterTasksByProject(project_id);
 
     setTasks(tasks);
-    console.log({...formData, project_id: project_id})
-    console.log("Amount of tasks: " + tasks.length)
 
-    // Formats the task id to be: "T-<project id>-<task length + 1>"
-    setTaskID("T-" + project_id + "-" + tasks.length + 1)
+    console.log("Tasks: ", tasks)
+
+    console.log("Task length: ", tasks.length)
+
+    // Formats the tas  k id to be: "T-<project id>-<task length + 1>"
+    const task_number = String(tasks.length + 1).padStart(3, '0');
+    setTaskID("T-" + project_id + "-" + task_number)
   }
 
-  const onSubmit = async () => {
+  const onSubmit = async (e: any) => {
+    e.preventDefault();
+
+    const form_data = new FormData(e.target);
+
+    // Basically send everything aside from the project title
+    const data_to_send: TaskProps = {
+      task_id: form_data.get('task_id') as string,
+      title: form_data.get('title') as string,
+      description: form_data.get('description') as string,
+      assigned_to: form_data.get('assigned_to') as string,
+      due_date: form_data.get('due_date') as string,
+      project_id: SelectedProject.project_id
+    }
+
     try {
-      const result_code = await postTask(formData);
+      const result_code = await postTask(data_to_send);
 
       switch (result_code) {
         case 201:
           alert("Task created successfully!")
+          navigate("/main_menu")
           break
         case 400:
           alert("Bad Request: Invalid data. Please make sure all fields are filled out. Error: " + result_code)
@@ -85,7 +105,7 @@ export function Tasks() {
         setEmployeelist(users);
 
         const projects = await getProjectList();
-          setProjects(projects);
+        setProjects(projects);
         
       } catch (error) {
         console.error(error);
@@ -99,11 +119,11 @@ export function Tasks() {
     <>
     <Header/>
       <h1 className="mx-4 text-x1 font-semibold">Assign Task</h1>
-        <form className="max-w-5xl w-full mx-auto my-5 bg-slate-200 rounded-lg shadow-md p-6 ">
+        <form className="max-w-5xl w-full mx-auto my-5 bg-slate-200 rounded-lg shadow-md p-6 " onSubmit={onSubmit}>
           <div className="grid grid-cols-2 grid-flow-row justify-center gap-4 mb-4">
               <div className='grid grid-rows-2'>
                 <label htmlFor="project_name">Project:</label>
-                <select name="project_name" id="project_name" value={formData.project_id} onChange={onProjectSelection}>
+                <select name="project_name" id="project_name" value={SelectedProject.project_name} onChange={onProjectSelection}>
                   {projects.map((option) => (
                     <option key={option.project_id} value={option.project_name}>
                       {option.project_name}
@@ -113,13 +133,13 @@ export function Tasks() {
               </div>
 
               <div className='grid grid-rows-2'>
-                <label htmlFor="title" className='mr-4'>Project ID:</label>
+                <label htmlFor="task_id" className='mr-4'>Task ID:</label>
                 <input
                   type="text"
                   placeholder="Enter subject"
                   value={taskID}
                   onChange={handleInputChange}
-                  name='title'
+                  name='task_id'
                   required
                   readOnly
                 />
@@ -139,7 +159,7 @@ export function Tasks() {
 
               <div className='grid grid-rows-2'>
                 <label htmlFor="title" className='mr-4'>Assign To:</label>
-                <select name="assign_to" id="assign_to" required>
+                <select name="assigned_to" id="assigned_to" required>
                   {employeelist.map((option) => (
                     <option key={option} value={option}>
                       {option}
@@ -161,7 +181,7 @@ export function Tasks() {
           </div>
 
           <div className="mx-auto text-center justify-center">
-            <button type="submit" className="bg-orange-300 rounded p-4" onClick={onSubmit}>Create Task</button>
+            <button type="submit" className="bg-orange-300 rounded p-4" >Create Task</button>
           </div>
         </form>
 
@@ -194,7 +214,7 @@ export function Tasks() {
           </div>
 
           <div className="mx-auto text-center justify-center">
-          <button type="submit" className="bg-orange-300 rounded p-4" onClick={onSubmit}>Update Task</button>
+          <button type="submit" className="bg-orange-300 rounded p-4">Update Task</button>
           </div>
 
         </form>
