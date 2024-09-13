@@ -52,6 +52,7 @@ export type SelectionComponentProps = {
     multiple?: boolean,
     options: { value: string, label: string }[] | undefined,
     name: string    
+    onChange?: () => void
 }
 
 export type SelectButtonProps = {

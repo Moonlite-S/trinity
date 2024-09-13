@@ -81,7 +81,7 @@ export function CreateableSelectionComponent({defaultValue = '', multiple, optio
     )
 }
 
-export function SelectionComponent({defaultValue = '', multiple, options, name}: SelectionComponentProps){
+export function SelectionComponent({defaultValue = '', multiple, options, name, onChange}: SelectionComponentProps){
     if (!options) {
         options = [{value: '', label: ''}];
     }
@@ -94,7 +94,7 @@ export function SelectionComponent({defaultValue = '', multiple, options, name}:
         ? defaultOption
         : {value: defaultValue, label: defaultValue}
     return (
-        <Select defaultValue={selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
+        <Select defaultValue={selectDefaultValue} onChange={onChange ? onChange : () => {}} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
         styles = {{
             control: (baseStyles: any, state: any) => ({
                 ...baseStyles,

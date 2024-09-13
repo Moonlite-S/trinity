@@ -1,9 +1,10 @@
+import { AxiosError } from "axios";
 import AxiosInstance from "../components/Axios";
 import { TaskProps } from "../interfaces/tasks_types";
 
-export function postTask(task: TaskProps) {
+export async function postTask(task: TaskProps): Promise<Number> {
     try {
-        const response = AxiosInstance.post('api/task/', {
+        await AxiosInstance.post('api/task/', {
             title: task.title,
             description: task.description,
             assigned_to: task.assigned_to,
@@ -11,26 +12,34 @@ export function postTask(task: TaskProps) {
             due_date: task.due_date
         })
 
-        if (!response) { 
-            throw new Error("Error creating task")
+        return 201
+    } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+            if (error.response?.status === 400) {
+                // 400 Bad Request
+                return 400
+            } else if (error.response?.status === 403) {
+                // 403 Forbidden
+                return 403
+            } else {
+                console.error("Axios error: ", error)
+                return 500
+            }
+        } else if (error instanceof Error) {
+            console.error("Error: ", error)
+            return 500
+        } else {
+            console.error("Unknown error: ", error)
+            return 500
         }
-
-        return response
-    } catch (error) {
-        console.error(error)
-        throw error
     }
 }
 
-export function filterTasksByProject(project_id: string) {
+export async function filterTasksByProject(project_id: string): Promise<TaskProps[]> {
     try {
-        const response = AxiosInstance.get('api/project_id/' + project_id)
+        const response = await AxiosInstance.get('api/task/project_id/' + project_id)
 
-        if (!response) {
-            throw new Error("Error fetching tasks")
-        }
-
-        return response
+        return response.data
     } catch (error) {
         console.error(error)
         throw error
