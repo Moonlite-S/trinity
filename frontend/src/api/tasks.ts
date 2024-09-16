@@ -40,10 +40,6 @@ export async function filterTasksByProject(project_id: string): Promise<TaskProp
     try {
         const response = await AxiosInstance.get('api/task/project_id/' + project_id)
 
-        if (typeof response.data === 'object' && response.data['task_id']) {
-            return [response.data]
-        }
-
         return response.data
     } catch (error) {
         console.error(error)

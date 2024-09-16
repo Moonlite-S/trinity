@@ -7,7 +7,9 @@ export type EmployeeProps = {
     username: string,
     password: string,
     role: string,
-    date_joined: string
+    date_joined: string,
+    projects: string[]
+    tasks: string[] 
 }
 
 export type FilterProps = {

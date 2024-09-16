@@ -1,15 +1,10 @@
 import React, { useEffect } from "react";
 import { Header } from "./misc";
 import { useNavigate } from "react-router-dom"
-import { logout } from "../api/auth";
+import { checkUser, logout } from "../api/auth";
+import { EmployeeProps } from "../interfaces/employee_type";
+import { useAuth } from "../App";
 
-type UserProps = {
-    name: string
-    role: string
-    
-    tasks?: string
-    projects?: string
-}
 /**
  * ### [Route for ('/main_menu')]
  * 
@@ -20,24 +15,28 @@ type UserProps = {
  * TODO:
  *  - Actually implement the user role system
  */
-type MainMenuProps = {
-    error?: string
-}
-export function MainMenu({ error='' } : MainMenuProps) {
+export function MainMenu() {
     // Check what roles the user has
     // and show / hide buttons accordingly
 
-    // Get User's name
-    const [user, setUser] = React.useState<UserProps>({name: '', role: ''})
     const [errorString, setErrorString] = React.useState<string>('')
+
+    // Get User's name
+    const { user } = useAuth();
+
+    console.log(user?.tasks)
+    console.log(user?.projects)
+    console.log(user?.role)
+    
+
+    if (!user) {
+        setErrorString("User not authenticated")
+        return <MainMenuError error={"User not authenticated"} />
+    }
+
     
     useEffect(() => {
-        // I'd probably just fetch the user again from backend
-        setUser({name: 'Sean', role: 'Manager'})
 
-        if (error) {
-            setErrorString(error)
-        }
     }, [])
 
     return (
@@ -151,16 +150,16 @@ function LogOut() {
  *  - Maybe place the tasks and projects below the Buttons? It wouldn't have enough space to show all of the tasks the way it currently is
  */
 function MainMenuQuickBar(
-    { name, role }: UserProps
+    {user}: {user: EmployeeProps}
 ) {
 return (
     <div className="grid grid-cols-2 grid-flow-row gap-3 justify-center w-screen p-5 ">
 
         <div className="p-5 mx-auto border row-span-1 w-full">
 
-            <h3>Hello, {name}</h3>
+            <h3>Hello, {user.name}</h3>
 
-            <h3>Role: {role}</h3>
+            <h3>Role: {user.role}</h3>
 
         </div>
 
@@ -196,11 +195,7 @@ return (
     );
 }
 
-type MainNavBarProps =  {
-    user: UserProps;
-};
-
-export function MainNavBar({ user }: MainNavBarProps) {
+export function MainNavBar({user}: {user: EmployeeProps}) {
     return (
     <div className="flex flex-row w-full bg-gray-50">
 
@@ -224,8 +219,7 @@ export function MainNavBar({ user }: MainNavBarProps) {
         </div>
 
         <MainMenuQuickBar
-            name={user.name}
-            role={user.role}
+            user={user}
         />
             
     </div>

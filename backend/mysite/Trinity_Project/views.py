@@ -255,14 +255,35 @@ def task_list(request):
         return Response(serializer.data)
 
     if request.method == 'POST':
+        # Get assigned_to from request data and check if it exists
         serializer = TaskSerializer(data=request.data)
 
-
         if serializer.is_valid():
-            print("Valid data:", serializer.validated_data) # Debug
-            serializer.save()
-            print("Serializer errors:", serializer.errors) # Debug
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            # Get assigned_to from request data and cross check it with the User model
+            # Same with Project model
+            assigned_to = serializer.validated_data.pop('assigned_to')
+            project_id = serializer.validated_data.pop('project_id')
+
+            try: 
+                user = User.objects.get(name=assigned_to)
+                project = Project.objects.get(project_id=project_id)
+                
+                task = Task.objects.create(assigned_to=user, project_id=project, **serializer.validated_data)
+
+                return Response(TaskSerializer(task).data, status=status.HTTP_201_CREATED)
+
+            except User.DoesNotExist:
+                print(f"User {assigned_to} does not exist.")
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            
+            except Project.DoesNotExist:
+                print(f"Project {project_id} does not exist.")
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            
+            except Exception as ex:
+                print(f"An error occurred while creating the task: {ex}")
+                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET','PUT','DELETE'])
@@ -304,16 +325,17 @@ def task_filter_by_project_id(request, project_id):
     #user = request.user
     
     try:
-        tasks=Task.objects.filter(project_id=project_id)
-    except Task.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    if request.method == 'GET':
-        if tasks.count() ==1:
-            serializer = TaskSerializer(tasks.first())
-        else:
-            serializer = TaskSerializer(tasks,many=True)
+        # The project_id__project_id searches in both tasks and projects
+        # By default, Django uses the inbuilt id field, so we need to use the project_id field
+        tasks=Task.objects.filter(project_id__project_id=project_id)
+
+        serializer = TaskSerializer(tasks,many=True)
         return Response(serializer.data)
-    
+        
+    except Exception as ex:
+        print(f"An error occurred while filtering tasks by project id: {ex}")
+        return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 @api_view(['GET'])
 def task_filter_by_name(request, name):
 

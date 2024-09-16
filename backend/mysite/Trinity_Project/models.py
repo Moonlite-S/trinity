@@ -73,8 +73,8 @@ class Task(models.Model):
     task_id=models.CharField(max_length=50, unique=True)
     title=models.CharField(max_length=50)
     description=models.CharField(max_length=50)
-    assigned_to=models.CharField(max_length=50)
-    project_id=models.CharField(max_length=50)
+    assigned_to=models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks")
+    project_id=models.ForeignKey(Project, to_field='project_id', on_delete=models.CASCADE, related_name="project")
     due_date=models.DateField()
 
     def __str__(self):

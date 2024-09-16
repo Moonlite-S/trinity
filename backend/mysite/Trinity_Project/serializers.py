@@ -29,6 +29,9 @@ class UserNameSerializer(serializers.ModelSerializer):
         fields = ['name'] 
 
 class TaskSerializer(serializers.ModelSerializer):
+    assigned_to = serializers.CharField()
+    project_id = serializers.CharField()
+
     class Meta:
         model=Task
         fields = ['task_id','title','description','assigned_to','project_id','due_date']

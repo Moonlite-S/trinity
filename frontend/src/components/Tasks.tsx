@@ -30,7 +30,7 @@ export function Tasks() {
 
   const [employeelist, setEmployeelist] = useState<string[]>([]);
   const [projects, setProjects] = useState<UpdateProjectProps[]>([]);
-  const [SelectedProject, setSelectedProject] = useState<UpdateProjectProps>({} as UpdateProjectProps);
+  const [SelectedProject, setSelectedProject] = useState<UpdateProjectProps>({project_name: ""} as UpdateProjectProps);
   const [taskID, setTaskID] = useState<string>("");
 
   //*event* is an object representing the event triggering the function (user typing input field)
@@ -44,7 +44,7 @@ export function Tasks() {
     // Gets the project id from the selected project
     const project_id = projects.find(project => project.project_name === newProjectName)?.project_id ?? '';
 
-    setSelectedProject(prevData => ({...prevData, project_id: project_id}))
+    setSelectedProject(prevData => ({...prevData, project_name: newProjectName, project_id: project_id}))
 
     const tasks = await filterTasksByProject(project_id);
 
@@ -54,9 +54,10 @@ export function Tasks() {
 
     console.log("Task length: ", tasks.length)
 
-    // Formats the tas  k id to be: "T-<project id>-<task length + 1>"
+    // Formats the task id to be: "T-<project id>-<task length + 1>"
     const task_number = String(tasks.length + 1).padStart(3, '0');
     setTaskID("T-" + project_id + "-" + task_number)
+ 
   }
 
   const onSubmit = async (e: any) => {
@@ -73,6 +74,8 @@ export function Tasks() {
       due_date: form_data.get('due_date') as string,
       project_id: SelectedProject.project_id
     }
+
+    console.log(data_to_send.project_id)
 
     try {
       const result_code = await postTask(data_to_send);
@@ -124,6 +127,7 @@ export function Tasks() {
               <div className='grid grid-rows-2'>
                 <label htmlFor="project_name">Project:</label>
                 <select name="project_name" id="project_name" value={SelectedProject.project_name} onChange={onProjectSelection}>
+                  <option value="" disabled>== Select a project ==</option>
                   {projects.map((option) => (
                     <option key={option.project_id} value={option.project_name}>
                       {option.project_name}
