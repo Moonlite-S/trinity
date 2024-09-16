@@ -2,7 +2,7 @@ import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Header } from './misc';
 import { getEmployeeNameList } from '../api/employee';
 import { getProjectList } from '../api/projects';
-import { UpdateProjectProps  } from '../interfaces/project_types';
+import { ProjectProps  } from '../interfaces/project_types';
 import { filterTasksByProject, postTask } from '../api/tasks';
 import { TaskProps } from '../interfaces/tasks_types';
 import { useNavigate } from 'react-router-dom';
@@ -29,8 +29,8 @@ export function Tasks() {
   const navigate = useNavigate();
 
   const [employeelist, setEmployeelist] = useState<string[]>([]);
-  const [projects, setProjects] = useState<UpdateProjectProps[]>([]);
-  const [SelectedProject, setSelectedProject] = useState<UpdateProjectProps>({project_name: ""} as UpdateProjectProps);
+  const [projects, setProjects] = useState<ProjectProps[]>([]);
+  const [SelectedProject, setSelectedProject] = useState<ProjectProps>({project_name: ""} as ProjectProps);
   const [taskID, setTaskID] = useState<string>("");
 
   //*event* is an object representing the event triggering the function (user typing input field)

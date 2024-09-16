@@ -1,4 +1,5 @@
 import { FormEvent } from "react"
+import { EmployeeProps } from "./employee_type"
 
 export type ProjectStatus = 
     "ACTIVE" |
@@ -8,10 +9,10 @@ export type ProjectStatus =
 
 export type quarter = "Q1" | "Q2" | "Q3" | "Q4"
 
-export type UpdateProjectProps = {
+export type ProjectProps = {
     project_id: string
     project_name: string
-    manager: string
+    manager: EmployeeProps
     city: string
     quarter: quarter
     client_name: string
@@ -35,7 +36,7 @@ export type ProjectFormProps = {
     onSubmit: (event: FormEvent<HTMLFormElement>) => void
 
     // For Project Update
-    formProps?: UpdateProjectProps
+    formProps?: ProjectProps
 }
 
 export type ProjectCreationProps = {
@@ -43,7 +44,7 @@ export type ProjectCreationProps = {
     users: string[]
     client_names: string[]
     cities: string[]
-    current_user: string
+    current_user: string[]
 }
 
 

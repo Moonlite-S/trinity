@@ -8,17 +8,24 @@ class Command(BaseCommand):
     help = 'Creates Example Projects'
 
     def handle(self, *args, **options):
-        
         for employee in employees:
             try:
-                User.objects.create_user(**employee)
+                if employee['name'] == 'admin':
+                    User.objects.create_superuser(**employee)
+                else:
+                    User.objects.create_user(**employee)
                 print(f"Employee '{employee['name']}' created successfully!")
             except Exception as ex:
                 print(f"An error occurred while creating employee: {ex}")
 
         for project in projects:
             try:
-                Project.objects.create(**project)
+                manager_obj = User.objects.get(email=project['manager'])
+                
+                project_data = project.copy()
+                project_data.pop('manager', None)
+
+                Project.objects.create(manager=manager_obj, **project_data)
 
                 folder = AzureFileShareClient()
                 

@@ -27,7 +27,7 @@ class CustomUserManager(BaseUserManager):
 class Project(models.Model):
     project_id=models.CharField(max_length=50, unique=True)
     project_name=models.CharField(max_length=50)
-    manager=models.CharField(max_length=50)
+    manager=models.ForeignKey("User", on_delete=models.CASCADE, related_name="projects")
     client_name=models.CharField(max_length=50)
     city=models.CharField(max_length=50)
     start_date=models.DateField()

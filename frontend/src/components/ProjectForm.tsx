@@ -3,6 +3,7 @@ import { ProjectFormProps } from "../interfaces/project_types"
 import { getDataForProjectCreation } from "../api/projects";
 import { CreateableSelectionComponent, SelectionComponent, BottomFormButton } from "./Buttons";
 import { Error_Component } from "./misc";
+import { EmployeeProps } from "../interfaces/employee_type";
 
 /**
  * This component shows the user the form to create a new project.
@@ -10,11 +11,8 @@ import { Error_Component } from "./misc";
  * @param FormProps : ( see type FormProps )  
  * 
  * TODO:
- *  - Project Managers can now have more than one manager [FIX THIS IN THE BACKEND]
- *  - Folder Name might just be the same for Project ID
  *  - REFACTOR THIS IN AN EASIER WAY (NO PROP DRILLING)
- *  - Email the Project Manager(s) when a new project is created
- * 
+ *  - DefaultManager sends only the name, not the email
  */
 export function ProjectForm(
     {button_text, onSubmit, formProps}: ProjectFormProps
@@ -22,7 +20,7 @@ export function ProjectForm(
     const {
         project_id = '',
         project_name = '',
-        manager = '',
+        manager = {} as EmployeeProps,
         city = '',
         status = 'ACTIVE',
         client_name = '',
@@ -37,11 +35,11 @@ export function ProjectForm(
     const [Clients, setClients] = useState<{ value: string, label: string }[] | undefined>()
     const [Cities, setCities] = useState<{ value: string, label: string }[] | undefined>()
     const [DateStart, setDateStart] = useState(start_date)
-    const [defaultManager, setDefaultManager] = useState<string>(manager)
+    const [defaultManager, setDefaultManager] = useState<string>(manager?.name ?? "")
     const [errorString, setErrorString] = useState<string>()
 
     const projectManagerListOptions = ProjectManagers?.map((value: string) => {
-        return { value: value, label: value }
+        return { value: value[1], label: value[0] }
     })
 
     const templates = [
@@ -53,6 +51,7 @@ export function ProjectForm(
             try {
                 const response = await getDataForProjectCreation(DateStart)
 
+                console.log(response)
                 if (!response) {
                     throw new Error("Error fetching project list")
                 }
@@ -61,11 +60,11 @@ export function ProjectForm(
 
                 if (button_text === "Create Project") {
                     setProjectID(start_date + "-" + project_count)
-                    setDefaultManager(response.current_user)
+                    setDefaultManager(response.current_user[0])
                 }
 
                 setProjectManagers(response.users)
-                
+
                 const obj_client_names = response.client_names.map((value: string) => {
                     return { value: value, label: value }
                 })
@@ -144,7 +143,7 @@ export function ProjectForm(
                 <div className="flex flex-col gap-5 justify-between">
                     <div className="flex flex-row justify-between gap-5">
                         <label htmlFor="manager" >Project Manager:</label>
-                        {defaultManager && <CreateableSelectionComponent defaultValue={defaultManager} options={projectManagerListOptions} name="manager"/>}
+                        {defaultManager && <SelectionComponent defaultValue={defaultManager} options={projectManagerListOptions} name="manager"/>}
                     </div>
 
                     <div className="flex flex-row justify-between gap-5">

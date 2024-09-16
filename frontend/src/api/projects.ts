@@ -1,4 +1,4 @@
-import { ProjectCreationProps, UpdateProjectProps } from "../interfaces/project_types";
+import { ProjectCreationProps, ProjectProps } from "../interfaces/project_types";
 import AxiosInstance from "../components/Axios";
 import { AxiosError } from "axios";
 
@@ -8,7 +8,7 @@ import { AxiosError } from "axios";
  * @ filter optional: filters the list of projects based on field
  * @ returns (supposed to be) a list of ProjectProps
  */
-export async function getProjectList(filter?: string): Promise<UpdateProjectProps[]> {
+export async function getProjectList(filter?: string): Promise<ProjectProps[]> {
     try {
         const response = await AxiosInstance.get('api/projects' + (filter ? '/' + filter : ''))
 
@@ -30,7 +30,7 @@ export async function getProjectList(filter?: string): Promise<UpdateProjectProp
  * @param id the project id of the project
  * @returns An object of type UpdateProjectProps
  */
-export async function getProject(id: string): Promise<UpdateProjectProps> {
+export async function getProject(id: string): Promise<ProjectProps> {
     try {
         const response = await AxiosInstance.get('api/projects/id/' + id)
 
@@ -146,7 +146,7 @@ export async function getDataForProjectCreation(date: string): Promise<ProjectCr
     }
 }
 
-export async function getProjectByDate(year: string, month: string): Promise<UpdateProjectProps[]> {
+export async function getProjectByDate(year: string, month: string): Promise<ProjectProps[]> {
     try {
         const response = await AxiosInstance.get('api/projects/by_date', { params: { year: year, month: month} })
 

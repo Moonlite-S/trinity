@@ -15,6 +15,7 @@ urlpatterns = [
     path("projects/name/<str:manager>", views.project_filter_by_manager),
     path("projects/by_date/",views.project_by_date),
     path("user/all_users_names",views.return_all_users_names),
+    path("user/all_users_name_and_email", views.return_all_users_name_and_email),
     path("user/all_users",views.user_list),
     path("task/",views.task_list),
     path("task/id/<str:task_id>",views.task_detail),

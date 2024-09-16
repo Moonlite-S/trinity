@@ -2,6 +2,7 @@ import { SelectionComponentProps } from "../interfaces/project_types";
 import CreatableSelect from "react-select/creatable";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 /** General Orange button */
 export function Route_Button({route, text, isDelete}: {route: string, text: string, isDelete?: boolean}) {
@@ -16,12 +17,12 @@ export function Route_Button({route, text, isDelete}: {route: string, text: stri
   
 /** Goes back a page in the browser */
 export function Back_Button() {
-const navigate = useNavigate();
-const css = 'bg-orange-300 rounded p-4 my-2 hover:bg-orange-400 transition'
+    const navigate = useNavigate();
+    const css = 'bg-orange-300 rounded p-4 my-2 hover:bg-orange-400 transition'
 
-return(
-    <button type="button" className={css} onClick={() => navigate(-1)}>Back</button>
-)
+    return(
+        <button type="button" className={css} onClick={() => navigate(-1)}>Back</button>
+    )
 }
 
 /**
@@ -93,8 +94,9 @@ export function SelectionComponent({defaultValue = '', multiple, options, name, 
     const selectDefaultValue = defaultOption
         ? defaultOption
         : {value: defaultValue, label: defaultValue}
+
     return (
-        <Select defaultValue={selectDefaultValue} onChange={onChange ? onChange : () => {}} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
+        <Select defaultValue={selectDefaultValue} onChange={onChange ? onChange : () => selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
         styles = {{
             control: (baseStyles: any, state: any) => ({
                 ...baseStyles,

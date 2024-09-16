@@ -1,12 +1,6 @@
+import { AxiosError } from "axios";
 import AxiosInstance from "../components/Axios";
-
-type EmployeeProps = {
-    name: string;
-    email: string;
-    password: string;
-    username: string;
-    role: string;
-}
+import { EmployeeNameEmail, EmployeeProps } from "../interfaces/employee_type";
 
 /**
  * Employee Creation API
@@ -103,5 +97,30 @@ export async function getAllEmployeeData(): Promise<EmployeeProps[]>  {
     } catch (error) {
         console.error("Server Error: ",error)
         throw error
+    }
+}
+
+export async function getAllEmployeeNameAndEmail(): Promise<EmployeeNameEmail[]> {
+    try {
+        const response = await AxiosInstance.get('api/user/all_users_name_email')
+
+        console.log(response)
+
+        return response.data
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            if (error.response?.status === 400) {
+                // 400 Bad Request
+                throw new Error('Error getting employee list')
+            } else if (error.response?.status === 403) {
+                // 403 Forbidden
+                throw new Error('Error getting employee list')
+            }
+        } else if (error instanceof Error) {
+            console.error("Server Error: ", error)
+            throw error
+        }
+
+        throw new Error('Error getting employee list')
     }
 }

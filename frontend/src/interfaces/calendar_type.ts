@@ -1,11 +1,11 @@
-import { UpdateProjectProps } from "./project_types"
+import { ProjectProps } from "./project_types"
 
 export type DayButtonProps = {
     day_number: number
-    projects?: UpdateProjectProps[]
+    projects?: ProjectProps[]
 }
 
 export type CalendarProps = {
-    projects?: UpdateProjectProps[]
+    projects?: ProjectProps[]
     day: number
 }

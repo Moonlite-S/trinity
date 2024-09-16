@@ -1,6 +1,13 @@
 # Create Employees
 employees = [
     {
+        'name': 'admin',
+        'email': 'admin@admin',
+        'password': '123',
+        'role': 'Admin',
+        'date_joined': '2022-01-01'
+    },
+    {
         'name': 'Sean',
         'email': 'sean@example.com',
         'password': '123',

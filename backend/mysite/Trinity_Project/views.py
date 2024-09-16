@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from .azure_file_share import AzureFileShareClient
 from .models import Project, Task
 from .models import User
-from .serializers import ProjectSerializer, TaskSerializer, UserNameSerializer, UserSerializer
+from .serializers import ProjectSerializer, TaskSerializer, UserNameAndEmail, UserNameSerializer, UserSerializer
 from rest_framework.views import APIView
 import jwt, datetime
 from datetime import datetime,timezone,timedelta
@@ -92,7 +92,7 @@ def project_creation_data(request):
 
     @return a JSON object with the following data:
     - `project_count`: number of projects created this month and year
-    - `users`: list of ProjectManager
+    - `users`: list of ProjectManager (tuple of name and email)
     - `client_name`: list of client names
     - `city`: list of cities
 
@@ -112,13 +112,14 @@ def project_creation_data(request):
     )
     data_to_send['project_count'] = projects.count()
 
-    # Gets lists of project managers (still need to filter out)
-    users = User.objects.values_list('name', flat=True)
+    # Gets lists of project managers
+    users = User.objects.filter(role__in=['Manager', 'Admin'], is_active=True).values_list('name', 'email')
     data_to_send['users'] = list(users)
 
+    print(users)
+
     # Get the current user
-    current_user = User.objects.filter(id=payload['id']).first()
-    current_user = current_user.name
+    current_user = User.objects.filter(id=payload['id']).values_list('name', 'email').first()
     data_to_send['current_user'] = current_user
 
     # Get list of client names
@@ -148,16 +149,21 @@ def project_list(request):
         serializer = ProjectSerializer(data=request.data)
         folder = AzureFileShareClient()
 
+        print(request.data)
+
         if serializer.is_valid():
+            manager = serializer.validated_data.pop('manager')
             try:
-                serializer.save()
+                manager_obj = User.objects.get(email=manager)
 
                 if serializer.data['template'] == '':
                     folder.create_empty_project_folder(serializer.data['folder_location'])
                 else:
                     folder.create_template_project_folder(serializer.data['folder_location'], serializer.data['template'])
                 
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+                project = Project.objects.create(manager=manager_obj, **serializer.validated_data)
+
+                return Response(ProjectSerializer(project).data, status=status.HTTP_201_CREATED)
             
             except Exception as ex:
                 print(f"An error occurred while creating the project: {ex} Deleting project...")
@@ -236,6 +242,14 @@ def return_all_users_names(request):
     
     users = User.objects.all()
     serializer = UserNameSerializer(users, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def return_all_users_name_and_email(request):
+    payload = authenticate_jwt(request)
+
+    users = User.objects.all()
+    serializer = UserNameAndEmail(users, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])

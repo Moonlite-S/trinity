@@ -12,6 +12,7 @@ import { ErrorPage } from './components/Error'
 import { Calendar } from './components/Calendar';
 import { Header } from './components/misc'
 import { EmployeeProps } from './interfaces/employee_type'
+import { SetAnnouncement } from './components/Announcement'
 
 // Main Router for the application
 export default function App() {
@@ -38,6 +39,8 @@ export default function App() {
               <Route path='/employees/create_employee' element={<CreateEmployee />} />
               <Route path='/template_list/' element={<TemplateList />} />
               <Route path='/calendar' element={<Calendar />} />
+
+              <Route path='/announcements/create_anncouncement' element={<SetAnnouncement />} />
 
             </Route>
 

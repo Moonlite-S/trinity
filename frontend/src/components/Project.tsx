@@ -3,7 +3,7 @@ import { Error_Component, Header } from "./misc";
 import { createProject, getProjectList, getProject, updateProject, deleteProject } from "../api/projects";
 import { useNavigate, useParams } from "react-router-dom";
 import DataTable, { Direction, TableColumn } from "react-data-table-component";
-import { FilterProps, UpdateProjectProps } from "../interfaces/project_types";
+import { FilterProps, ProjectProps } from "../interfaces/project_types";
 import { getEmployeeNameList } from "../api/employee";
 import { ProjectForm } from "./ProjectForm";
 import { Route_Button } from "./Buttons";
@@ -12,6 +12,7 @@ import { Route_Button } from "./Buttons";
  * ### [Route for ('/create_project')]
  * 
  * This component shows a ProjectForm component to create a new project.
+ * 
  */
 export function CreateProject() {
     const [errorString, setErrorString] = useState<string>()
@@ -19,7 +20,7 @@ export function CreateProject() {
 
     const onSubmit = async (event: any) => {
         event.preventDefault()
-
+        
         const formData = new FormData(event.target)
         const data = Object.fromEntries(formData)
 
@@ -91,14 +92,14 @@ export function CreateProject() {
  *  - Look for a custom component for the table that has search, sort, and pagination
  */
 export function UpdateProjectList() {
-    const [projectList, setProjectList] = useState<UpdateProjectProps[]>([])
+    const [projectList, setProjectList] = useState<ProjectProps[]>([])
     const [projectLoaded, setProjectLoaded] = useState<boolean>(false)
 
     useEffect(() => {
         // This is where the list of projects will be fetched
         const fetchProjects = async () => {
             try {
-                const data: Array<UpdateProjectProps> = await getProjectList()
+                const data: Array<ProjectProps> = await getProjectList()
                 
                 setProjectList(data)
                 setProjectLoaded(true)
@@ -133,7 +134,7 @@ export function UpdateProjectList() {
 export function UpdateProject() {
     const { id } = useParams<string>()
     const [projectManager, setProjectManagers] = useState<string[]>([])
-    const [currentProject, setCurrentProject] = useState<UpdateProjectProps>()
+    const [currentProject, setCurrentProject] = useState<ProjectProps>()
     const [errorString, setErrorString] = useState<string>()
     const [loading, setLoading] = useState<boolean>(true)
     const navigate = useNavigate()
@@ -147,12 +148,12 @@ export function UpdateProject() {
                 const data = await getProject(id)
                 const managers = await getEmployeeNameList()
 
-                if (data.manager && !managers.includes(data.manager)) {
+                if (data.manager && !managers.includes(data.manager.name)) {
                     console.error("There's no mangaer with that name: ", data.manager)
                     console.error("We will automatically include it, but please create the employee before creating a project")
 
                     setErrorString("There is no manager in the database with that name. \n We will automatically include it, but please create the employee before creating a project.")
-                    managers.push(data.manager)
+                    managers.push(data.manager.name)
                 }
 
                 setCurrentProject(data)
@@ -172,7 +173,9 @@ export function UpdateProject() {
         
         try {
             const form_data = new FormData(event.target)
+
             const data = Object.fromEntries(form_data)
+
             const response = await updateProject(data, id)
 
             switch (response) {
@@ -220,7 +223,7 @@ export function ProjectStatusReport() {
      * TODO:
      * - Make the page printable
      */
-    const [project, setProject] = useState<UpdateProjectProps[]>()
+    const [project, setProject] = useState<ProjectProps[]>()
     const [manager, setManagers] = useState<string[]>([])
 
     useEffect(() => {
@@ -231,8 +234,8 @@ export function ProjectStatusReport() {
                 throw new Error("Error fetching project list")
             }
 
-            const unique_managers = [...new Set(response.map(project => project.manager))]
-
+            const unique_managers = [...new Set(response.map(project => project.manager.name))];
+            
             setManagers(unique_managers)
             
             setProject(response)
@@ -252,7 +255,7 @@ export function ProjectStatusReport() {
 
             {manager && manager.map(manager => 
             <div key={manager} className="my-5">
-                <h4 className="px-2">Total Projects: {project && project.filter(project => project.manager === manager).length}</h4>
+                <h4 className="px-2">Total Projects: {project && project.filter(project => project.manager.name === manager).length}</h4>
                 <div className="grid grid-cols-5 p-4 border-b-2 bg-slate-50">
                     <h3>{manager}</h3>
                     <h3>Project ID</h3>
@@ -262,7 +265,7 @@ export function ProjectStatusReport() {
                 </div>
 
                 <div>
-                    {project && project.filter(project => project.manager === manager).map(project => 
+                    {project && project.filter(project => project.manager.name === manager).map(project => 
                     <div key={project.project_id} className="grid grid-cols-5 px-2 py-4 hover:bg-slate-100 transition border-b">
                         <div>
                             
@@ -327,7 +330,7 @@ const FilterComponent = ({ filterText, onFilter, onClear }: FilterProps) => (
  * @param param0 data The props of a give row
  * 
  */
-const ExpandableRowComponent = ({ data }: { data: UpdateProjectProps }) => (
+const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => (
     <div className="flex flex-col gap-5 bg-slate-50">
         
         <div className="p-5 flex flex-row gap-5">
@@ -360,17 +363,17 @@ const ExpandableRowComponent = ({ data }: { data: UpdateProjectProps }) => (
  * @param param0 projectList - List of projects 
  * @param param1 projectLoaded - Boolean to check if projects have been loaded
  */
-function ProjectUpdateTable({ projectList, projectLoaded }: { projectList: UpdateProjectProps[], projectLoaded: boolean }) {
+function ProjectUpdateTable({ projectList, projectLoaded }: { projectList: ProjectProps[], projectLoaded: boolean }) {
     const [filterText, setFilterText] = useState<string>('')
     const [resetPaginationToggle, setResetPaginationToggle] = useState<boolean>(false)
 
-    const filteredProjects: UpdateProjectProps[] = projectList.filter(item => item.project_name.toLowerCase().includes(filterText.toLowerCase()))
+    const filteredProjects: ProjectProps[] = projectList.filter(item => item.project_name.toLowerCase().includes(filterText.toLowerCase()))
 
     // Column Names
-    const columns: TableColumn<UpdateProjectProps>[] = [
+    const columns: TableColumn<ProjectProps>[] = [
         { name: "Project ID", selector: row => row.project_id, sortable: true },
         { name: "Project Name", selector: row => row.project_name, sortable: true },
-        { name: "Project Manager", selector: row => row.manager, sortable: true },
+        { name: "Project Manager", selector: row => row.manager.name, sortable: true },
         { name: "Status", selector: row => row.status, sortable: true },
         { name: "Customer", selector: row => row.client_name, sortable: true },
         { name: "City", selector: row => row.city, sortable: true },

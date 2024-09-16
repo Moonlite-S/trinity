@@ -3,7 +3,7 @@ projects = [
     {
         "project_id": "2024-09-001",
         "project_name": "Sunnyside Solar-Powered Community Center",
-        "manager": "Sean",
+        "manager": "sean@example.com",
         "client_name": "Sunnyside City Council",
         "city": "Sunnyside",
         "start_date": "2024-09-03",
@@ -16,7 +16,7 @@ projects = [
     {
         "project_id": "2024-09-002",
         "project_name": "Riverdale Hydroelectric Dam Upgrade",
-        "manager": "Matthew",
+        "manager": "matthew@example.com",
         "client_name": "Riverdale Power Company",
         "city": "Riverdale",
         "start_date": "2024-09-05",
@@ -29,7 +29,7 @@ projects = [
     {
         "project_id": "2024-09-003",
         "project_name": "Pinecrest Eco-Friendly Industrial Park",
-        "manager": "Jose",
+        "manager": "jose@example.com",
         "client_name": "Pinecrest Economic Development Board",
         "city": "Pinecrest",
         "start_date": "2024-09-10",
@@ -42,7 +42,7 @@ projects = [
     {
         "project_id": "2024-09-004",
         "project_name": "Oakwood Smart Traffic Management System",
-        "manager": "Israel",
+        "manager": "israel@example.com",
         "client_name": "Oakwood Department of Transportation",
         "city": "Oakwood",
         "start_date": "2024-09-12",
@@ -55,7 +55,7 @@ projects = [
     {
         "project_id": "2024-09-005",
         "project_name": "Meadowbrook Wetland Restoration",
-        "manager": "Sean",
+        "manager": "sean@example.com",
         "client_name": "Meadowbrook Environmental Trust",
         "city": "Meadowbrook",
         "start_date": "2024-09-15",
@@ -68,7 +68,7 @@ projects = [
     {
         "project_id": "2024-09-006",
         "project_name": "Silver Springs Autonomous Vehicle Test Track",
-        "manager": "Matthew",
+        "manager": "matthew@example.com",
         "client_name": "Silver Springs Innovation Hub",
         "city": "Silver Springs",
         "start_date": "2024-09-18",
@@ -81,7 +81,7 @@ projects = [
     {
         "project_id": "2024-09-007",
         "project_name": "Harmony Heights Vertical Farm",
-        "manager": "Jose",
+        "manager": "jose@example.com",
         "client_name": "Harmony Heights Urban Agriculture Initiative",
         "city": "Harmony Heights",
         "start_date": "2024-09-20",
@@ -94,7 +94,7 @@ projects = [
     {
         "project_id": "2024-09-008",
         "project_name": "Bayside Marine Research Center",
-        "manager": "Israel",
+        "manager": "israel@example.com",
         "client_name": "Bayside Oceanographic Institute",
         "city": "Bayside",
         "start_date": "2024-09-23",
@@ -107,7 +107,7 @@ projects = [
     {
         "project_id": "2024-09-009",
         "project_name": "Greenfield Waste-to-Energy Plant",
-        "manager": "Sean",
+        "manager": "sean@example.com",
         "client_name": "Greenfield Sustainable Solutions",
         "city": "Greenfield",
         "start_date": "2024-09-25",
@@ -120,7 +120,7 @@ projects = [
     {
         "project_id": "2024-09-010",
         "project_name": "Sunset Valley Resilient Infrastructure Plan",
-        "manager": "Matthew",
+        "manager": "matthew@example.com",
         "client_name": "Sunset Valley City Planning Department",
         "city": "Sunset Valley",
         "start_date": "2024-09-28",
@@ -133,7 +133,7 @@ projects = [
         {
         "project_id": "2024-09-011",
         "project_name": "Maple Grove Park Renovation",
-        "manager": "Sean",
+        "manager": "sean@example.com",
         "client_name": "Maple Grove Parks Department",
         "city": "Maple Grove",
         "start_date": "2024-09-02",
@@ -146,7 +146,7 @@ projects = [
     {
         "project_id": "2024-09-012",
         "project_name": "Hillside Emergency Water System Repair",
-        "manager": "Matthew",
+        "manager": "matthew@example.com",
         "client_name": "Hillside Water Authority",
         "city": "Hillside",
         "start_date": "2024-09-05",
@@ -159,7 +159,7 @@ projects = [
     {
         "project_id": "2024-09-013",
         "project_name": "Lakefront Temporary Event Structure",
-        "manager": "Jose",
+        "manager": "jose@example.com",
         "client_name": "Lakefront City Events Committee",
         "city": "Lakefront",
         "start_date": "2024-09-08",
@@ -172,7 +172,7 @@ projects = [
     {
         "project_id": "2024-09-014",
         "project_name": "Redwood City Bridge Inspection",
-        "manager": "Israel",
+        "manager": "israel@example.com",
         "client_name": "Redwood City Department of Transportation",
         "city": "Redwood City",
         "start_date": "2024-09-10",
@@ -185,7 +185,7 @@ projects = [
     {
         "project_id": "2024-09-015",
         "project_name": "Sunnyvale Solar Panel Quick Install",
-        "manager": "Sean",
+        "manager": "sean@example.com",
         "client_name": "Sunnyvale Community Center",
         "city": "Sunnyvale",
         "start_date": "2024-09-03",
@@ -198,7 +198,7 @@ projects = [
     {
         "project_id": "2024-09-016",
         "project_name": "Clearwater Stormwater System Assessment",
-        "manager": "Matthew",
+        "manager": "matthew@example.com",
         "client_name": "Clearwater Environmental Services",
         "city": "Clearwater",
         "start_date": "2024-09-06",
@@ -211,7 +211,7 @@ projects = [
     {
         "project_id": "2024-09-017",
         "project_name": "Maplewood Traffic Signal Optimization",
-        "manager": "Jose",
+        "manager": "jose@example.com",
         "client_name": "Maplewood Traffic Management",
         "city": "Maplewood",
         "start_date": "2024-09-09",
@@ -224,7 +224,7 @@ projects = [
     {
         "project_id": "2024-09-018",
         "project_name": "Oakdale Drone Survey for Urban Planning",
-        "manager": "Israel",
+        "manager": "israel@example.com",
         "client_name": "Oakdale City Planning Office",
         "city": "Oakdale",
         "start_date": "2024-09-11",
@@ -237,7 +237,7 @@ projects = [
     {
         "project_id": "2024-09-019",
         "project_name": "Springville Rapid Bike Lane Implementation",
-        "manager": "Sean",
+        "manager": "sean@example.com",
         "client_name": "Springville Department of Transportation",
         "city": "Springville",
         "start_date": "2024-09-04",
@@ -250,7 +250,7 @@ projects = [
     {
         "project_id": "2024-09-020",
         "project_name": "Riverside Emergency Levee Reinforcement",
-        "manager": "Matthew",
+        "manager": "matthew@example.com",
         "client_name": "Riverside Flood Control District",
         "city": "Riverside",
         "start_date": "2024-09-07",

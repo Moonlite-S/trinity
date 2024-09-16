@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Header } from "./misc";
 import { format, addMonths, subMonths, getDaysInMonth } from 'date-fns';
-import { UpdateProjectProps } from '../interfaces/project_types';
+import { ProjectProps } from '../interfaces/project_types';
 import { getProjectByDate } from '../api/projects';
 import { useNavigate } from 'react-router-dom';
 import { CalendarProps, DayButtonProps } from '../interfaces/calendar_type';
@@ -162,7 +162,7 @@ function DayCard({ day_number, projects }: DayButtonProps) {
  * Renders all projects due on a specific day
  * @param projects list of projects on a specific day
  */
-function ListProjectsOnDay({ projects }: { projects: UpdateProjectProps[] }) {
+function ListProjectsOnDay({ projects }: { projects: ProjectProps[] }) {
     const navigate = useNavigate();
 
     return(
