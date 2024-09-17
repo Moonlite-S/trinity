@@ -24,6 +24,8 @@ class CustomUserManager(BaseUserManager):
             raise ValueError(_('Superuser must have is_superuser=True.'))
         return self.create_user(email, password, **extra_fields)
     
+
+    
 class Project(models.Model):
     project_id=models.CharField(max_length=50, unique=True)
     project_name=models.CharField(max_length=50)
@@ -79,3 +81,12 @@ class Task(models.Model):
 
     def __str__(self):
         return f"ID: {self.task_id} | {self.title} | {self.assigned_to}"
+    
+class Announcements(models.Model):
+    title=models.CharField(max_length=255)
+    content=models.TextField(max_length=255)
+    author=models.ForeignKey(User, on_delete=models.CASCADE, related_name="announcements")
+    date=models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title

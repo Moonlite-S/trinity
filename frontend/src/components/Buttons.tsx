@@ -87,13 +87,16 @@ export function SelectionComponent({defaultValue = '', multiple, options, name, 
         options = [{value: '', label: ''}];
     }
 
-    const defaultOption = options.find((option) => option.value === defaultValue)
+    const defaultOption = options.find((option) => option.label === defaultValue)
+
+    // This one is specifically for the manager (getting the email for defaultmanager)
+    const defaultOptionValue = options.find((option) => option.label === defaultValue)?.value
 
     // Sets default to the defaultOption if it exists
     // if not, uses DefaultValue
     const selectDefaultValue = defaultOption
         ? defaultOption
-        : {value: defaultValue, label: defaultValue}
+        : {value: defaultOptionValue ? defaultOptionValue : defaultValue, label: defaultValue}
 
     return (
         <Select defaultValue={selectDefaultValue} onChange={onChange ? onChange : () => selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 

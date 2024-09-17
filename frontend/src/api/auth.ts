@@ -55,26 +55,31 @@ type LoginProps = {
  */
 export async function login({email, password }: LoginProps): Promise<number> {
     try {
-      const response = await AxiosInstance.post('api/login', {
+      await AxiosInstance.post('api/login', {
         email: email,
         password: password
       })
 
-      const data = response.data
-
-      console.log(data)
-
-      if (data) {
-        console.log("login successful")
-        return 200
-      } else {
-        console.log("login failed")
-        return 401
-      }
-
+      return 200
     } catch (error) {
-      console.error("Network Error: ",error)
-      return 500
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 401) {
+          // 401 Unauthorized
+          return 401
+        } else if (error.response?.status === 403) {
+          // 403 Forbidden
+          return 403
+        } else {
+          console.error("Axios error: ", error)
+          return 500
+        }
+    } else if (error instanceof Error) {
+        console.error("Error: ", error)
+        return 500
+      } else {
+        console.error("Unknown error: ", error)
+        return 500
+      }
     }
 }
 

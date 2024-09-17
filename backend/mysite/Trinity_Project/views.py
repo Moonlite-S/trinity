@@ -8,9 +8,9 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated
 
 from .azure_file_share import AzureFileShareClient
-from .models import Project, Task
+from .models import Announcements, Project, Task
 from .models import User
-from .serializers import ProjectSerializer, TaskSerializer, UserNameAndEmail, UserNameSerializer, UserSerializer
+from .serializers import AnnouncmentsSerializer, ProjectSerializer, TaskSerializer, UserNameAndEmail, UserNameSerializer, UserSerializer
 from rest_framework.views import APIView
 import jwt, datetime
 from datetime import datetime,timezone,timedelta
@@ -149,13 +149,14 @@ def project_list(request):
         serializer = ProjectSerializer(data=request.data)
         folder = AzureFileShareClient()
 
-        print(request.data)
-
         if serializer.is_valid():
-            manager = serializer.validated_data.pop('manager')
+            print(serializer.data)
             try:
+                manager = serializer.validated_data.pop('manager')
+                
                 manager_obj = User.objects.get(email=manager)
 
+                # Template Creation (Gunna be a more indepth implementation later)
                 if serializer.data['template'] == '':
                     folder.create_empty_project_folder(serializer.data['folder_location'])
                 else:
@@ -179,7 +180,6 @@ def project_list(request):
                 return Response(serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 @api_view(['GET','PUT','DELETE'])
 #@jwt_required
@@ -391,3 +391,33 @@ def project_by_date(request):
             serializer = ProjectSerializer(project,many=True)
             
         return Response(serializer.data)
+    
+@api_view(['GET', 'POST'])
+def announcement(request):
+    payload = authenticate_jwt(request)
+    
+    if request.method == 'GET':
+        announcements = Announcements.objects.all()
+        serializer = AnnouncmentsSerializer(announcements, many=True)
+        return Response(serializer.data)
+
+    if request.method == 'POST':
+        serializer = AnnouncmentsSerializer(data=request.data)
+        if serializer.is_valid():
+            author = serializer.validated_data.pop('author')
+            try:
+                user = User.objects.get(email=author)
+
+                print(user.role)
+
+                if user.role == 'Manager' or user.role == 'Administrator':
+                    announcement = Announcements.objects.create(author=user, **serializer.validated_data)
+
+                    return Response(AnnouncmentsSerializer(announcement).data, status=status.HTTP_201_CREATED)
+                else:
+                    return Response(data={"Permission Error": "You do not have permission to create an announcement."}, status=status.HTTP_403_FORBIDDEN)
+
+            except User.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

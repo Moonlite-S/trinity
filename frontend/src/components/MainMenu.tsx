@@ -6,6 +6,8 @@ import { useAuth } from "../App";
 import { useState, useEffect } from "react";
 import { TaskProps } from "../interfaces/tasks_types";
 import { ProjectProps } from "../interfaces/project_types";
+import { getAnnouncements } from "../api/announcements";
+import { AnnouncementProps } from "../interfaces/announcement_types";
 
 /**
  * ### [Route for ('/main_menu')]
@@ -22,6 +24,7 @@ export function MainMenu() {
     // and show / hide buttons accordingly
 
     const [errorString, setErrorString] = useState<string>('')
+    const [announcements, setAnnouncements] = useState<AnnouncementProps[]>([])
 
     // Get User's name
     const { user } = useAuth();
@@ -33,7 +36,18 @@ export function MainMenu() {
 
     
     useEffect(() => {
+        const get_announcements = async () => {
+            try {
+                const response = await getAnnouncements()
+                console.log(response)
+                setAnnouncements(response)
+            } catch (error) {
+                console.log(error)
+                setErrorString("Error fetching announcements")
+            }
+        }
 
+        get_announcements()
     }, [])
 
     return (
@@ -50,7 +64,7 @@ export function MainMenu() {
 
                 <MainNavBar/>
 
-                <MainMenuDashboard user={user} />
+                <MainMenuDashboard user={user} announcements={announcements}/>
 
             </div>
         
@@ -147,11 +161,9 @@ function LogOut() {
  * 
  * Shows the user's name and role, along with tasks and projects
  * 
- * TODO:
- *  - Maybe place the tasks and projects below the Buttons? It wouldn't have enough space to show all of the tasks the way it currently is
  */
 function MainMenuDashboard(
-    {user}: {user: EmployeeProps}
+    {user, announcements}: {user: EmployeeProps, announcements: AnnouncementProps[]}
 ) {
     const sort_tasks = (tasks: TaskProps[]) => {
         return tasks.sort((a, b) => a.due_date.localeCompare(b.due_date))
@@ -193,15 +205,22 @@ return (
 
         </div>
 
-        <div className="p-5 mx-auto border row-span-1 w-full">
+        <div className="p-5 mx-auto border row-span-1 w-full overflow-hidden">
 
             <h3>Announcements:</h3>
 
-            <h3>- Announcements go here</h3>
+            <div className="overflow-y-auto h-full">
+                {announcements ? announcements.map((announcement, index) => (
+                    <MainMenuAnnouncements key={index} announcement={announcement} />
+                ))
+                : 
+                <h3>No Announcements</h3>
+                }
+            </div>
 
         </div>
 
-        <div className="p-5 mx-auto border row-span-4 w-full overflow-hidden">
+        <div className="p-5 mx-auto border row-span-2 w-full overflow-hidden">
 
             <h3>Projects:</h3>
             
@@ -218,6 +237,16 @@ return (
 
     </div>
     );
+}
+
+function MainMenuAnnouncements({announcement} : {announcement: AnnouncementProps}) {
+    return (
+    <div className="bg-slate-100 p-2 my-4 rounded-md">
+        <h3>{announcement.title}</h3>
+        <p>{announcement.content}</p>
+        <p>{announcement.author}</p>
+    </div>
+    )
 }
 
 function MainMenuProjects ({project} : {project: ProjectProps}) {

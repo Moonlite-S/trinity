@@ -2,9 +2,9 @@
 employees = [
     {
         'name': 'admin',
-        'email': 'admin@admin',
+        'email': 'admin@admin.com',
         'password': '123',
-        'role': 'Admin',
+        'role': 'Administrator',
         'date_joined': '2022-01-01'
     },
     {
