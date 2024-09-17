@@ -12,20 +12,8 @@ import { Back_Button } from './Buttons';
 //To prevent errors; assigns properties to the tasks to maintain consistency
 
 //*TODO:
-/* - Put all the current tasks when selecting a project on top
-/* - Ask Joey on:
-/* - Do i have to assign a unique id for tasks
-/* - How can i look at tasks through projects
-/* - How can i look at tasks through employees
-/* - How can i look at tasks through dates
-/* - How can i look at tasks through status
-/* - How can i look at tasks through priority
-/* - How can i look at tasks through tags
-/* - Does tasks and projects have foreign keys to each other
-*/
+// - Maybe filter out employees who aren't assigned to that project?
 
-//Set a defined component *function Tasks() {...}* to create reusable UI element
-//useState hook used to manage state within the Tasks component
 export function Tasks() {
   //const [tasks, setTasks] = useState<TaskProps[]>([]); //Holds an array of tasks, initial value of tasks *empty array*
   const [newTask, setNewTask] = useState(''); //Track input value for new tasks
@@ -96,7 +84,6 @@ export function Tasks() {
         default:
           throw new Error("Error creating task: " + result_code)
       }
-
     } catch (error: unknown) {
       console.error("Something went wrong: ", error)
     }
@@ -222,7 +209,9 @@ export function TaskList() {
         ))}
       </div>
 
-      <Back_Button/>
+      <div className="flex justify-center">
+        <Back_Button/>
+      </div>
     </>
   );
 }

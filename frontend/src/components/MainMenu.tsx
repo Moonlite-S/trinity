@@ -17,7 +17,9 @@ import { AnnouncementProps } from "../interfaces/announcement_types";
  * Based on the user's role, it will show / hide different buttons.
  * 
  * TODO:
- *  - Actually implement the user role system
+ *  - Make sure to filter out projects and tasks that are passed due dates
+ * - Make sure that projects and tasks are sorted by due date
+ * - Still fix that grid layout
  */
 export function MainMenu() {
     // Check what roles the user has
@@ -241,28 +243,12 @@ return (
 
 
 function MainMenuProjects ({project} : {project: ProjectProps}) {
-    const getStatusColor = (status: string) => {
-        switch(status) {
-          case 'ACTIVE':
-            return 'text-green-500';
-          case 'NOT STARTED':
-            return 'text-red-500';
-          case 'COMPLETED':
-            return 'text-blue-500';
-          case 'CANCELLED':
-            return 'text-gray-500';
-          default:
-            return 'text-black';
-        }
-      };
-
     return (
     <div className="bg-slate-100 p-2 my-4 mx-2 rounded-md">
         <h3>{project.project_name}</h3>
         <p>Client: {project.client_name}</p>
         <p className="py-4">Notes: {project.notes ? project.notes : '(No Notes Written)'}</p>
         <p className="text-red-800">Next Deadline: {project.end_date}</p>
-        <p className={`${getStatusColor(project.status)}`}>Status: {project.status}</p>
     </div>
     )
 }
@@ -276,14 +262,13 @@ export function MainNavBar() {
         <Button_Card text="Create Project" route="/projects/create_project" />
         <Button_Card text="Update Project" route="/projects/" />
         <Button_Card text="Project Status Report" route="/projects/project_status_report" />
-        <Button_Card text="Import Projects" route="/projects/" />
         <Button_Card text="Your Tasks" route="/tasks" />
         <Button_Card text="Create Task" route="/tasks/create_task" />
-        <Button_Card text="Report" route="/" />
-        <Button_Card text="Submittal" route="/" />
-        <Button_Card text="Proposal" route="/" />
+        <Button_Card text="Report" route="/report" />
+        <Button_Card text="Submittal" route="/submittal" />
+        <Button_Card text="Proposal" route="/proposal" />
         <Button_Card text="Calendar" route="/calendar" />
-        <Button_Card text="Calls" route="/" />
+        <Button_Card text="Calls" route="/calls" />
         <Button_Card text="Employee List" route="/employees/" />
         <Button_Card text="Create Employee" route="/employees/create_employee" />
         <Button_Card text="Create Client" route="/client/create_client" />

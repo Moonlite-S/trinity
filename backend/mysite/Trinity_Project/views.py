@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from .azure_file_share import AzureFileShareClient
 from .models import Announcements, Project, Task
 from .models import User
-from .serializers import AnnouncmentsSerializer, ProjectSerializer, TaskSerializer, UserNameAndEmail, UserNameSerializer, UserSerializer
+from .serializers import AnnouncmentsSerializer, ProjectSerializer, ProjectSerializerUserObjectVer, TaskSerializer, UserNameAndEmail, UserNameSerializer, UserSerializer
 from rest_framework.views import APIView
 import jwt, datetime
 from datetime import datetime,timezone,timedelta
@@ -142,7 +142,7 @@ def project_list(request):
     if request.method == 'GET':    
         projects = Project.objects.all()
 
-        serializer = ProjectSerializer(projects, many=True)
+        serializer = ProjectSerializerUserObjectVer(projects, many=True)
         return Response(serializer.data)
     
     if request.method == 'POST':

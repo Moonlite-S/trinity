@@ -30,6 +30,15 @@ class UserNameSerializer(serializers.ModelSerializer):
         model = User
         fields = ['name'] 
 
+# This is basically the same as the other ProjectSerializer
+# but returns the user object instead of the email
+# This is used in the Project Status Report
+class ProjectSerializerUserObjectVer(serializers.ModelSerializer):
+    manager = BasicUserSerializer()
+    class Meta:
+        model=Project
+        fields = ['project_id','project_name','manager','client_name','city','start_date','end_date','notes','status', 'folder_location', 'template']
+
 class ProjectSerializer(serializers.ModelSerializer):
     manager = serializers.EmailField()
     class Meta:

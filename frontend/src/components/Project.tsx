@@ -8,6 +8,7 @@ import { FilterProps, ProjectProps } from "../interfaces/project_types";
 import { getEmployeeNameList } from "../api/employee";
 import { ProjectForm } from "./ProjectForm";
 import { Route_Button } from "./Buttons";
+import { useAuth } from "../App";
 
 /**
  * ### [Route for ('/create_project')]
@@ -16,6 +17,7 @@ import { Route_Button } from "./Buttons";
  * 
  */
 export function CreateProject() {
+    const { user } = useAuth();
     const [errorString, setErrorString] = useState<string>()
     const navigate = useNavigate()
 
@@ -25,7 +27,7 @@ export function CreateProject() {
         const formData = new FormData(event.currentTarget)
         const data = Object.fromEntries(formData)
 
-        if (data.notify_manager === "on") {
+        if (data.notify_manager === "on" && data.manager !== user?.email) {
             const to = data.manager // Change this so that it's the user's email
             const subject = "New Project (" + data.project_name + ") Assigned to you"
             const body = "You have been assigned a new project, " + data.project_name + ". Please check it out."
@@ -88,9 +90,7 @@ export function CreateProject() {
  * This component fetches a list of projects and shows them in a table.
  * 
  * TODO: 
- *  - Add a button to create a new project (so we can have one button in the Main Menu)
- *  - Add a search bar
- *  - Look for a custom component for the table that has search, sort, and pagination
+ *  - Fix Default Project Manager
  */
 export function UpdateProjectList() {
     const [projectList, setProjectList] = useState<ProjectProps[]>([])
@@ -236,6 +236,10 @@ export function ProjectStatusReport() {
             }
 
             const unique_managers = [...new Set(response.map(project => project.manager.name))];
+
+            console.log("test", response)
+
+            console.log("Unique Managers: ", unique_managers)
             
             setManagers(unique_managers)
             
