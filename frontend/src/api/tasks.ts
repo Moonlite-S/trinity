@@ -2,7 +2,7 @@ import { AxiosError } from "axios";
 import AxiosInstance from "../components/Axios";
 import { TaskProps } from "../interfaces/tasks_types";
 
-export async function postTask(task: TaskProps): Promise<Number> {
+export async function postTask(task: TaskProps): Promise<number> {
     try {
         await AxiosInstance.post('api/task/', {
             task_id: task.task_id,
@@ -39,6 +39,17 @@ export async function postTask(task: TaskProps): Promise<Number> {
 export async function filterTasksByProject(project_id: string): Promise<TaskProps[]> {
     try {
         const response = await AxiosInstance.get('api/task/project_id/' + project_id)
+
+        return response.data
+    } catch (error) {
+        console.error(error)
+        throw error
+    }
+}
+
+export async function filterTasksByUser(email: string): Promise<TaskProps[]> {
+    try {
+        const response = await AxiosInstance.get('api/task/assigned_to/' + email)
 
         return response.data
     } catch (error) {

@@ -9,7 +9,7 @@ projects = [
         "start_date": "2024-09-03",
         "end_date": "2025-06-30",
         "notes": "Design and construction of a community center powered entirely by solar energy, featuring a green roof and rainwater harvesting system.",
-        "status": "Active",
+        "status": "ACTIVE",
         "folder_location": "2024-09-001",
         "template": "default"
     },
@@ -22,7 +22,7 @@ projects = [
         "start_date": "2024-09-05",
         "end_date": "2025-08-15",
         "notes": "Modernization of existing hydroelectric dam to improve efficiency and environmental impact mitigation.",
-        "status": "Not Started",
+        "status": "NOT STARTED",
         "folder_location": "2024-09-002",
         "template": ""
     },
@@ -35,7 +35,7 @@ projects = [
         "start_date": "2024-09-10",
         "end_date": "2025-11-30",
         "notes": "Development of a sustainable industrial park with focus on circular economy principles and zero-waste infrastructure.",
-        "status": "Active",
+        "status": "ACTIVE",
         "folder_location": "2024-09-003",
         "template": "default"
     },
@@ -48,7 +48,7 @@ projects = [
         "start_date": "2024-09-12",
         "end_date": "2025-05-31",
         "notes": "Implementation of AI-driven traffic management system to reduce congestion and improve air quality in the city center.",
-        "status": "Not Started",
+        "status": "NOT STARTED",
         "folder_location": "2024-09-004",
         "template": "default"
     },
@@ -61,7 +61,7 @@ projects = [
         "start_date": "2024-09-15",
         "end_date": "2025-10-15",
         "notes": "Comprehensive wetland restoration project to improve local ecosystem and create natural flood protection.",
-        "status": "Active",
+        "status": "ACTIVE",
         "folder_location": "2024-09-005",
         "template": ""
     },
@@ -74,7 +74,7 @@ projects = [
         "start_date": "2024-09-18",
         "end_date": "2025-07-31",
         "notes": "Design and construction of a state-of-the-art test track for autonomous vehicles, including various road conditions and smart city elements.",
-        "status": "Not Started",
+        "status": "NOT STARTED",
         "folder_location": "2024-09-006",
         "template": "default"
     },
@@ -87,7 +87,7 @@ projects = [
         "start_date": "2024-09-20",
         "end_date": "2025-12-15",
         "notes": "Development of a high-tech vertical farm to provide fresh produce for the local community, incorporating hydroponic and aeroponic systems.",
-        "status": "Active",
+        "status": "ACTIVE",
         "folder_location": "2024-09-007",
         "template": ""
     },
@@ -100,7 +100,7 @@ projects = [
         "start_date": "2024-09-23",
         "end_date": "2025-11-30",
         "notes": "Construction of a cutting-edge marine research center with laboratories, aquariums, and a deep-sea simulation facility.",
-        "status": "Not Started",
+        "status": "NOT STARTED",
         "folder_location": "2024-09-008",
         "template": "default"
     },
@@ -113,7 +113,7 @@ projects = [
         "start_date": "2024-09-25",
         "end_date": "2025-10-31",
         "notes": "Design and implementation of an advanced waste-to-energy facility to reduce landfill usage and generate clean electricity.",
-        "status": "Active",
+        "status": "ACTIVE",
         "folder_location": "2024-09-009",
         "template": "default"
     },
@@ -126,7 +126,7 @@ projects = [
         "start_date": "2024-09-28",
         "end_date": "2025-09-15",
         "notes": "Comprehensive infrastructure resilience plan to address climate change impacts, including flood protection, heat mitigation, and sustainable energy systems.",
-        "status": "Not Started",
+        "status": "NOT STARTED",
         "folder_location": "2024-09-010",
         "template": ""
     },
@@ -139,7 +139,7 @@ projects = [
         "start_date": "2024-09-02",
         "end_date": "2024-09-20",
         "notes": "Quick renovation of central park facilities including playground equipment upgrade and pathway improvements.",
-        "status": "Active",
+        "status": "ACTIVE",
         "folder_location": "2024-09-011",
         "template": "default"
     },
@@ -152,7 +152,7 @@ projects = [
         "start_date": "2024-09-05",
         "end_date": "2024-09-25",
         "notes": "Urgent repair and upgrade of water distribution system in response to recent infrastructure failures.",
-        "status": "Active",
+        "status": "ACTIVE",
         "folder_location": "2024-09-012",
         "template": ""
     },
@@ -165,7 +165,7 @@ projects = [
         "start_date": "2024-09-08",
         "end_date": "2024-09-28",
         "notes": "Design and construction of a temporary, eco-friendly structure for the annual Lakefront Arts Festival.",
-        "status": "Not Started",
+        "status": "NOT STARTED",
         "folder_location": "2024-09-013",
         "template": "default"
     },
@@ -178,7 +178,7 @@ projects = [
         "start_date": "2024-09-10",
         "end_date": "2024-09-30",
         "notes": "Comprehensive structural inspection and report on the city's five major bridges.",
-        "status": "Not Started",
+        "status": "NOT STARTED",
         "folder_location": "2024-09-014",
         "template": "default"
     },
@@ -191,7 +191,7 @@ projects = [
         "start_date": "2024-09-03",
         "end_date": "2024-09-23",
         "notes": "Rapid installation of solar panels on the community center roof to meet green energy grant deadline.",
-        "status": "Active",
+        "status": "ACTIVE",
         "folder_location": "2024-09-015",
         "template": ""
     },
@@ -204,7 +204,7 @@ projects = [
         "start_date": "2024-09-06",
         "end_date": "2024-09-27",
         "notes": "Evaluation of current stormwater management system and recommendations for green infrastructure integration.",
-        "status": "Not Started",
+        "status": "NOT STARTED",
         "folder_location": "2024-09-016",
         "template": "default"
     },
@@ -217,7 +217,7 @@ projects = [
         "start_date": "2024-09-09",
         "end_date": "2024-09-29",
         "notes": "Recalibration and optimization of traffic signals in the downtown area to reduce congestion.",
-        "status": "Active",
+        "status": "ACTIVE",
         "folder_location": "2024-09-017",
         "template": ""
     },
@@ -230,7 +230,7 @@ projects = [
         "start_date": "2024-09-11",
         "end_date": "2024-09-30",
         "notes": "Comprehensive drone survey of the city to update GIS data for future urban development projects.",
-        "status": "Not Started",
+        "status": "NOT STARTED",
         "folder_location": "2024-09-018",
         "template": "default"
     },
@@ -243,7 +243,7 @@ projects = [
         "start_date": "2024-09-04",
         "end_date": "2024-09-24",
         "notes": "Quick implementation of dedicated bike lanes on major thoroughfares to promote sustainable transportation.",
-        "status": "Active",
+        "status": "ACTIVE",
         "folder_location": "2024-09-019",
         "template": "default"
     },
@@ -256,7 +256,7 @@ projects = [
         "start_date": "2024-09-07",
         "end_date": "2024-09-28",
         "notes": "Urgent reinforcement of critical sections of the city's levee system before the fall rainy season.",
-        "status": "Active",
+        "status": "ACTIVE",
         "folder_location": "2024-09-020",
         "template": ""
     }

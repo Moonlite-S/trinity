@@ -1,11 +1,14 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
-import { Header } from './misc';
-import { getEmployeeNameList } from '../api/employee';
+import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { Header, TaskCard } from './misc';
+import { getAllEmployeeNameAndEmail } from '../api/employee';
 import { getProjectList } from '../api/projects';
 import { ProjectProps  } from '../interfaces/project_types';
-import { filterTasksByProject, postTask } from '../api/tasks';
+import { filterTasksByProject, filterTasksByUser, postTask } from '../api/tasks';
 import { TaskProps } from '../interfaces/tasks_types';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../App';
+import { EmployeeNameEmail } from '../interfaces/employee_type';
+import { Back_Button } from './Buttons';
 //To prevent errors; assigns properties to the tasks to maintain consistency
 
 //*TODO:
@@ -24,11 +27,11 @@ import { useNavigate } from 'react-router-dom';
 //Set a defined component *function Tasks() {...}* to create reusable UI element
 //useState hook used to manage state within the Tasks component
 export function Tasks() {
-  const [tasks, setTasks] = useState<TaskProps[]>([]); //Holds an array of tasks, initial value of tasks *empty array*
+  //const [tasks, setTasks] = useState<TaskProps[]>([]); //Holds an array of tasks, initial value of tasks *empty array*
   const [newTask, setNewTask] = useState(''); //Track input value for new tasks
   const navigate = useNavigate();
 
-  const [employeelist, setEmployeelist] = useState<string[]>([]);
+  const [employeelist, setEmployeelist] = useState<EmployeeNameEmail[]>([]);
   const [projects, setProjects] = useState<ProjectProps[]>([]);
   const [SelectedProject, setSelectedProject] = useState<ProjectProps>({project_name: ""} as ProjectProps);
   const [taskID, setTaskID] = useState<string>("");
@@ -48,7 +51,7 @@ export function Tasks() {
 
     const tasks = await filterTasksByProject(project_id);
 
-    setTasks(tasks);
+    //setTasks(tasks);
 
     console.log("Tasks: ", tasks)
 
@@ -57,13 +60,12 @@ export function Tasks() {
     // Formats the task id to be: "T-<project id>-<task length + 1>"
     const task_number = String(tasks.length + 1).padStart(3, '0');
     setTaskID("T-" + project_id + "-" + task_number)
- 
   }
 
-  const onSubmit = async (e: any) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const form_data = new FormData(e.target);
+    const form_data = new FormData(e.currentTarget);
 
     // Basically send everything aside from the project title
     const data_to_send: TaskProps = {
@@ -104,7 +106,7 @@ export function Tasks() {
     // Fetches the neccessary data from the backend
     const fetchData = async () => {
       try {
-        const users = await getEmployeeNameList();
+        const users = await getAllEmployeeNameAndEmail();
         setEmployeelist(users);
 
         const projects = await getProjectList();
@@ -121,6 +123,7 @@ export function Tasks() {
   return (
     <>
     <Header/>
+
       <h1 className="mx-4 text-x1 font-semibold">Assign Task</h1>
         <form className="max-w-5xl w-full mx-auto my-5 bg-slate-200 rounded-lg shadow-md p-6 " onSubmit={onSubmit}>
           <div className="grid grid-cols-2 grid-flow-row justify-center gap-4 mb-4">
@@ -164,9 +167,9 @@ export function Tasks() {
               <div className='grid grid-rows-2'>
                 <label htmlFor="title" className='mr-4'>Assign To:</label>
                 <select name="assigned_to" id="assigned_to" required>
-                  {employeelist.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
+                  {employeelist.map((user) => (
+                    <option key={user.email} value={user.email}>
+                      {user.name}
                     </option>
                   ))}
                 </select>
@@ -188,50 +191,38 @@ export function Tasks() {
             <button type="submit" className="bg-orange-300 rounded p-4" >Create Task</button>
           </div>
         </form>
-
-
-      <div className="max-w-md mx-auto bg-slate-100 rounded-lg shadow-md p-6">
-        <form>
-          <h1 className="text-x1 font-semibold">Task Progress and Updates</h1>
-          <div>
-            <div className="flex flex-row justify-center gap-10 p-5">
-              <div className="flex flex-col">
-                <select className="w-full p-2 border rounded">
-                  <option value="">Select Task</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col">
-            <label htmlFor="edit_task">Task Subject:</label>
-              <input
-                type="text"
-                placeholder="Edit subject"
-                onChange={handleInputChange}
-              />
-          </div>
-
-          <div className="flex flex-col my-3">
-            <label htmlFor="edit_description">Task Description:</label>
-            <textarea placeholder="Edit description" name="task_description" required/>
-          </div>
-
-          <div className="mx-auto text-center justify-center">
-          <button type="submit" className="bg-orange-300 rounded p-4">Update Task</button>
-          </div>
-
-        </form>
-      </div>
     </>
   );
 }
 
 export function TaskList() {
+  const { user } = useAuth();
+  const [tasks, setTasks] = useState<TaskProps[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const get_tasks = await filterTasksByUser(user?.email as string);
+        setTasks(get_tasks);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchData();
+  }, [user?.email])
   return (
     <>
-    <Header/>
+      <Header/>
       <h1 className="mx-4 text-x1 font-semibold">Task List</h1>
+
+      <div className='grid grid-cols-4 mx-5'>
+        {tasks && tasks.map((task) => (
+          <TaskCard key={task.task_id} task={task} />
+        ))}
+      </div>
+
+      <Back_Button/>
     </>
   );
 }

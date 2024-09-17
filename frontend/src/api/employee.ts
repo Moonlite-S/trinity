@@ -60,7 +60,8 @@ export async function getEmployeeNameList(): Promise<string[]> {
  * 
  * - Backend still needs to implement this
  */
-export async function getOneEmployee(email: string): Promise<any> {
+export async function getOneEmployee(email: string): Promise<EmployeeProps
+> {
     try {
         const response = await AxiosInstance.get('api/user/:id' + email)
 
@@ -102,7 +103,9 @@ export async function getAllEmployeeData(): Promise<EmployeeProps[]>  {
 
 export async function getAllEmployeeNameAndEmail(): Promise<EmployeeNameEmail[]> {
     try {
-        const response = await AxiosInstance.get('api/user/all_users_name_email')
+        const response = await AxiosInstance.get(
+          "api/user/all_users_name_and_email"
+        );
 
         console.log(response)
 

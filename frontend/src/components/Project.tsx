@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Error_Component, Header } from "./misc";
 import { createProject, getProjectList, getProject, updateProject, deleteProject } from "../api/projects";
 import { useNavigate, useParams } from "react-router-dom";
@@ -18,10 +19,10 @@ export function CreateProject() {
     const [errorString, setErrorString] = useState<string>()
     const navigate = useNavigate()
 
-    const onSubmit = async (event: any) => {
+    const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         
-        const formData = new FormData(event.target)
+        const formData = new FormData(event.currentTarget)
         const data = Object.fromEntries(formData)
 
         if (data.notify_manager === "on") {
@@ -166,13 +167,13 @@ export function UpdateProject() {
         }
 
         project()
-    }, [])
+    }, [id, navigate])
 
-    const onSubmit = async(event: any) => {
+    const onSubmit = async(event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         
         try {
-            const form_data = new FormData(event.target)
+            const form_data = new FormData(event.currentTarget)
 
             const data = Object.fromEntries(form_data)
 
@@ -224,7 +225,7 @@ export function ProjectStatusReport() {
      * - Make the page printable
      */
     const [project, setProject] = useState<ProjectProps[]>()
-    const [manager, setManagers] = useState<string[]>([])
+    const [managers, setManagers] = useState<string[]>([])
 
     useEffect(() => {
         const get_data = async () => {
@@ -245,6 +246,8 @@ export function ProjectStatusReport() {
         get_data()
     }, [])
 
+    console.log("Managers: ", managers)
+
     return(
         <>
             <Header />
@@ -253,8 +256,8 @@ export function ProjectStatusReport() {
 
             {project && project.length === 0 && <h1 className="flex justify-center py-2">No projects found</h1>}
 
-            {manager && manager.map(manager => 
-            <div key={manager} className="my-5">
+            {managers && managers.map((manager, index) => 
+            <div key={index} className="my-5">
                 <h4 className="px-2">Total Projects: {project && project.filter(project => project.manager.name === manager).length}</h4>
                 <div className="grid grid-cols-5 p-4 border-b-2 bg-slate-50">
                     <h3>{manager}</h3>
@@ -265,8 +268,8 @@ export function ProjectStatusReport() {
                 </div>
 
                 <div>
-                    {project && project.filter(project => project.manager.name === manager).map(project => 
-                    <div key={project.project_id} className="grid grid-cols-5 px-2 py-4 hover:bg-slate-100 transition border-b">
+                    {project && project.filter(project => project.manager.name === manager).map((project, index) => 
+                    <div key={index} className="grid grid-cols-5 px-2 py-4 hover:bg-slate-100 transition border-b">
                         <div>
                             
                         </div>

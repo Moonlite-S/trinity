@@ -1,4 +1,4 @@
-import { Header } from "./misc";
+import { Header, AnnouncementCard, TaskCard } from "./misc";
 import { useNavigate } from "react-router-dom"
 import { logout } from "../api/auth";
 import { EmployeeProps } from "../interfaces/employee_type";
@@ -23,18 +23,6 @@ export function MainMenu() {
     // Check what roles the user has
     // and show / hide buttons accordingly
 
-    const [errorString, setErrorString] = useState<string>('')
-    const [announcements, setAnnouncements] = useState<AnnouncementProps[]>([])
-
-    // Get User's name
-    const { user } = useAuth();
-
-    if (!user) {
-        setErrorString("User not authenticated")
-        return <MainMenuError error={"User not authenticated"} />
-    }
-
-    
     useEffect(() => {
         const get_announcements = async () => {
             try {
@@ -49,6 +37,18 @@ export function MainMenu() {
 
         get_announcements()
     }, [])
+
+    const [errorString, setErrorString] = useState<string>('')
+    const [announcements, setAnnouncements] = useState<AnnouncementProps[]>([])
+
+    // Get User's name
+    const { user } = useAuth();
+
+    if (!user) {
+        setErrorString("User not authenticated")
+        return <MainMenuError error={"User not authenticated"} />
+    }
+
 
     return (
         <>
@@ -195,7 +195,7 @@ return (
 
                 <div className="overflow-y-auto h-full">
                     {sorted_tasks.length > 0 ? sorted_tasks.map((task) => (
-                        <MainMenuTasks key={task.project_id} task={task} />
+                        <TaskCard key={task.project_id} task={task} />
                     ))
                     :
                     <h3>No Tasks assigned to you</h3>}
@@ -211,7 +211,7 @@ return (
 
             <div className="overflow-y-auto h-full">
                 {announcements.length > 0 ? announcements.reverse().map((announcement, index) => (
-                    <MainMenuAnnouncements key={index} announcement={announcement} />
+                    <AnnouncementCard key={index} announcement={announcement} />
                 ))
                 : 
                 <h3>No Announcements at the moment</h3>
@@ -239,15 +239,6 @@ return (
     );
 }
 
-function MainMenuAnnouncements({announcement} : {announcement: AnnouncementProps}) {
-    return (
-    <div className="bg-slate-100 p-2 my-4 mx-2 rounded-md">
-        <h3>{announcement.title}</h3>
-        <p>{announcement.content}</p>
-        <p>{announcement.author}</p>
-    </div>
-    )
-}
 
 function MainMenuProjects ({project} : {project: ProjectProps}) {
     const getStatusColor = (status: string) => {
@@ -276,20 +267,7 @@ function MainMenuProjects ({project} : {project: ProjectProps}) {
     )
 }
 
-function MainMenuTasks ({task} : {task: TaskProps}) {
-    const formatProjectName = task.project_id.split('|')[1]
-    const formatCompanyName = task.project_id.split('|')[2]
 
-    return (
-    <div className=" bg-slate-100 p-2 my-4 mx-2 rounded-md">
-        <h3>{formatProjectName}</h3>
-        <h4>Task: {task.title}</h4> 
-        <p className="py-4">{task.description}</p>
-        <p className="text-red-800">Due: {task.due_date}</p>
-        <p>From Project: {formatCompanyName}</p>
-    </div>
-    )
-}
 
 export function MainNavBar() {
     return (
@@ -299,7 +277,7 @@ export function MainNavBar() {
         <Button_Card text="Update Project" route="/projects/" />
         <Button_Card text="Project Status Report" route="/projects/project_status_report" />
         <Button_Card text="Import Projects" route="/projects/" />
-        <Button_Card text="Tasks" route="/tasks" />
+        <Button_Card text="Your Tasks" route="/tasks" />
         <Button_Card text="Create Task" route="/tasks/create_task" />
         <Button_Card text="Report" route="/" />
         <Button_Card text="Submittal" route="/" />

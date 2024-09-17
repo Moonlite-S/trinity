@@ -12,6 +12,8 @@ export async function getProjectList(filter?: string): Promise<ProjectProps[]> {
     try {
         const response = await AxiosInstance.get('api/projects' + (filter ? '/' + filter : ''))
 
+        console.log(response)
+
         if (response.status === 200) {
             return response.data
         } else {
@@ -58,7 +60,7 @@ export async function getProject(id: string): Promise<ProjectProps> {
  * - Backend needs to perform a check to make sure the project doesn't already exist
  * - Currently can't catch the error if project_id already existsq
  */
-export async function createProject(project_data: { [key: string]: FormDataEntryValue }): Promise<Number> {
+export async function createProject(project_data: { [key: string]: FormDataEntryValue }): Promise<number> {
     try {
         const response = await AxiosInstance.post('api/projects/', project_data)
 

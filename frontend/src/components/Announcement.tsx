@@ -2,14 +2,15 @@ import { useNavigate } from "react-router-dom";
 import { postAnnouncement } from "../api/announcements";
 import { useAuth } from "../App";
 import { Header } from "./misc";
+import { FormEvent } from "react";
 
 export function SetAnnouncement() {
     const { user } = useAuth();
     const navigate = useNavigate();
 
-    const handleSubmit = async(event: any) => {
+    const handleSubmit = async(event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const formData = new FormData(event.target);
+        const formData = new FormData(event.currentTarget);
         const title = formData.get("title");
         const content = formData.get("content");
         const author = user?.email;
@@ -42,7 +43,6 @@ export function SetAnnouncement() {
                 navigate("/main_menu");
                 break;
         }
-
     };
     return (
         <>

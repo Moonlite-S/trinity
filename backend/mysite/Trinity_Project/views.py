@@ -279,7 +279,7 @@ def task_list(request):
             project_id = serializer.validated_data.pop('project_id')
 
             try: 
-                user = User.objects.get(name=assigned_to)
+                user = User.objects.get(email=assigned_to)
                 project = Project.objects.get(project_id=project_id)
                 
                 task = Task.objects.create(assigned_to=user, project_id=project, **serializer.validated_data)
@@ -335,9 +335,6 @@ def task_detail(request, task_id):
 
 @api_view(['GET'])
 def task_filter_by_project_id(request, project_id):
-    #project=User.objects.get(project_id=project_id)
-    #user = request.user
-    
     try:
         # The project_id__project_id searches in both tasks and projects
         # By default, Django uses the inbuilt id field, so we need to use the project_id field
@@ -351,19 +348,20 @@ def task_filter_by_project_id(request, project_id):
         return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET'])
-def task_filter_by_name(request, name):
+def task_filter_by_user(request, email):
 
     #user = request.user
     try:
-        tasks=Task.objects.filter(assigned_to=name)
+        user = User.objects.get(email=email)
+        tasks=Task.objects.filter(assigned_to=user)
+
     except Task.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(data={"error": "Task not found."}, status=status.HTTP_404_NOT_FOUND)
+    except User.DoesNotExist:
+        return Response(data={"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
     
     if request.method == 'GET':
-        if tasks.count() ==1:
-            serializer = TaskSerializer(tasks.first())
-        else:
-            serializer = TaskSerializer(tasks,many=True)
+        serializer = TaskSerializer(tasks,many=True)
     
         return Response(serializer.data)
     
