@@ -194,11 +194,11 @@ return (
                 <h3>Tasks:</h3>
 
                 <div className="overflow-y-auto h-full">
-                    {sorted_tasks ? sorted_tasks.map((task) => (
+                    {sorted_tasks.length > 0 ? sorted_tasks.map((task) => (
                         <MainMenuTasks key={task.project_id} task={task} />
                     ))
                     :
-                    <h3>No Tasks</h3>}
+                    <h3>No Tasks assigned to you</h3>}
                 </div>
 
             </div>
@@ -210,11 +210,11 @@ return (
             <h3>Announcements:</h3>
 
             <div className="overflow-y-auto h-full">
-                {announcements ? announcements.map((announcement, index) => (
+                {announcements.length > 0 ? announcements.reverse().map((announcement, index) => (
                     <MainMenuAnnouncements key={index} announcement={announcement} />
                 ))
                 : 
-                <h3>No Announcements</h3>
+                <h3>No Announcements at the moment</h3>
                 }
             </div>
 
@@ -222,14 +222,14 @@ return (
 
         <div className="p-5 mx-auto border row-span-2 w-full overflow-hidden">
 
-            <h3>Projects:</h3>
+            <h3 className="py-2">Projects:</h3>
             
             <div className="overflow-y-auto h-full">
-                {sorted_projects ? sorted_projects.map((project) => (
+                {sorted_projects.length > 0 ? sorted_projects.map((project) => (
                     <MainMenuProjects key={project.project_id} project={project} />
                 ))
                 :
-                <h3>No Projects</h3>
+                <h3>No Projects assigned to you</h3>
                 }
             </div>
 
@@ -241,7 +241,7 @@ return (
 
 function MainMenuAnnouncements({announcement} : {announcement: AnnouncementProps}) {
     return (
-    <div className="bg-slate-100 p-2 my-4 rounded-md">
+    <div className="bg-slate-100 p-2 my-4 mx-2 rounded-md">
         <h3>{announcement.title}</h3>
         <p>{announcement.content}</p>
         <p>{announcement.author}</p>
@@ -250,13 +250,28 @@ function MainMenuAnnouncements({announcement} : {announcement: AnnouncementProps
 }
 
 function MainMenuProjects ({project} : {project: ProjectProps}) {
+    const getStatusColor = (status: string) => {
+        switch(status) {
+          case 'ACTIVE':
+            return 'text-green-500';
+          case 'NOT STARTED':
+            return 'text-red-500';
+          case 'COMPLETED':
+            return 'text-blue-500';
+          case 'CANCELLED':
+            return 'text-gray-500';
+          default:
+            return 'text-black';
+        }
+      };
+
     return (
-    <div className="bg-slate-100 p-2 my-4 rounded-md">
+    <div className="bg-slate-100 p-2 my-4 mx-2 rounded-md">
         <h3>{project.project_name}</h3>
         <p>Client: {project.client_name}</p>
-        <p>Notes: {project.notes}</p>
-        <p>Due Date: {project.end_date}</p>
-        <p>Status: {project.status}</p>
+        <p className="py-4">Notes: {project.notes ? project.notes : '(No Notes Written)'}</p>
+        <p className="text-red-800">Next Deadline: {project.end_date}</p>
+        <p className={`${getStatusColor(project.status)}`}>Status: {project.status}</p>
     </div>
     )
 }
@@ -266,11 +281,11 @@ function MainMenuTasks ({task} : {task: TaskProps}) {
     const formatCompanyName = task.project_id.split('|')[2]
 
     return (
-    <div className=" bg-slate-100 p-2 my-4 rounded-md">
+    <div className=" bg-slate-100 p-2 my-4 mx-2 rounded-md">
         <h3>{formatProjectName}</h3>
         <h4>Task: {task.title}</h4> 
-        <p>{task.description}</p>
-        <p>Due: {task.due_date}</p>
+        <p className="py-4">{task.description}</p>
+        <p className="text-red-800">Due: {task.due_date}</p>
         <p>From Project: {formatCompanyName}</p>
     </div>
     )
@@ -284,7 +299,8 @@ export function MainNavBar() {
         <Button_Card text="Update Project" route="/projects/" />
         <Button_Card text="Project Status Report" route="/projects/project_status_report" />
         <Button_Card text="Import Projects" route="/projects/" />
-        <Button_Card text="Tasks" route="/task" />
+        <Button_Card text="Tasks" route="/tasks" />
+        <Button_Card text="Create Task" route="/tasks/create_task" />
         <Button_Card text="Report" route="/" />
         <Button_Card text="Submittal" route="/" />
         <Button_Card text="Proposal" route="/" />
@@ -300,3 +316,4 @@ export function MainNavBar() {
         
     );
 }
+

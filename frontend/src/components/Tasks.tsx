@@ -226,3 +226,12 @@ export function Tasks() {
     </>
   );
 }
+
+export function TaskList() {
+  return (
+    <>
+    <Header/>
+      <h1 className="mx-4 text-x1 font-semibold">Task List</h1>
+    </>
+  );
+}
