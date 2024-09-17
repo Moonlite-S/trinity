@@ -8,6 +8,7 @@ from two_factor.views import LoginView
 urlpatterns = [
     path("projects/", views.project_list,name="project_list"),
     path("projects/id/<str:project_id>", views.project_detail),
+    #path("projects/id/<str:project_id>", views.update_project),
     path("register", views.RegisterView.as_view()),
     path("login", views.login_view),
     path('logout', views.logout_view),
@@ -25,5 +26,6 @@ urlpatterns = [
     path("task/id/<str:task_id>",views.task_detail),
     path("task/project_id/<str:project_id>",views.task_filter_by_project_id),
     path("task/assigned_to/<str:name>",views.task_filter_by_name),
-    path("verify/", views.verify_view)
+    path("verify/", views.verify_view),
+    path("delete_log",views.project_delete_log)
 ]

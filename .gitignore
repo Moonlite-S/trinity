@@ -1,5 +1,5 @@
 .env
 .venv/
 .vscode/
-
+backend/mysite/Trinity_Project/logfile.log
 **/__pycache__

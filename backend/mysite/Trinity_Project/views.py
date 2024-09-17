@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from two_factor.views import LoginView
 
 from .azure_file_share import create_folder_in_file_share, copy_template_folder
-from .models import Project, VerificationCode, User,Task
+from .models import Project, ProjectChangeLog, TaskChangeLog, VerificationCode, User,Task
 from .serializers import ProjectSerializer, UserNameSerializer, UserSerializer,TaskSerializer
 from rest_framework.views import APIView
 import jwt, datetime
@@ -24,6 +24,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from .forms import VerificationCodeForm
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from django.contrib.auth.models import AnonymousUser
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver
 
 #from backend.mysite.Trinity_Project import serializers
 
@@ -143,6 +145,7 @@ def project_detail(request, project_id):
         serializer = ProjectSerializer(project, data=request.data)
         if serializer.is_valid():
             serializer.save()
+            #post_save.send(sender=Project, instance=project, user=user, update_fields=serializer.validated_data.keys())
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -274,9 +277,13 @@ def task_detail(request, task_id):
     except Task.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
+    print(f"Task project_id: {task.project_id}")
     #get project manager name from project_id
-    project=Project.objects.get(project_id=task.project_id)
-    manager=project.manager
+    try:
+        project=Project.objects.get(project_id=task.project_id)
+        manager=project.manager
+    except Project.DoesNotExist:
+        return Response({"error": "Associated project not found"}, status=status.HTTP_404_NOT_FOUND)
 
     user = request.user
 
@@ -359,3 +366,10 @@ def project_by_date(request):
             serializer = ProjectSerializer(project,many=True)
             
         return Response(serializer.data)
+        
+
+@api_view(['DELETE'])
+def project_delete_log(request):
+    if request.method == 'DELETE':
+        ProjectChangeLog.objects.all().delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
