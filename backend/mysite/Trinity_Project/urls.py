@@ -8,6 +8,7 @@ urlpatterns = [
     path("projects/", views.project_list,name="project_list"),
     path("projects/project_creation", views.project_creation_data),
     path("projects/id/<str:project_id>", views.project_detail),
+    #path("projects/id/<str:project_id>", views.update_project),
     path("register", views.RegisterView.as_view()),
     path("login", views.LoginView.as_view()),
     path("user",views.UserView.as_view()),    
@@ -21,5 +22,8 @@ urlpatterns = [
     path("task/id/<str:task_id>",views.task_detail),
     path("task/project_id/<str:project_id>",views.task_filter_by_project_id),
     path("task/assigned_to/<str:email>",views.task_filter_by_user),
+    path("task/assigned_to/<str:name>",views.task_filter_by_name),
     path("announcements/",views.announcement),
+    path("verify/", views.verify_view),
+    path("delete_log",views.project_delete_log)
 ]

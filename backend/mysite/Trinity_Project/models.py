@@ -42,6 +42,26 @@ class Project(models.Model):
     def __str__(self):
         return f"ID: {self.project_id} | {self.project_name} | {self.client_name}"
     
+    def save(self, *args, **kwargs):
+        if self.pk:  # Update scenario
+            old_instance = Project.objects.get(pk=self.pk)
+            # Filter out reverse relationships
+            self._old_values = {
+                field.name: getattr(old_instance, field.name)
+                for field in self._meta.get_fields()
+                if isinstance(field, models.Field)
+            }
+        super(Project, self).save(*args, **kwargs)
+
+    def get_old_values(self):
+        if hasattr(self, '_old_values'):
+            return self._old_values
+        return {}
+    # def save(self, *args, **kwargs):
+    #     if not self.id:
+    #         self.id = generate_id()
+    #     super().save(*args, **kwargs)
+        
 class User(AbstractUser):
     name=models.CharField(max_length=50)
     email=models.EmailField(max_length=50, unique=True)
@@ -78,10 +98,38 @@ class Task(models.Model):
     assigned_to=models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks")
     project_id=models.ForeignKey(Project, to_field='project_id', on_delete=models.CASCADE, related_name="project")
     due_date=models.DateField()
+    
+    def save(self, *args, **kwargs):
+        if self.pk:  # Update scenario
+            old_instance = Task.objects.get(pk=self.pk)
+            # Filter out reverse relationships
+            self._old_values = {
+                field.name: getattr(old_instance, field.name)
+                for field in self._meta.get_fields()
+                if isinstance(field, models.Field)
+            }
+        super(Task, self).save(*args, **kwargs)
+
+    def get_old_values(self):
+        if hasattr(self, '_old_values'):
+            return self._old_values
+        return {}
+
 
     def __str__(self):
         return f"ID: {self.task_id} | {self.title} | {self.assigned_to}"
     
+    def save(self, *args, **kwargs):
+        number_list = [x for x in range(10)]
+        code_items = []
+        
+        for i in range(5):
+            num = random.choice(number_list)
+            code_items.append(num)
+        code_string="".join(str(item) for item in code_items)
+        self.number = code_string
+        super().save(*args, **kwargs)
+
 class Announcements(models.Model):
     title=models.CharField(max_length=255)
     content=models.TextField(max_length=255)
@@ -90,3 +138,40 @@ class Announcements(models.Model):
 
     def __str__(self):
         return self.title
+        
+class ProjectChangeLog(models.Model):
+    project_id = models.CharField(max_length=50)
+    project_name = models.CharField(max_length=50)
+    changed_by = models.CharField(max_length=50)
+    change_time = models.DateTimeField(auto_now_add=True)
+    change_description = models.TextField()
+
+    def __str__(self):
+        return f"Change to {self.project_name} by {self.changed_by} at {self.change_time}"        
+# class ProjectChangeLog(models.Model):
+#     project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True)
+#     changed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+#     change_time = models.DateTimeField(auto_now_add=True)
+#     change_description = models.TextField()
+
+#     def __str__(self):
+#         return f"Change to {self.project.project_name} by {self.changed_by} at {self.change_time}"
+
+# class TaskChangeLog(models.Model):
+#     task = models.ForeignKey(Task, on_delete=models.CASCADE)
+#     changed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+#     change_time = models.DateTimeField(auto_now_add=True)
+#     change_description = models.TextField()
+
+#     def __str__(self):
+#         return f"Change to task {self.task.title} by {self.changed_by} at {self.change_time}"
+    
+class TaskChangeLog(models.Model):
+    task_id = models.CharField(max_length=50)
+    task_title = models.CharField(max_length=50)
+    changed_by = models.CharField(max_length=50)
+    change_time = models.DateTimeField(auto_now_add=True)
+    change_description = models.TextField()
+    
+    def __str__(self):
+        return f"Change to {self.task_title} by {self.changed_by} at {self.change_time}"      
