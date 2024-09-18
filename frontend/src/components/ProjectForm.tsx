@@ -177,7 +177,7 @@ export function ProjectForm(
 
             {button_text === "Create Project" && 
             <div title="If you are the project managers assigned to this project, you will not receive an email.">
-                <label htmlFor="notify_manager" className="py-2" >Notify Manager(s):</label>
+                <label htmlFor="notify_manager" className="py-2" >Notify Manager:</label>
                 <input type="checkbox" name="notify_manager" className="mx-2 bg-slate-200 border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" defaultChecked />
             </div>}
         </div>

@@ -30,14 +30,14 @@ export function CreateProject() {
         const data = Object.fromEntries(formData)
 
         if (data.notify_manager === "on" && data.manager !== user?.email) {
-            const to = data.manager // Change this so that it's the user's email
-            const subject = "New Project (" + data.project_name + ") Assigned to you"
-            const body = "You have been assigned a new project, " + data.project_name + ". Please check it out."
+                const to = data.manager // Change this so that it's the user's email
+                const subject = "New Project (" + data.project_name + ") Assigned to you"
+                const body = "You have been assigned a new project, " + data.project_name + ". Please check it out."
 
-            const mail_url = `mailto:${encodeURIComponent(String(to))}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+                const mail_url = `mailto:${encodeURIComponent(String(to))}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
 
-            window.location.href = mail_url
-        }
+                window.location.href = mail_url
+            }
 
         try {
             setErrorString(undefined)
