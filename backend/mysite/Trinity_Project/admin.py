@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Project, Task, User, ProjectChangeLog,TaskChangeLog
+from .models import Project, Task, User, ProjectChangeLog, TaskChangeLog, Announcements
 # Register your models here.
 
 admin.site.register(Project)

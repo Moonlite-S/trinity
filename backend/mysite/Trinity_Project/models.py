@@ -115,20 +115,8 @@ class Task(models.Model):
             return self._old_values
         return {}
 
-
     def __str__(self):
         return f"ID: {self.task_id} | {self.title} | {self.assigned_to}"
-    
-    def save(self, *args, **kwargs):
-        number_list = [x for x in range(10)]
-        code_items = []
-        
-        for i in range(5):
-            num = random.choice(number_list)
-            code_items.append(num)
-        code_string="".join(str(item) for item in code_items)
-        self.number = code_string
-        super().save(*args, **kwargs)
 
 class Announcements(models.Model):
     title=models.CharField(max_length=255)
@@ -138,7 +126,7 @@ class Announcements(models.Model):
 
     def __str__(self):
         return self.title
-        
+
 class ProjectChangeLog(models.Model):
     project_id = models.CharField(max_length=50)
     project_name = models.CharField(max_length=50)
@@ -148,23 +136,6 @@ class ProjectChangeLog(models.Model):
 
     def __str__(self):
         return f"Change to {self.project_name} by {self.changed_by} at {self.change_time}"        
-# class ProjectChangeLog(models.Model):
-#     project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True)
-#     changed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-#     change_time = models.DateTimeField(auto_now_add=True)
-#     change_description = models.TextField()
-
-#     def __str__(self):
-#         return f"Change to {self.project.project_name} by {self.changed_by} at {self.change_time}"
-
-# class TaskChangeLog(models.Model):
-#     task = models.ForeignKey(Task, on_delete=models.CASCADE)
-#     changed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-#     change_time = models.DateTimeField(auto_now_add=True)
-#     change_description = models.TextField()
-
-#     def __str__(self):
-#         return f"Change to task {self.task.title} by {self.changed_by} at {self.change_time}"
     
 class TaskChangeLog(models.Model):
     task_id = models.CharField(max_length=50)

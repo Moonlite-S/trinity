@@ -20,6 +20,7 @@ class Command(BaseCommand):
 
         for project in projects:
             try:
+                print(project['manager'])
                 manager_obj = User.objects.get(email=project['manager'])
                 
                 project_data = project.copy()

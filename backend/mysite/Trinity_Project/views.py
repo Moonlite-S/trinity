@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated
 
-from .azure_file_share import AzureFileShareClient, create_folder_in_file_share, copy_template_folder
+from .azure_file_share import AzureFileShareClient
 from .models import Announcements, Project, Task,ProjectChangeLog, TaskChangeLog, User
 from .serializers import AnnouncmentsSerializer, ProjectSerializer, ProjectSerializerUserObjectVer, TaskSerializer, UserNameAndEmail, UserNameSerializer, UserSerializer
 from rest_framework.views import APIView
@@ -18,16 +18,9 @@ from rest_framework.authentication import BaseAuthentication
 #from django.conf import setting
 from django.contrib.auth import get_user_model
 from .utils import authenticate_jwt
-from rest_framework.exceptions import PermissionDenied
-from django.contrib.auth.forms import AuthenticationForm
-from .forms import VerificationCodeForm
-from django_otp.plugins.otp_totp.models import TOTPDevice
-from django.contrib.auth.models import AnonymousUser
 from django.db.models.signals import post_save, pre_save
-from django.dispatch import receiver
 
 #from backend.mysite.Trinity_Project import serializers
-
 
 # Create your views here.
 
@@ -155,24 +148,23 @@ def project_list(request):
         folder = AzureFileShareClient()
 
         if serializer.is_valid():
-            print(serializer.data)
             try:
                 manager = serializer.validated_data.pop('manager')
                 
                 manager_obj = User.objects.get(email=manager)
 
                 # Template Creation (Gunna be a more indepth implementation later)
-                if serializer.data['template'] == '':
-                    folder.create_empty_project_folder(serializer.data['folder_location'])
+                if serializer.validated_data['template'] == '':
+                    folder.create_empty_project_folder(serializer.validated_data['folder_location'])
                 else:
-                    folder.create_template_project_folder(serializer.data['folder_location'], serializer.data['template'])
+                    folder.create_template_project_folder(serializer.validated_data['folder_location'], serializer.validated_data['template'])
                 
                 project = Project.objects.create(manager=manager_obj, **serializer.validated_data)
 
-                return Response(ProjectSerializer(project).data, status=status.HTTP_201_CREATED)
+                return Response(ProjectSerializerUserObjectVer(project).data, status=status.HTTP_201_CREATED)
             
             except Exception as ex:
-                print(f"An error occurred while creating the project: {ex} Deleting project...")
+                print(f"An error occurred while creating the project: \n{ex}\n Deleting project...")
                 
                 folder.delete_project_folder(serializer.data['folder_location'])
 
@@ -198,16 +190,23 @@ def project_detail(request, project_id):
         return Response(status=status.HTTP_404_NOT_FOUND)
     
     if request.method == 'GET':
-        serializer = ProjectSerializer(project)
+        serializer = ProjectSerializerUserObjectVer(project)
+
         return Response(serializer.data)
     elif request.method == 'PUT':
-        if project.manager != payload['name'] and not payload['is_superuser']:
-            raise PermissionDenied("You do not have permission to edit this project.")
+
+        # if project.manager != payload['name'] and not payload['is_superuser']:
+        #     raise PermissionDenied("You do not have permission to edit this project.")
+
         serializer = ProjectSerializer(project, data=request.data)
         if serializer.is_valid():
+            manager_email = request.data.get('manager')
+            manager_obj = User.objects.get(email=manager_email)
+            serializer.validated_data['manager'] = manager_obj
             serializer.save()
-            #post_save.send(sender=Project, instance=project, user=user, update_fields=serializer.validated_data.keys())
+            post_save.send(sender=Project, instance=project, user=payload['name'], update_fields=serializer.validated_data.keys())
             return Response(serializer.data)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
         if project.manager != payload['name'] and not payload['is_superuser']:
@@ -314,14 +313,13 @@ def task_detail(request, task_id):
     except Task.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    print(f"Task project_id: {task.project_id}")
     #get project manager name from project_id
     try:
-        project=Project.objects.get(project_id=task.project_id)
+        project=Project.objects.get(project_id=task.project_id.project_id)
         manager=project.manager
     except Project.DoesNotExist:
         return Response({"error": "Associated project not found"}, status=status.HTTP_404_NOT_FOUND)
-
+    
     user = request.user
 
     if request.method == 'GET':
@@ -329,8 +327,8 @@ def task_detail(request, task_id):
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        if manager != user.name and not user.is_superuser:
-            raise PermissionDenied("You do not have permission to edit this task.")
+        # if manager != user.name and not user.is_superuser:
+        #     raise PermissionDenied("You do not have permission to edit this task.")
         serializer = TaskSerializer(task, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -415,8 +413,6 @@ def announcement(request):
             author = serializer.validated_data.pop('author')
             try:
                 user = User.objects.get(email=author)
-
-                print(user.role)
 
                 if user.role == 'Manager' or user.role == 'Administrator':
                     announcement = Announcements.objects.create(author=user, **serializer.validated_data)

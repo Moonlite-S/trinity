@@ -215,3 +215,30 @@ export function TaskList() {
     </>
   );
 }
+
+export function EditTask() {
+  return (
+    <>
+      <Header/>
+      <h1 className="mx-4 text-x1 font-semibold">Edit Task</h1>
+      <form>
+        <div className="grid grid-cols-2 grid-flow-row justify-center gap-4 mb-4"> 
+          <div className='grid grid-rows-2'>
+            <label htmlFor="title">Task Subject:</label>
+            <input type="text" name="title" required/>
+          </div>
+
+          <div className='grid grid-rows-2'>
+            <label htmlFor="description">Task Description:</label>
+            <input type="text" name="description" required/>
+          </div>
+
+        </div>
+
+        <div className="mx-auto text-center justify-center">
+          <button type="submit" className="bg-orange-300 rounded p-4" >Save Changes</button>
+        </div>
+      </form>
+    </>
+  );
+}

@@ -5,12 +5,13 @@ import { createProject, getProjectList, getProject, updateProject, deleteProject
 import { useNavigate, useParams } from "react-router-dom";
 import DataTable, { Direction, TableColumn } from "react-data-table-component";
 import { FilterProps, ProjectProps } from "../interfaces/project_types";
-import { getEmployeeNameList } from "../api/employee";
+import { getAllEmployeeNameAndEmail, getEmployeeNameList } from "../api/employee";
 import { ProjectForm } from "./ProjectForm";
 import { Route_Button } from "./Buttons";
 import { useAuth } from "../App";
 import { filterTasksByProject } from "../api/tasks";
 import { TaskProps } from "../interfaces/tasks_types";
+import { EmployeeNameEmail } from "../interfaces/employee_type";
 
 /**
  * ### [Route for ('/create_project')]
@@ -149,18 +150,26 @@ export function UpdateProject() {
 
             try {
                 const data = await getProject(id)
-                const managers = await getEmployeeNameList()
+                const managers = await getAllEmployeeNameAndEmail()
 
-                if (data.manager && !managers.includes(data.manager.name)) {
+                console.log("Managers: ", managers)
+                console.log("Data: ", data.manager.email)
+
+                if (data.manager && !managers.some(manager => manager.email === data.manager.email)) {
                     console.error("There's no mangaer with that name: ", data.manager)
                     console.error("We will automatically include it, but please create the employee before creating a project")
 
                     setErrorString("There is no manager in the database with that name. \n We will automatically include it, but please create the employee before creating a project.")
-                    managers.push(data.manager.name)
+                    managers.push(data.manager)
                 }
 
                 setCurrentProject(data)
-                setProjectManagers(managers)
+
+                const string_managers = managers.map((value: EmployeeNameEmail) => {
+                    return value.name
+                })
+
+                setProjectManagers(string_managers)
                 setLoading(false)
             } catch (error) {
                 console.error("Error fetching project:", error);
@@ -178,6 +187,8 @@ export function UpdateProject() {
             const form_data = new FormData(event.currentTarget)
 
             const data = Object.fromEntries(form_data)
+
+            console.log("Data: ", data)
 
             const response = await updateProject(data, id)
 
@@ -210,7 +221,7 @@ export function UpdateProject() {
 
             {loading ? <div>Loading...</div> 
             : 
-            <ProjectForm button_text="Update Project" projectManagerList={projectManager} onSubmit={onSubmit} formProps={currentProject} />}
+            <ProjectForm button_text="Update Project" onSubmit={onSubmit} formProps={currentProject} />}
             
         </>
     )
@@ -481,3 +492,7 @@ export function ProjectDeleteConfimation() {
 
     )
 }
+function return_all_users_name_and_email() {
+    throw new Error("Function not implemented.");
+}
+

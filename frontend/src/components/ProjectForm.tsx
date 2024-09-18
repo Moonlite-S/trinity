@@ -35,7 +35,7 @@ export function ProjectForm(
     const [Clients, setClients] = useState<{ value: string, label: string }[] | undefined>()
     const [Cities, setCities] = useState<{ value: string, label: string }[] | undefined>()
     const [DateStart, setDateStart] = useState(start_date)
-    const [defaultManager, setDefaultManager] = useState<string>(manager?.name ?? "")
+    const [defaultManager, setDefaultManager] = useState<string>(manager?.email ?? "")
     const [errorString, setErrorString] = useState<string>()
 
     const projectManagerListOptions = ProjectManagers?.map((value: string) => {
@@ -62,6 +62,8 @@ export function ProjectForm(
                     setProjectID(start_date + "-" + project_count)
                     setDefaultManager(response.current_user[0])
                 }
+
+                console.log("Users: ", response.users)
 
                 setProjectManagers(response.users)
 

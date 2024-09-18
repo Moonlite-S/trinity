@@ -2,6 +2,7 @@ from threading import local
 
 _user = local()
 
+print(_user)
 class CurrentUserMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response

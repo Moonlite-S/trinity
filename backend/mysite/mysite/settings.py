@@ -58,13 +58,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django_otp.middleware.OTPMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django_otp.middleware.OTPMiddleware',
-    'django_auto_logout.middleware.auto_logout',
     'Trinity_Project.middleware.CurrentUserMiddleware',
-    'two_factor.middleware.threadlocals.ThreadLocals',
 ]
 
 CORS_ALLOWED_ORIGINS = [

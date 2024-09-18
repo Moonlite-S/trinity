@@ -98,6 +98,8 @@ export function SelectionComponent({defaultValue = '', multiple, options, name, 
         ? defaultOption
         : {value: defaultOptionValue ? defaultOptionValue : defaultValue, label: defaultValue}
 
+    console.log("Select Default Value: ", selectDefaultValue)
+
     return (
         <Select defaultValue={selectDefaultValue} onChange={onChange ? onChange : () => selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
         styles = {{

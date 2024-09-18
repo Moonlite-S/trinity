@@ -1,18 +1,12 @@
 #from datetime import timezone
 from django.utils import timezone
 from .models import User, ProjectChangeLog, Project, Task,TaskChangeLog
-from .models import VerificationCode
 from django.db.models.signals import post_save, pre_save, pre_delete,post_delete
 from django.dispatch import receiver
 import logging
 from .middleware import CurrentUserMiddleware
 
 logger=logging.getLogger('Trinity_Project')
-
-@receiver(post_save, sender=User)
-def post_save_generate_code(sender, instance, created, *args, **kwargs):
-    if created:
-        VerificationCode.objects.create(user=instance)
 
 @receiver(post_save, sender=Project)
 def log_project_change(sender, instance, **kwargs):
@@ -25,18 +19,17 @@ def log_project_change(sender, instance, **kwargs):
     try:
         original = Project.objects.get(pk=instance.pk)
     except Project.DoesNotExist:
-        return  # If the original does not exist, exit
-    
+        raise Exception("Project does not exist")
     
     # Retrieve the user from the context (if passed)
     user = CurrentUserMiddleware.get_current_user()
-    #user = kwargs.get('user')
+    print("user", user)
     if not user:
-        return
+        raise Exception("User not found")
     
     old_values = instance.get_old_values()
     
-    fields_to_log = ['project_id', 'project_name', 'manager', 'client_name', 'city', 'start_date', 'end_date', 'description', 'status']
+    fields_to_log = ['project_id', 'project_name', 'manager', 'client_name', 'city', 'start_date', 'end_date', 'notes', 'status']
     
     for field in fields_to_log:
         old_value = old_values.get(field)

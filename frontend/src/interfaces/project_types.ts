@@ -32,7 +32,6 @@ export type FilterProps = {
 
 export type ProjectFormProps = {
     button_text: string
-    projectManagerList?: string[]
     onSubmit: (event: FormEvent<HTMLFormElement>) => void
 
     // For Project Update
