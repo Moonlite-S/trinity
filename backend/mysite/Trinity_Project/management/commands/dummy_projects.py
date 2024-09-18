@@ -259,5 +259,31 @@ projects = [
         "status": "ACTIVE",
         "folder_location": "2024-09-020",
         "template": ""
+    },
+    {
+        "project_id": "2024-10-001",
+        "project_name": "Oakville Downtown Revitalization",
+        "manager": "israel@example.com",
+        "client_name": "Oakville City Council",
+        "city": "Oakville",
+        "start_date": "2024-10-02",
+        "end_date": "2024-10-23",
+        "notes": "Comprehensive plan to revitalize the downtown area, including façade improvements and pedestrian-friendly street designs.",
+        "status": "NOT STARTED",
+        "folder_location": "2024-10-001",
+        "template": "default"
+    },
+    {
+        "project_id": "2024-10-002",
+        "project_name": "Maplewood Smart Traffic Management System",
+        "manager": "sarah@example.com",
+        "client_name": "Maplewood Department of Transportation",
+        "city": "Maplewood",
+        "start_date": "2024-10-05",
+        "end_date": "2024-10-31",
+        "notes": "Implementation of an AI-driven traffic management system to reduce congestion and improve traffic flow in the city center.",
+        "status": "ACTIVE",
+        "folder_location": "2024-10-002",
+        "template": ""
     }
 ]

@@ -3,15 +3,15 @@ import { TaskProps } from "./tasks_types"
 import { ProjectProps } from "./project_types"
 
 export type EmployeeProps = {
-    id: string,
+    id?: string,
     name: string,
     email: string,
     username: string,
     password: string,
     role: string,
-    date_joined: string,
-    projects: ProjectProps[]
-    tasks: TaskProps[] 
+    date_joined?: string,
+    projects?: ProjectProps[]
+    tasks?: TaskProps[] 
 }
 
 export type EmployeeNameEmail = {

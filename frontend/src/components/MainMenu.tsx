@@ -171,13 +171,13 @@ function MainMenuDashboard(
         return tasks.sort((a, b) => a.due_date.localeCompare(b.due_date))
     }
 
-    const sorted_tasks = sort_tasks(user.tasks)
+    const sorted_tasks = sort_tasks(user.tasks ?? [])
 
     const sort_projects = (projects: ProjectProps[]) => {
         return projects.sort((a, b) => a.end_date.localeCompare(b.end_date))
     }
 
-    const sorted_projects = sort_projects(user.projects)
+    const sorted_projects = sort_projects(user.projects ?? [])
 
 return (
     <div className="grid grid-cols-2 grid-flow-row gap-3 justify-center w-screen p-5 h-screen">

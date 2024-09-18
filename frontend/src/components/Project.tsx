@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { Error_Component, Header } from "./misc";
+import { Error_Component, Header, TaskCard } from "./misc";
 import { createProject, getProjectList, getProject, updateProject, deleteProject } from "../api/projects";
 import { useNavigate, useParams } from "react-router-dom";
 import DataTable, { Direction, TableColumn } from "react-data-table-component";
@@ -9,6 +9,8 @@ import { getEmployeeNameList } from "../api/employee";
 import { ProjectForm } from "./ProjectForm";
 import { Route_Button } from "./Buttons";
 import { useAuth } from "../App";
+import { filterTasksByProject } from "../api/tasks";
+import { TaskProps } from "../interfaces/tasks_types";
 
 /**
  * ### [Route for ('/create_project')]
@@ -337,10 +339,26 @@ const FilterComponent = ({ filterText, onFilter, onClear }: FilterProps) => (
  * @param param0 data The props of a give row
  * 
  */
-const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => (
+const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
+    const [tasks, setTasks] = useState<TaskProps[]>([])
+
+    useEffect(() => {
+        console.log("Data: ", data)
+        const get_tasks = async () => {
+            const response = await filterTasksByProject(data.project_id)
+            setTasks(response)
+        }
+
+        get_tasks()
+
+    }, [data])
+
+    console.log("Tasks: ", tasks)
+
+    return (
     <div className="flex flex-col gap-5 bg-slate-50">
         
-        <div className="p-5 flex flex-row gap-5">
+        <div className="p-5 flex flex-col gap-5">
 
             <div>
                 <h3>Description:</h3>
@@ -349,7 +367,14 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => (
 
             <div>
                 <h3>Tasks:</h3>
-                <p>(This is where ongoing tasks come in)</p>
+                {tasks.length > 0 ? tasks.map(task => 
+                    <div key={task.task_id} className="w-1/2"> 
+                        <TaskCard task={task} />
+                    </div>
+                ) 
+                : 
+                <p>No tasks found</p>
+                }
             </div>
 
         </div>
@@ -360,7 +385,8 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => (
         </div>
 
     </div>
-)
+    )
+}
 
 /**
  * The Table Component that lists the projects

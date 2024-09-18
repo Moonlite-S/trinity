@@ -36,7 +36,8 @@ export function CreateEmployee() {
                 email: e.target.email.value,
                 password: e.target.password.value,
                 username: e.target.name.value,
-                role: e.target.role.value
+                role: e.target.role.value,
+                
             })
 
             if (code === 200) {
@@ -91,7 +92,7 @@ export function CreateEmployee() {
                         <label htmlFor="name">Role:</label>
                         <select name="role" className="bg-slate-100 border border-zinc-300" required>
                             <option value="Manager">Manager</option>
-                            <option value="Employee">Employee</option>
+                            <option value="Employee">Team Member</option>
                         </select>
 
                     </div>
@@ -217,11 +218,11 @@ function EmployeeUpdateTable({ employeeList, employeeLoaded }: { employeeList: E
 
     // Column Names
     const columns: TableColumn<EmployeeProps>[] = [
-        { name: "ID", selector: row => row.id, sortable: true },
+        { name: "ID", selector: row => row.id ?? "", sortable: true },
         { name: "Name", selector: row => row.name, sortable: true },
         { name: "E-mail", selector: row => row.email, sortable: true },
         { name: "Role", selector: row => row.role, sortable: true },
-        { name: "Date Joined", selector: row => row.date_joined, sortable: true },
+        { name: "Date Joined", selector: row => row.date_joined ?? "", sortable: true },
     ]
 
     // For the filter function
