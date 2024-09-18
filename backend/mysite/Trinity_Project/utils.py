@@ -2,7 +2,7 @@ import jwt
 from rest_framework.exceptions import AuthenticationFailed
 
 def authenticate_jwt(request):
-    token = request.COOKIES.get('jwt')
+    token = request.COOKIES.get('jwt_token')
     
     if not token:
         raise AuthenticationFailed('Unauthenticated!') 

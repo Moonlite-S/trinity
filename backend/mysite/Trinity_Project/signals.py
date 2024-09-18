@@ -23,7 +23,6 @@ def log_project_change(sender, instance, **kwargs):
     
     # Retrieve the user from the context (if passed)
     user = CurrentUserMiddleware.get_current_user()
-    print("user", user)
     if not user:
         raise Exception("User not found")
     

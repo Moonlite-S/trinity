@@ -16,10 +16,11 @@ from datetime import datetime,timezone,timedelta
 from django.contrib.auth.decorators import login_required
 from rest_framework.authentication import BaseAuthentication
 #from django.conf import setting
+from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from .utils import authenticate_jwt
 from django.db.models.signals import post_save, pre_save
-
+from datetime import datetime, timedelta
 #from backend.mysite.Trinity_Project import serializers
 
 # Create your views here.
@@ -30,14 +31,15 @@ class RegisterView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
-        
+
 class LoginView(APIView):
     def post(self, request):
         email = request.data['email']
         password = request.data['password']
         
-        user = User.objects.filter(email=email).first()
-        
+        #user = User.objects.filter(email=email).first()
+        user = authenticate(email=email, password=password)
+
         if user is None:
             raise AuthenticationFailed('User not found!')
         
@@ -47,6 +49,7 @@ class LoginView(APIView):
         payload = {
             'id': user.id,
             'name': user.name,
+            'email': user.email,
             'is_superuser':user.is_superuser,
             'exp': datetime.now(timezone.utc) + timedelta(minutes=60),
             'iat': datetime.now(timezone.utc)
@@ -56,15 +59,20 @@ class LoginView(APIView):
         
         response = Response()
         
-        response.set_cookie(key='jwt', value=token, httponly=True, samesite='None', secure=True)
+        response.set_cookie(key='jwt_token', value=token, httponly=True, samesite='None', secure=True)
         response.data = {
-            'jwt': token
+            'jwt': token,
+            'user': user.name,
+            'email': user.email,
+            'is_superuser': user.is_superuser,
+            'role': user.role,
+            'email': user.email,
         }
         
         return response
 
 class UserView(APIView):
-    def get(self,request):
+    def get(self, request):
         payload = authenticate_jwt(request)
         
         user = User.objects.filter(id=payload['id']).first()
@@ -113,8 +121,6 @@ def project_creation_data(request):
     # Gets lists of project managers
     users = User.objects.filter(role__in=['Manager', 'Admin'], is_active=True).values_list('name', 'email')
     data_to_send['users'] = list(users)
-
-    print(users)
 
     # Get the current user
     current_user = User.objects.filter(id=payload['id']).values_list('name', 'email').first()
@@ -195,8 +201,8 @@ def project_detail(request, project_id):
         return Response(serializer.data)
     elif request.method == 'PUT':
 
-        # if project.manager != payload['name'] and not payload['is_superuser']:
-        #     raise PermissionDenied("You do not have permission to edit this project.")
+        if project.manager != payload['name'] and not payload['is_superuser']:
+            raise PermissionDenied("You do not have permission to edit this project.")
 
         serializer = ProjectSerializer(project, data=request.data)
         if serializer.is_valid():
