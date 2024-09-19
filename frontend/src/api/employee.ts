@@ -107,7 +107,7 @@ export async function getAllEmployeeNameAndEmail(): Promise<EmployeeNameEmail[]>
           "api/user/all_users_name_and_email"
         );
 
-        console.log(response)
+        console.log("Axios Response", response)
 
         return response.data
     } catch (error) {

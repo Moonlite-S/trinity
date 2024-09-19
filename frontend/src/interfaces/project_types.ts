@@ -31,7 +31,6 @@ export type FilterProps = {
 }
 
 export type ProjectFormProps = {
-    button_text: string
     onSubmit: (event: FormEvent<HTMLFormElement>) => void
 
     // For Project Update
@@ -48,7 +47,8 @@ export type ProjectCreationProps = {
 
 
 export type SelectionComponentProps = {
-    defaultValue: string,
+    defaultValue?: string,
+    value?: string,
     multiple?: boolean,
     options: { value: string, label: string }[] | undefined,
     name: string    

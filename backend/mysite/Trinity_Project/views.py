@@ -121,7 +121,7 @@ def project_creation_data(request):
     data_to_send['project_count'] = projects.count()
 
     # Gets lists of project managers
-    users = User.objects.filter(role__in=['Manager', 'Admin'], is_active=True).values_list('name', 'email')
+    users = User.objects.filter(role__in=['Manager', 'Administrator'], is_active=True).values_list('name', 'email')
     data_to_send['users'] = list(users)
 
     # Get the current user
@@ -230,7 +230,6 @@ def project_detail(request, project_id):
         
         except Exception as e:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
     
 @api_view(['GET'])    
 def project_filter_by_manager(request, manager):

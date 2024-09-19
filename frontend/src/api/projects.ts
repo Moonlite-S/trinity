@@ -143,7 +143,7 @@ export async function getDataForProjectCreation(date: string): Promise<ProjectCr
             throw new Error('Error fetching project creation data')
         }
     } catch (error) {
-        console.error("Server Error: ",error)
+        console.error("Server Error: ", error)
         throw error
     }
 }

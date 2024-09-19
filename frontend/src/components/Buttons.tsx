@@ -2,7 +2,6 @@ import { SelectionComponentProps } from "../interfaces/project_types";
 import CreatableSelect from "react-select/creatable";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 
 /** General Orange button */
 export function Route_Button({route, text, isDelete}: {route: string, text: string, isDelete?: boolean}) {
@@ -30,9 +29,6 @@ export function Back_Button() {
  *  
  * There are two buttons: One that goes back to the main menu and one that creates or updates a project
  * 
- * @params button_text The text of the second button (Either "Create Project" or "Update Project")
- * @params route The route of the back button (Either "/main_menu" or "/update_project")
- * This is usually either "Create Project" or "Update Project"
  */
 export function BottomFormButton({ button_text }: { button_text: string}) {
     return (
@@ -85,23 +81,70 @@ export function CreateableSelectionComponent({defaultValue = '', multiple, optio
 export function SelectionComponent({defaultValue = '', multiple, options, name, onChange}: SelectionComponentProps){
     if (!options) {
         options = [{value: '', label: ''}];
+        console.error("No options found for", name)
     }
 
-    const defaultOption = options.find((option) => option.label === defaultValue)
-
+    const defaultOption = options.find((option) => option.value === defaultValue)
+    
     // This one is specifically for the manager (getting the email for defaultmanager)
     const defaultOptionValue = options.find((option) => option.label === defaultValue)?.value
 
+    // If the default option value is not found, it will be undefined
+    // This would cause an error if the manager's email is not found
+    if (!defaultOptionValue) {
+        console.warn("No default option value found for", name, "with options", options)
+    }
+    
     // Sets default to the defaultOption if it exists
     // if not, uses DefaultValue
     const selectDefaultValue = defaultOption
-        ? defaultOption
-        : {value: defaultOptionValue ? defaultOptionValue : defaultValue, label: defaultValue}
+    ? defaultOption
+    : {value: defaultOptionValue ? defaultOptionValue : defaultValue, label: defaultValue}
 
-    console.log("Select Default Value: ", selectDefaultValue)
 
     return (
         <Select defaultValue={selectDefaultValue} onChange={onChange ? onChange : () => selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
+        styles = {{
+            control: (baseStyles: any, state: any) => ({
+                ...baseStyles,
+                borderColor: state.isFocused ? 'orange' : 'gray',
+                boxShadow: state.isFocused ? '0 0 0 2px orange' : 'none',
+                '&:hover': {
+                    borderColor: state.isFocused ? 'orange' : 'gray',
+                },
+            }),
+            option: () => ({
+                padding: '5px 10px',
+                rounded: '5px',
+                '&:hover': {
+                    backgroundColor: '#cacacc',
+                },
+                
+            })
+
+        }}/>
+    )
+}
+
+export function SelectionComponentValue({defaultValue = '', multiple, options, name, onChange}: SelectionComponentProps){
+    if (!options) {
+        options = [{value: '', label: ''}];
+    }
+
+    const defaultOption = options.find((option) => option.label === defaultValue)
+    
+    // This one is specifically for the manager (getting the email for defaultmanager)
+    const defaultOptionValue = options.find((option) => option.label === defaultValue)?.value
+    
+    // Sets default to the defaultOption if it exists
+    // if not, uses DefaultValue
+    const selectDefaultValue = defaultOption
+    ? defaultOption
+    : {value: defaultOptionValue ? defaultOptionValue : defaultValue, label: defaultValue}
+    console.log("Select Option Value: ", selectDefaultValue)
+
+    return (
+        <Select value={selectDefaultValue} onChange={onChange ? onChange : () => selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
         styles = {{
             control: (baseStyles: any, state: any) => ({
                 ...baseStyles,

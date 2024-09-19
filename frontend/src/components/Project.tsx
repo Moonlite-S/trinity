@@ -5,13 +5,12 @@ import { createProject, getProjectList, getProject, updateProject, deleteProject
 import { useNavigate, useParams } from "react-router-dom";
 import DataTable, { Direction, TableColumn } from "react-data-table-component";
 import { FilterProps, ProjectProps } from "../interfaces/project_types";
-import { getAllEmployeeNameAndEmail, getEmployeeNameList } from "../api/employee";
-import { ProjectForm } from "./ProjectForm";
+import { getAllEmployeeNameAndEmail } from "../api/employee";
+import { ProjectFormCreation, ProjectFormUpdate } from "./ProjectForm";
 import { Route_Button } from "./Buttons";
 import { useAuth } from "../App";
 import { filterTasksByProject } from "../api/tasks";
 import { TaskProps } from "../interfaces/tasks_types";
-import { EmployeeNameEmail } from "../interfaces/employee_type";
 
 /**
  * ### [Route for ('/create_project')]
@@ -81,7 +80,7 @@ export function CreateProject() {
 
             </div>
 
-            <ProjectForm button_text="Create Project" onSubmit={onSubmit} />
+            <ProjectFormCreation onSubmit={onSubmit} />
 
         </>
     )
@@ -137,7 +136,6 @@ export function UpdateProjectList() {
  */
 export function UpdateProject() {
     const { id } = useParams<string>()
-    const [projectManager, setProjectManagers] = useState<string[]>([])
     const [currentProject, setCurrentProject] = useState<ProjectProps>()
     const [errorString, setErrorString] = useState<string>()
     const [loading, setLoading] = useState<boolean>(true)
@@ -151,25 +149,15 @@ export function UpdateProject() {
             try {
                 const data = await getProject(id)
                 const managers = await getAllEmployeeNameAndEmail()
-
                 console.log("Managers: ", managers)
-                console.log("Data: ", data.manager.email)
 
                 if (data.manager && !managers.some(manager => manager.email === data.manager.email)) {
-                    console.error("There's no mangaer with that name: ", data.manager)
-                    console.error("We will automatically include it, but please create the employee before creating a project")
-
                     setErrorString("There is no manager in the database with that name. \n We will automatically include it, but please create the employee before creating a project.")
                     managers.push(data.manager)
                 }
 
                 setCurrentProject(data)
 
-                const string_managers = managers.map((value: EmployeeNameEmail) => {
-                    return value.name
-                })
-
-                setProjectManagers(string_managers)
                 setLoading(false)
             } catch (error) {
                 console.error("Error fetching project:", error);
@@ -221,7 +209,7 @@ export function UpdateProject() {
 
             {loading ? <div>Loading...</div> 
             : 
-            <ProjectForm button_text="Update Project" onSubmit={onSubmit} formProps={currentProject} />}
+            <ProjectFormUpdate onSubmit={onSubmit} formProps={currentProject} />}
             
         </>
     )
