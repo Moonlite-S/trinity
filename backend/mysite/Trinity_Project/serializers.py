@@ -12,6 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'name','email','password','role','date_joined']
+        #this makes it so that the password isn't visible when a user info is called
         extra_kwargs = {
             'password': {'write_only': True}
             }

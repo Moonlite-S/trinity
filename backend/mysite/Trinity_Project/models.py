@@ -128,33 +128,28 @@ class VerificationCode(models.Model):
 class ProjectChangeLog(models.Model):
     project_id = models.CharField(max_length=50)
     project_name = models.CharField(max_length=50)
+    manager=models.CharField(max_length=50)
+    client_name=models.CharField(max_length=50)
+    city=models.CharField(max_length=50)
+    start_date=models.CharField(max_length=50)
+    end_date=models.CharField(max_length=50)
+    description=models.TextField()
+    status=models.CharField(max_length=50)
     changed_by = models.CharField(max_length=50)
     change_time = models.DateTimeField(auto_now_add=True)
     change_description = models.TextField()
 
     def __str__(self):
         return f"Change to {self.project_name} by {self.changed_by} at {self.change_time}"        
-# class ProjectChangeLog(models.Model):
-#     project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True)
-#     changed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-#     change_time = models.DateTimeField(auto_now_add=True)
-#     change_description = models.TextField()
 
-#     def __str__(self):
-#         return f"Change to {self.project.project_name} by {self.changed_by} at {self.change_time}"
-
-# class TaskChangeLog(models.Model):
-#     task = models.ForeignKey(Task, on_delete=models.CASCADE)
-#     changed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-#     change_time = models.DateTimeField(auto_now_add=True)
-#     change_description = models.TextField()
-
-#     def __str__(self):
-#         return f"Change to task {self.task.title} by {self.changed_by} at {self.change_time}"
     
 class TaskChangeLog(models.Model):
     task_id = models.CharField(max_length=50)
     task_title = models.CharField(max_length=50)
+    description=models.TextField()
+    assigned_to=models.CharField(max_length=50)
+    project_id=models.CharField(max_length=50)
+    due_date=models.CharField(max_length=50)
     changed_by = models.CharField(max_length=50)
     change_time = models.DateTimeField(auto_now_add=True)
     change_description = models.TextField()
