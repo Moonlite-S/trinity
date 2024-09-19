@@ -1,3 +1,4 @@
+from django.conf import settings
 import jwt
 from rest_framework.exceptions import AuthenticationFailed
 
@@ -8,7 +9,7 @@ def authenticate_jwt(request):
         raise AuthenticationFailed('Unauthenticated!') 
     
     try:
-        payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
     except jwt.ExpiredSignatureError:
         raise AuthenticationFailed('Unauthenticated!')
     

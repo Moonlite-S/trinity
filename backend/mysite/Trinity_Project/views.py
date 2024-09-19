@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, JsonResponse
 from openai import AuthenticationError
@@ -22,9 +23,10 @@ from .utils import authenticate_jwt
 from django.db.models.signals import post_save, pre_save
 from datetime import datetime, timedelta
 #from backend.mysite.Trinity_Project import serializers
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.utils.decorators import method_decorator
 
 # Create your views here.
-
 class RegisterView(APIView):
     def post(self, request):
         serializer = UserSerializer(data=request.data)
@@ -39,7 +41,7 @@ class LoginView(APIView):
         
         #user = User.objects.filter(email=email).first()
         user = authenticate(email=email, password=password)
-
+        
         if user is None:
             raise AuthenticationFailed('User not found!')
         
@@ -55,7 +57,7 @@ class LoginView(APIView):
             'iat': datetime.now(timezone.utc)
         }
         
-        token = jwt.encode(payload, 'secret', algorithm='HS256')
+        token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
         
         response = Response()
         
@@ -74,7 +76,7 @@ class LoginView(APIView):
 class UserView(APIView):
     def get(self, request):
         payload = authenticate_jwt(request)
-        
+
         user = User.objects.filter(id=payload['id']).first()
         serializers = UserSerializer(user)
         return Response(serializers.data)
