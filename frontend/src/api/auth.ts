@@ -95,13 +95,9 @@ export async function login({email, password }: LoginProps): Promise<number> {
           console.error("Axios error: ", error)
           return 500
         }
-    } else if (error instanceof Error) {
+    } else 
         console.error("Error: ", error)
         return 500
-      } else {
-        console.error("Unknown error: ", error)
-        return 500
-      }
     }
 }
 

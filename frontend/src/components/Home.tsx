@@ -32,7 +32,7 @@ export default function Home() {
 /**
  * Component where the user can contact Trinity for more information
  */
-function ContactForm() {
+export function ContactForm() {
   const [email, setEmail] = React.useState<string>('')
   const [submitted, setSubmitted] = React.useState<boolean>(false)
   const [error, setError] = React.useState<boolean>(false)
@@ -41,7 +41,6 @@ function ContactForm() {
   const handleSubmit = () => {
     // Do Validation Here
     if (email === '' || !email_regex.test(email)) {
-      console.log("Nuh uh");
       setError(true)
       return
     }
@@ -49,13 +48,10 @@ function ContactForm() {
     // Removes leading and trailing whitespace
     setEmail(email.trim())
 
-    window.open('mailto:test@gmail.com?subject=Contact For More Information')
+    window.open(`mailto:trinity@mep.com?subject=Contact For More Information&body=Hello, I want to know more about your company.`)
 
     setSubmitted(true)
     setError(false)
-
-    console.log('email: ' + email)
-          
   }
   return (
     <div className='m-5'>
@@ -65,12 +61,12 @@ function ContactForm() {
 
         <div className='flex flex-col'>
 
-          <label className='mb-3 mt-3'>E-mail</label>
-          <input type='text' name='email' className='bg-slate-100' onChange={(e) => setEmail(e.target.value)}/>
+          <label htmlFor='email' className='mb-3 mt-3'>E-mail</label>
+          <input id='email' type='text' name='email' className='bg-slate-100' onChange={(e) => setEmail(e.target.value)}/>
 
         </div>
 
-        {submitted ? <p className='mt-3 text-green-500'>Submitted. We will get back to you as soon as we can!</p> : <button type='submit' onClick={handleSubmit} className='mt-3 bg-red-100 p-3'>Submit</button>}
+        {submitted ? <p className='mt-3 text-green-500'>Submitted. We will get back to you as soon as we can!</p> : <button data-testid='send_email' type='submit' onClick={handleSubmit} className='mt-3 bg-red-100 p-3'>Submit</button>}
         {error && <p className='mt-3 text-red-500'>Please Enter a Valid Email</p>}
 
     </div>
@@ -80,7 +76,7 @@ function ContactForm() {
 /**
  * Login Component
  */
-function Login(){
+export function Login(){
   const [email, setEmail] = React.useState<string>('')
   const [password, setPassword] = React.useState<string>('')
   const [error, setError] = React.useState<boolean>(false)
@@ -97,7 +93,7 @@ function Login(){
     // Do Validation Here
     if (email_regex.test(email) === false || !email || !password) {
       setError(true)
-      setErrorCode("Invalid Email or Password")
+      setErrorCode("Please enter a valid email and password")
       return
     }
 
@@ -111,11 +107,15 @@ function Login(){
         navigate("/main_menu")
 
       } else {
-        if (response === 403) {
-          setErrorCode("Incorrect username or password")
+        if (response === 401) {
+          setErrorCode("Incorrect email or password")
+        }
+        else if (response === 403) {
+          setErrorCode("Account is not active")
         }
         else {
           setErrorCode("Server Error")
+
         }
 
         setLoading(false)
@@ -138,15 +138,15 @@ function Login(){
 
         <div className='flex flex-col'>
 
-          <label className='mb-3'>E-mail:</label>
-          <input type='text' name='email' className='bg-slate-100' onChange={(e) => setEmail(e.target.value)}/>
+          <label htmlFor='email' className='mb-3'>E-mail:</label>
+          <input id='email' type='text' name='email' className='bg-slate-100' onChange={(e) => setEmail(e.target.value)}/>
 
-          <label className='mb-3'>Password:</label>
-          <input type='password' name='password' className='bg-slate-100' onChange={(e) => setPassword(e.target.value)}/>
+          <label htmlFor='password' className='mb-3'>Password:</label>
+          <input id='password' type='password' name='password' className='bg-slate-100' onChange={(e) => setPassword(e.target.value)}/>
 
         </div>
 
-        {(!error && loading) ? <p className='mt-3'>Loading...</p> : <button type='submit' className='mt-3 bg-red-100 p-3' onSubmit={handleSubmit}>Submit</button>}
+        {(!error && loading) ? <p className='mt-3'>Loading...</p> : <button data-testid='login_submit' type='submit' className='mt-3 bg-red-100 p-3' onSubmit={handleSubmit}>Submit</button>}
 
         {error && <p className='mt-3 text-red-500'>{errorCode}</p>}
       
