@@ -1,4 +1,4 @@
-import { Header, AnnouncementCard, TaskCard } from "./misc";
+import { Header, AnnouncementCard, TaskCard, ProjectCard } from "./misc";
 import { useNavigate } from "react-router-dom"
 import { logout } from "../api/auth";
 import { EmployeeProps } from "../interfaces/employee_type";
@@ -228,7 +228,7 @@ return (
             
             <div className="overflow-y-auto h-full">
                 {sorted_projects.length > 0 ? sorted_projects.map((project) => (
-                    <MainMenuProjects key={project.project_id} project={project} />
+                    <ProjectCard key={project.project_id} project={project} />
                 ))
                 :
                 <h3>No Projects assigned to you</h3>
@@ -240,19 +240,6 @@ return (
     </div>
     );
 }
-
-
-function MainMenuProjects ({project} : {project: ProjectProps}) {
-    return (
-    <div className="bg-slate-100 p-2 my-4 mx-2 rounded-md">
-        <h3>{project.project_name}</h3>
-        <p>Client: {project.client_name}</p>
-        <p className="py-4">Notes: {project.notes ? project.notes : '(No Notes Written)'}</p>
-        <p className="text-red-800">Next Deadline: {project.end_date}</p>
-    </div>
-    )
-}
-
 
 
 export function MainNavBar() {

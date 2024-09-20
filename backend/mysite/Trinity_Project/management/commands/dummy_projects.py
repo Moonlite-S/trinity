@@ -8,7 +8,7 @@ projects = [
         "city": "Sunnyside",
         "start_date": "2024-09-03",
         "end_date": "2025-06-30",
-        "notes": "Design and construction of a community center powered entirely by solar energy, featuring a green roof and rainwater harvesting system.",
+        "description": "Design and construction of a community center powered entirely by solar energy, featuring a green roof and rainwater harvesting system.",
         "status": "ACTIVE",
         "folder_location": "2024-09-001",
         "template": "default"
@@ -21,7 +21,7 @@ projects = [
         "city": "Riverdale",
         "start_date": "2024-09-05",
         "end_date": "2025-08-15",
-        "notes": "Modernization of existing hydroelectric dam to improve efficiency and environmental impact mitigation.",
+        "description": "Modernization of existing hydroelectric dam to improve efficiency and environmental impact mitigation.",
         "status": "NOT STARTED",
         "folder_location": "2024-09-002",
         "template": ""
@@ -34,7 +34,7 @@ projects = [
         "city": "Pinecrest",
         "start_date": "2024-09-10",
         "end_date": "2025-11-30",
-        "notes": "Development of a sustainable industrial park with focus on circular economy principles and zero-waste infrastructure.",
+        "description": "Development of a sustainable industrial park with focus on circular economy principles and zero-waste infrastructure.",
         "status": "ACTIVE",
         "folder_location": "2024-09-003",
         "template": "default"
@@ -47,7 +47,7 @@ projects = [
         "city": "Oakwood",
         "start_date": "2024-09-12",
         "end_date": "2025-05-31",
-        "notes": "Implementation of AI-driven traffic management system to reduce congestion and improve air quality in the city center.",
+        "description": "Implementation of AI-driven traffic management system to reduce congestion and improve air quality in the city center.",
         "status": "NOT STARTED",
         "folder_location": "2024-09-004",
         "template": "default"
@@ -60,7 +60,7 @@ projects = [
         "city": "Meadowbrook",
         "start_date": "2024-09-15",
         "end_date": "2025-10-15",
-        "notes": "Comprehensive wetland restoration project to improve local ecosystem and create natural flood protection.",
+        "description": "Comprehensive wetland restoration project to improve local ecosystem and create natural flood protection.",
         "status": "ACTIVE",
         "folder_location": "2024-09-005",
         "template": ""
@@ -73,7 +73,7 @@ projects = [
         "city": "Silver Springs",
         "start_date": "2024-09-18",
         "end_date": "2025-07-31",
-        "notes": "Design and construction of a state-of-the-art test track for autonomous vehicles, including various road conditions and smart city elements.",
+        "description": "Design and construction of a state-of-the-art test track for autonomous vehicles, including various road conditions and smart city elements.",
         "status": "NOT STARTED",
         "folder_location": "2024-09-006",
         "template": "default"
@@ -86,7 +86,7 @@ projects = [
         "city": "Harmony Heights",
         "start_date": "2024-09-20",
         "end_date": "2025-12-15",
-        "notes": "Development of a high-tech vertical farm to provide fresh produce for the local community, incorporating hydroponic and aeroponic systems.",
+        "description": "Development of a high-tech vertical farm to provide fresh produce for the local community, incorporating hydroponic and aeroponic systems.",
         "status": "ACTIVE",
         "folder_location": "2024-09-007",
         "template": ""
@@ -99,7 +99,7 @@ projects = [
         "city": "Bayside",
         "start_date": "2024-09-23",
         "end_date": "2025-11-30",
-        "notes": "Construction of a cutting-edge marine research center with laboratories, aquariums, and a deep-sea simulation facility.",
+        "description": "Construction of a cutting-edge marine research center with laboratories, aquariums, and a deep-sea simulation facility.",
         "status": "NOT STARTED",
         "folder_location": "2024-09-008",
         "template": "default"
@@ -112,7 +112,7 @@ projects = [
         "city": "Greenfield",
         "start_date": "2024-09-25",
         "end_date": "2025-10-31",
-        "notes": "Design and implementation of an advanced waste-to-energy facility to reduce landfill usage and generate clean electricity.",
+        "description": "Design and implementation of an advanced waste-to-energy facility to reduce landfill usage and generate clean electricity.",
         "status": "ACTIVE",
         "folder_location": "2024-09-009",
         "template": "default"
@@ -125,7 +125,7 @@ projects = [
         "city": "Sunset Valley",
         "start_date": "2024-09-28",
         "end_date": "2025-09-15",
-        "notes": "Comprehensive infrastructure resilience plan to address climate change impacts, including flood protection, heat mitigation, and sustainable energy systems.",
+        "description": "Comprehensive infrastructure resilience plan to address climate change impacts, including flood protection, heat mitigation, and sustainable energy systems.",
         "status": "NOT STARTED",
         "folder_location": "2024-09-010",
         "template": ""
@@ -138,7 +138,7 @@ projects = [
         "city": "Maple Grove",
         "start_date": "2024-09-02",
         "end_date": "2024-09-20",
-        "notes": "Quick renovation of central park facilities including playground equipment upgrade and pathway improvements.",
+        "description": "Quick renovation of central park facilities including playground equipment upgrade and pathway improvements.",
         "status": "ACTIVE",
         "folder_location": "2024-09-011",
         "template": "default"
@@ -151,7 +151,7 @@ projects = [
         "city": "Hillside",
         "start_date": "2024-09-05",
         "end_date": "2024-09-25",
-        "notes": "Urgent repair and upgrade of water distribution system in response to recent infrastructure failures.",
+        "description": "Urgent repair and upgrade of water distribution system in response to recent infrastructure failures.",
         "status": "ACTIVE",
         "folder_location": "2024-09-012",
         "template": ""
@@ -164,7 +164,7 @@ projects = [
         "city": "Lakefront",
         "start_date": "2024-09-08",
         "end_date": "2024-09-28",
-        "notes": "Design and construction of a temporary, eco-friendly structure for the annual Lakefront Arts Festival.",
+        "description": "Design and construction of a temporary, eco-friendly structure for the annual Lakefront Arts Festival.",
         "status": "NOT STARTED",
         "folder_location": "2024-09-013",
         "template": "default"
@@ -177,7 +177,7 @@ projects = [
         "city": "Redwood City",
         "start_date": "2024-09-10",
         "end_date": "2024-09-30",
-        "notes": "Comprehensive structural inspection and report on the city's five major bridges.",
+        "description": "Comprehensive structural inspection and report on the city's five major bridges.",
         "status": "NOT STARTED",
         "folder_location": "2024-09-014",
         "template": "default"
@@ -190,7 +190,7 @@ projects = [
         "city": "Sunnyvale",
         "start_date": "2024-09-03",
         "end_date": "2024-09-23",
-        "notes": "Rapid installation of solar panels on the community center roof to meet green energy grant deadline.",
+        "description": "Rapid installation of solar panels on the community center roof to meet green energy grant deadline.",
         "status": "ACTIVE",
         "folder_location": "2024-09-015",
         "template": ""
@@ -203,7 +203,7 @@ projects = [
         "city": "Clearwater",
         "start_date": "2024-09-06",
         "end_date": "2024-09-27",
-        "notes": "Evaluation of current stormwater management system and recommendations for green infrastructure integration.",
+        "description": "Evaluation of current stormwater management system and recommendations for green infrastructure integration.",
         "status": "NOT STARTED",
         "folder_location": "2024-09-016",
         "template": "default"
@@ -216,7 +216,7 @@ projects = [
         "city": "Maplewood",
         "start_date": "2024-09-09",
         "end_date": "2024-09-29",
-        "notes": "Recalibration and optimization of traffic signals in the downtown area to reduce congestion.",
+        "description": "Recalibration and optimization of traffic signals in the downtown area to reduce congestion.",
         "status": "ACTIVE",
         "folder_location": "2024-09-017",
         "template": ""
@@ -229,7 +229,7 @@ projects = [
         "city": "Oakdale",
         "start_date": "2024-09-11",
         "end_date": "2024-09-30",
-        "notes": "Comprehensive drone survey of the city to update GIS data for future urban development projects.",
+        "description": "Comprehensive drone survey of the city to update GIS data for future urban development projects.",
         "status": "NOT STARTED",
         "folder_location": "2024-09-018",
         "template": "default"
@@ -242,7 +242,7 @@ projects = [
         "city": "Springville",
         "start_date": "2024-09-04",
         "end_date": "2024-09-24",
-        "notes": "Quick implementation of dedicated bike lanes on major thoroughfares to promote sustainable transportation.",
+        "description": "Quick implementation of dedicated bike lanes on major thoroughfares to promote sustainable transportation.",
         "status": "ACTIVE",
         "folder_location": "2024-09-019",
         "template": "default"
@@ -255,7 +255,7 @@ projects = [
         "city": "Riverside",
         "start_date": "2024-09-07",
         "end_date": "2024-09-28",
-        "notes": "Urgent reinforcement of critical sections of the city's levee system before the fall rainy season.",
+        "description": "Urgent reinforcement of critical sections of the city's levee system before the fall rainy season.",
         "status": "ACTIVE",
         "folder_location": "2024-09-020",
         "template": ""
@@ -268,7 +268,7 @@ projects = [
         "city": "Oakville",
         "start_date": "2024-10-02",
         "end_date": "2024-10-23",
-        "notes": "Comprehensive plan to revitalize the downtown area, including façade improvements and pedestrian-friendly street designs.",
+        "description": "Comprehensive plan to revitalize the downtown area, including façade improvements and pedestrian-friendly street designs.",
         "status": "NOT STARTED",
         "folder_location": "2024-10-001",
         "template": "default"
@@ -281,7 +281,7 @@ projects = [
         "city": "Maplewood",
         "start_date": "2024-10-05",
         "end_date": "2024-10-31",
-        "notes": "Implementation of an AI-driven traffic management system to reduce congestion and improve traffic flow in the city center.",
+        "description": "Implementation of an AI-driven traffic management system to reduce congestion and improve traffic flow in the city center.",
         "status": "ACTIVE",
         "folder_location": "2024-10-002",
         "template": ""

@@ -34,7 +34,7 @@ class Project(models.Model):
     city=models.CharField(max_length=50)
     start_date=models.DateField()
     end_date=models.DateField()
-    notes=models.TextField(blank=True)
+    description=models.TextField(blank=True)
     status=models.CharField(max_length=50)
     folder_location=models.CharField(max_length=255)
     template=models.CharField(max_length=255, blank=True)

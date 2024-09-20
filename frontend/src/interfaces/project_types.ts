@@ -18,7 +18,7 @@ export type ProjectProps = {
     client_name: string
     start_date: string
     end_date: string
-    notes?: string
+    description?: string
     status: ProjectStatus
     folder_location: string
     project_template: string,

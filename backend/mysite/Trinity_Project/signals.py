@@ -14,6 +14,7 @@ def log_project_change(sender, instance,created, **kwargs):
     if created:
         # Retrieve the user using middleware
         user = CurrentUserMiddleware.get_current_user()
+
         if not user:
             return
         ProjectChangeLog.objects.create(
@@ -45,7 +46,7 @@ def log_project_change(sender, instance,created, **kwargs):
     
     old_values = instance.get_old_values()
     
-    fields_to_log = ['project_id', 'project_name', 'manager', 'client_name', 'city', 'start_date', 'end_date', 'notes', 'status']
+    fields_to_log = ['project_id', 'project_name', 'manager', 'client_name', 'city', 'start_date', 'end_date', 'description', 'status']
     
     for field in fields_to_log:
         old_value = old_values.get(field)
@@ -105,7 +106,7 @@ def log_task_change(sender, instance,created, **kwargs):
             task_title=f'{instance.title}',
             description=f'{instance.description}',
             assigned_to=f'{instance.assigned_to}',
-            project_id=f'{instance.project_id}',
+            project_id=f'{instance.project_id.project_id}',
             due_date=f'{instance.due_date}',
             change_description='Task was created',
             changed_by=user
@@ -118,7 +119,6 @@ def log_task_change(sender, instance,created, **kwargs):
         original = Task.objects.get(pk=instance.pk)
     except Task.DoesNotExist:
         return  # If the original does not exist, exit
-    
     
     # Retrieve the user using middleware
     user = CurrentUserMiddleware.get_current_user()
@@ -139,7 +139,7 @@ def log_task_change(sender, instance,created, **kwargs):
                 task_title=f'{instance.title}',
                 description=f'{instance.description}',
                 assigned_to=f'{instance.assigned_to}',
-                project_id=f'{instance.project_id}',
+                project_id=f'{instance.project_id.project_id}',
                 due_date=f'{instance.due_date}',
                 change_description=f'{field} changed from {old_value} to {new_value}',
                 changed_by=f'{user}'

@@ -5,7 +5,7 @@ import Home from './components/Home'
 import './App.css'
 import { CreateProject, UpdateProject, UpdateProjectList, ProjectStatusReport, ProjectDeleteConfimation } from './components/Project'
 import { checkUser } from './api/auth'
-import { TaskList, Tasks } from './components/Tasks';
+import { EditTask, TaskList, Tasks } from './components/Tasks';
 import { CreateEmployee, EmployeeList } from './components/Employee'
 import { TemplateList } from './components/Template'
 import { ErrorPage } from './components/Error'
@@ -35,7 +35,9 @@ export default function App() {
               <Route path='/projects/delete/:id' element={<ProjectDeleteConfimation />} />
 
               <Route path='/tasks/create_task' element={<Tasks />} />
+              <Route path='/tasks/edit_task/:id' element={<EditTask />} />
               <Route path='/tasks/' element={<TaskList />} />
+
 
               <Route path='/employees/' element={<EmployeeList />} />
               <Route path='/employees/create_employee' element={<CreateEmployee />} />

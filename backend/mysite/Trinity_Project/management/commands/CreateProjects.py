@@ -3,6 +3,7 @@ from Trinity_Project.models import Project, User
 from Trinity_Project.azure_file_share import AzureFileShareClient
 from Trinity_Project.management.commands.dummy_projects import projects
 from Trinity_Project.management.commands.dummy_employees import employees
+from django.db import connection
 
 class Command(BaseCommand):
     help = 'Creates Example Projects'
@@ -17,6 +18,9 @@ class Command(BaseCommand):
                 print(f"Employee '{employee['name']}' created successfully!")
             except Exception as ex:
                 print(f"An error occurred while creating employee: {ex}")
+                User.objects.all().delete()
+                self.stdout.write(self.style.ERROR('All users deleted successfully!'))
+                return
 
         for project in projects:
             try:
@@ -37,6 +41,12 @@ class Command(BaseCommand):
 
                 print(f"Project '{project['project_name']}' created successfully in Azure File Share!")
             except Exception as ex:
-                print(f"An error occurred while creating project: {ex}")
+                self.stdout.write(self.style.ERROR(f"An error occurred while creating project: {ex} ! Please fix them and try again."))
+                # Drops entire project if an error occurs
+                Project.objects.all().delete()
+                self.stdout.write(self.style.ERROR('All projects deleted successfully!'))
+                return
+
+
 
         self.stdout.write(self.style.SUCCESS('Successfully created example projects!'))

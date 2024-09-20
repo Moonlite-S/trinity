@@ -148,13 +148,6 @@ export function UpdateProject() {
 
             try {
                 const data = await getProject(id)
-                const managers = await getAllEmployeeNameAndEmail()
-                console.log("Managers: ", managers)
-
-                if (data.manager && !managers.some(manager => manager.email === data.manager.email)) {
-                    setErrorString("There is no manager in the database with that name. \n We will automatically include it, but please create the employee before creating a project.")
-                    managers.push(data.manager)
-                }
 
                 setCurrentProject(data)
 
@@ -288,7 +281,7 @@ export function ProjectStatusReport() {
                             {project && project.client_name}
                         </div>
                         <div>
-                            {project && project.notes}
+                            {project && project.description}
                         </div>
                     </div>
                     )}
@@ -361,7 +354,7 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
 
             <div>
                 <h3>Description:</h3>
-                {data.notes && <p>{data.notes}</p>}
+                {data.description && <p>{data.description}</p>}
             </div>
 
             <div>

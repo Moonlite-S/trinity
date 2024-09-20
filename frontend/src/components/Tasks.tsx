@@ -3,12 +3,13 @@ import { Header, TaskCard } from './misc';
 import { getAllEmployeeNameAndEmail } from '../api/employee';
 import { getProjectList } from '../api/projects';
 import { ProjectProps  } from '../interfaces/project_types';
-import { filterTasksByProject, filterTasksByUser, postTask } from '../api/tasks';
+import { filterTasksByProject, filterTasksByUser, getTaskByID, postTask, updateTask } from '../api/tasks';
 import { TaskProps } from '../interfaces/tasks_types';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../App';
 import { EmployeeNameEmail } from '../interfaces/employee_type';
-import { Back_Button } from './Buttons';
+import { Back_Button, BottomFormButton, SelectionComponent } from './Buttons';
+import { Link } from 'react-router-dom';
 //To prevent errors; assigns properties to the tasks to maintain consistency
 
 //*TODO:
@@ -114,8 +115,9 @@ export function Tasks() {
       <h1 className="mx-4 text-x1 font-semibold">Assign Task</h1>
         <form className="max-w-5xl w-full mx-auto my-5 bg-slate-200 rounded-lg shadow-md p-6 " onSubmit={onSubmit}>
           <div className="grid grid-cols-2 grid-flow-row justify-center gap-4 mb-4">
-              <div className='grid grid-rows-2'>
-                <label htmlFor="project_name">Project:</label>
+            <div className='grid grid-rows-2'>
+              <label htmlFor="project_name">Project:</label>
+
                 <select name="project_name" id="project_name" value={SelectedProject.project_name} onChange={onProjectSelection}>
                   <option value="" disabled>== Select a project ==</option>
                   {projects.map((option) => (
@@ -205,7 +207,9 @@ export function TaskList() {
 
       <div className='grid grid-cols-4 mx-5'>
         {tasks && tasks.map((task) => (
-          <TaskCard key={task.task_id} task={task} />
+          <Link to={'/tasks/edit_task/' + task.task_id} key={task.task_id}>
+            <TaskCard task={task} />
+          </Link>
         ))}
       </div>
 
@@ -217,27 +221,134 @@ export function TaskList() {
 }
 
 export function EditTask() {
+  const { id } = useParams<string>()
+  const [task, setTask] = useState<TaskProps>()
+  const [ProjectManagers, setProjectManagers] = useState<EmployeeNameEmail[]>([])
+  const [projects, setProjects] = useState<ProjectProps[]>([]);
+  const [defaultProject, setDefaultProject] = useState<string>('')
+  const [defaultManager, setDefaultManager] = useState<string>('')
+  const [taskID, setTaskID] = useState<string>('')
+
+  const navigate = useNavigate()
+
+  const projectManagerListOptions = ProjectManagers.map((manager) => ({value: manager.email, label: manager.name}))
+
+  const projectListOptions = projects.map((project) => ({value: project.project_id, label: project.project_name}))
+  useEffect(() => {
+
+    const fetchData = async () => {
+      if (!id) return
+      
+      try {
+        const get_task = await getTaskByID(id)
+        const managers = await getAllEmployeeNameAndEmail()
+        const projects = await getProjectList()
+
+        setProjectManagers(managers)  
+        setProjects(projects) 
+        setTaskID(get_task.task_id)
+
+        const project_name = get_task.project_id.split('|')[1].trim()
+
+        setDefaultProject(project_name)
+
+        console.log(project_name)
+
+        // CAUTION: Assigned to is formatted as "name|email"
+        // USING THE __STR__ REPRESENTATION OF THE OBJECT USER
+        // CHANGING THAT IN THE BACKEND WILL BREAK THINGS
+        const split_assigned = get_task.assigned_to.split('|')
+        const name = split_assigned[0].trim()
+
+        setDefaultManager(name)
+
+        setTask(get_task)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    fetchData()
+
+  }, [id])
+
+  console.log(task)
+
+  const onProjectChange = async(e: ChangeEvent<HTMLInputElement>) => {
+    const newProject = e.target.value
+    
+    console.log("DO THIS LATER")
+  }
+
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => { 
+    e.preventDefault()
+
+    const form_data = new FormData(e.currentTarget)
+
+    const data_to_send: TaskProps = {
+      task_id: form_data.get('task_id') as string,
+      title: form_data.get('title') as string,
+      description: form_data.get('description') as string,
+      assigned_to: form_data.get('assigned_to') as string,
+      due_date: form_data.get('due_date') as string,
+      project_id: form_data.get('project_id') as string
+    }
+
+    console.log(data_to_send)
+
+    try {
+      const result_code = await updateTask(data_to_send)
+
+      switch (result_code) {
+        case 200:
+          alert("Task updated successfully!")
+          navigate("/main_menu")
+          break
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   return (
     <>
       <Header/>
       <h1 className="mx-4 text-x1 font-semibold">Edit Task</h1>
-      <form>
-        <div className="grid grid-cols-2 grid-flow-row justify-center gap-4 mb-4"> 
+      <form id="task_update" onSubmit={onSubmit} method="post">
+        <div className="grid grid-rows-2 grid-flow-row justify-center gap-4 mb-4"> 
+          <div className='grid grid-rows-2'>
+            <label htmlFor="title">Task ID:</label>
+            <input value={taskID} type="text" name="task_id" className='border-black border px-2 ' required readOnly/>
+          </div>
+
           <div className='grid grid-rows-2'>
             <label htmlFor="title">Task Subject:</label>
-            <input type="text" name="title" required/>
+            <input defaultValue={task?.title} type="text" name="title" className='border-black border px-2 ' required/>
           </div>
 
           <div className='grid grid-rows-2'>
             <label htmlFor="description">Task Description:</label>
-            <input type="text" name="description" required/>
+            <textarea defaultValue={task?.description} name="description" className='border-black border px-2 ' required/>
           </div>
 
+          <div className='grid grid-rows-2'>
+            <label htmlFor="assigned_to">Assigned To:</label>
+            {task?.assigned_to && <SelectionComponent options={projectManagerListOptions} name='assigned_to' defaultValue={defaultManager}/>}
+          </div>
+
+          <div className='grid grid-rows-2'>
+            <label htmlFor="project_id">Project:</label>
+            {task?.project_id && <SelectionComponent options={projectListOptions} name='project_id' defaultValue={defaultProject} />}
+          </div>
+
+
+          <div className='grid grid-rows-2'>
+            <label htmlFor="due_date">Due Date:</label>
+            <input defaultValue={task?.due_date} type="date" name="due_date" className='border-black border px-2 ' required/>
+          </div>
         </div>
 
-        <div className="mx-auto text-center justify-center">
-          <button type="submit" className="bg-orange-300 rounded p-4" >Save Changes</button>
-        </div>
+        <BottomFormButton button_text='Update Task'/>
       </form>
     </>
   );

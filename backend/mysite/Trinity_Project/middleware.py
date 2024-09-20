@@ -11,7 +11,7 @@ from django.conf import settings
 
 User = get_user_model()
 _user = local()
-
+#This get the current user for log changes class
 class CurrentUserMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response

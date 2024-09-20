@@ -103,7 +103,7 @@ export function ProjectFormCreation(
                 <div className="flex flex-col gap-5 justify-between">
                     <div className="flex flex-row justify-between gap-5">
                         <label htmlFor="status" className="py-2">Project Status:</label>
-                        <select defaultValue={status} name="status" className="bg-white rounded-md p-2 border border-zinc-500">
+                        <select name="status" className="bg-white rounded-md p-2 border border-zinc-500">
                             <option value={'ACTIVE'}>Active</option>
                             <option value={'COMPLETED'}>Completed</option>
                             <option value={'CANCELLED'}>Cancelled</option>
@@ -153,8 +153,8 @@ export function ProjectFormCreation(
             </div>
 
             <div className="flex flex-col gap-5">
-                <label  htmlFor="notes">Project Notes:</label>
-                <textarea defaultValue={""} className="bg-white border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" placeholder="Enter notes or other details" name="notes"/>
+                <label  htmlFor="description">Project description:</label>
+                <textarea defaultValue={""} className="bg-white border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" placeholder="Enter description or other details" name="description"/>
             </div>
 
             <div title="If you are the project managers assigned to this project, you will not receive an email.">
@@ -182,7 +182,7 @@ export function ProjectFormUpdate(
         client_name = '',
         start_date = new Date().toLocaleDateString("en-CA"),
         end_date = '',
-        notes = '',
+        description = '',
         project_template = '',
     } = formProps ?? {}
 
@@ -256,7 +256,7 @@ export function ProjectFormUpdate(
     <>
     {errorString && <Error_Component errorString={errorString} />}
 
-    <form id="project_creation" onSubmit={onSubmit}  method="post">
+    <form id="project_update" onSubmit={onSubmit}  method="post">
         <div className="flex flex-col gap-10 p-24 mx-auto max-w-screen-lg bg-zinc-50" >
             <div className="flex flex-row justify-center gap-5">
                 <label htmlFor="project_id" className="py-2">Project ID:</label>
@@ -320,8 +320,8 @@ export function ProjectFormUpdate(
             </div>
 
             <div className="flex flex-col gap-5">
-                <label  htmlFor="notes">Project Notes:</label>
-                <textarea defaultValue={notes} className="bg-white border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" placeholder="Enter notes or other details" name="notes"/>
+                <label  htmlFor="description">Project description:</label>
+                <textarea defaultValue={description} className="bg-white border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" placeholder="Enter description or other details" name="description"/>
             </div>
 
         </div>

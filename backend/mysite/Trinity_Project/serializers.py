@@ -37,13 +37,13 @@ class ProjectSerializerUserObjectVer(serializers.ModelSerializer):
     manager = BasicUserSerializer()
     class Meta:
         model=Project
-        fields = ['project_id','project_name','manager','client_name','city','start_date','end_date','notes','status', 'folder_location', 'template']
+        fields = ['project_id','project_name','manager','client_name','city','start_date','end_date','description','status', 'folder_location', 'template']
 
 class ProjectSerializer(serializers.ModelSerializer):
     manager = serializers.EmailField()
     class Meta:
         model=Project
-        fields = ['project_id','project_name','manager','client_name','city','start_date','end_date','notes','status', 'folder_location', 'template']
+        fields = ['project_id','project_name','manager','client_name','city','start_date','end_date','description','status', 'folder_location', 'template']
 
 class UserSerializer(serializers.ModelSerializer):
     tasks = TaskSerializer(many=True, read_only=True)

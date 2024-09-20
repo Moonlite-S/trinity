@@ -1,12 +1,10 @@
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, JsonResponse
-from openai import AuthenticationError
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.permissions import IsAuthenticated
 
 from .azure_file_share import AzureFileShareClient
 from .models import Announcements, Project, Task,ProjectChangeLog, TaskChangeLog, User
@@ -14,17 +12,11 @@ from .serializers import AnnouncmentsSerializer, ProjectSerializer, ProjectSeria
 from rest_framework.views import APIView
 import jwt, datetime
 from datetime import datetime,timezone,timedelta
-from django.contrib.auth.decorators import login_required
-from rest_framework.authentication import BaseAuthentication
 #from django.conf import setting
 from django.contrib.auth import authenticate
-from django.contrib.auth import get_user_model
 from .utils import authenticate_jwt
-from django.db.models.signals import post_save, pre_save
 from datetime import datetime, timedelta
 #from backend.mysite.Trinity_Project import serializers
-from django.views.decorators.csrf import ensure_csrf_cookie
-from django.utils.decorators import method_decorator
 
 # Create your views here.
 class RegisterView(APIView):
@@ -43,10 +35,12 @@ class LoginView(APIView):
         user = authenticate(email=email, password=password)
         
         if user is None:
-            raise AuthenticationFailed('User not found!')
+            return Response(status=status.HTTP_403_FORBIDDEN)
+            # raise AuthenticationFailed('User not found!')
         
         if not user.check_password(password):
-            raise AuthenticationFailed('Incorrect password!')
+            return Response(status=status.HTTP_403_FORBIDDEN)
+            # raise AuthenticationFailed('Incorrect password!')
         
         payload = {
             'id': user.id,
@@ -165,7 +159,7 @@ def project_list(request):
                 if serializer.validated_data['template'] == '':
                     folder.create_empty_project_folder(serializer.validated_data['folder_location'])
                 else:
-                    folder.create_template_project_folder(serializer.validated_data['folder_location'], serializer.validated_data['template'])
+                    folder.create_template_project_folder(seralizer.validated_data['folder_location'], serializer.validated_data['template'])
                 
                 project = Project.objects.create(manager=manager_obj, **serializer.validated_data)
 
@@ -212,7 +206,6 @@ def project_detail(request, project_id):
             manager_obj = User.objects.get(email=manager_email)
             serializer.validated_data['manager'] = manager_obj
             serializer.save()
-            post_save.send(sender=Project, instance=project, user=payload['name'], update_fields=serializer.validated_data.keys())
             return Response(serializer.data)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -314,7 +307,6 @@ def task_list(request):
 
 @api_view(['GET','PUT','DELETE'])
 def task_detail(request, task_id):
-
     try:
         task=Task.objects.get(task_id=task_id)
     except Task.DoesNotExist:
@@ -331,15 +323,34 @@ def task_detail(request, task_id):
 
     if request.method == 'GET':
         serializer = TaskSerializer(task)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'PUT':
         # if manager != user.name and not user.is_superuser:
         #     raise PermissionDenied("You do not have permission to edit this task.")
         serializer = TaskSerializer(task, data=request.data)
         if serializer.is_valid():
+            manager_obj = serializer.validated_data.pop('assigned_to')
+            project_obj = serializer.validated_data.pop('project_id')
+
+            try:
+                manager = User.objects.get(email=manager_obj)
+                project = Project.objects.get(project_id=project_obj)
+            except User.DoesNotExist:   
+                return Response(data={"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+            
+            except Project.DoesNotExist:
+
+                return Response(data={"error": "Project not found"}, status=status.HTTP_404_NOT_FOUND)
+            
+            serializer.validated_data['assigned_to'] = manager  
+            serializer.validated_data['project_id'] = project
+
             serializer.save()
+            print(serializer.data)
+
             return Response(serializer.data)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':

@@ -175,7 +175,7 @@ function ListProjectsOnDay({ projects }: { projects: ProjectProps[] }) {
                     </div>
 
                     <div className='bg-orange-200 text-xs '>
-                        {project.notes}
+                        {project.description}
                     </div>
                 </div>
             </button>
