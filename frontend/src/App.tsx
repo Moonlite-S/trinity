@@ -1,16 +1,18 @@
-import { useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { BrowserRouter as Router, Route, Routes, Outlet, useLocation } from 'react-router-dom'
 import { MainMenu } from './components/MainMenu'
 import Home from './components/Home'
 import './App.css'
 import { CreateProject, UpdateProject, UpdateProjectList, ProjectStatusReport, ProjectDeleteConfimation } from './components/Project'
 import { checkUser } from './api/auth'
-import { Tasks } from './components/Tasks';
+import { EditTask, TaskList, Tasks } from './components/Tasks';
 import { CreateEmployee, EmployeeList } from './components/Employee'
 import { TemplateList } from './components/Template'
 import { ErrorPage } from './components/Error'
 import { Calendar } from './components/Calendar';
 import { Header } from './components/misc'
+import { EmployeeProps } from './interfaces/employee_type'
+import { SetAnnouncement } from './components/Announcement'
 
 // Main Router for the application
 export default function App() {
@@ -32,21 +34,52 @@ export default function App() {
               <Route path='/projects/project_status_report' element={<ProjectStatusReport />} />
               <Route path='/projects/delete/:id' element={<ProjectDeleteConfimation />} />
 
-              <Route path='/task' element={<Tasks />} />
+              <Route path='/tasks/create_task' element={<Tasks />} />
+              <Route path='/tasks/edit_task/:id' element={<EditTask />} />
+              <Route path='/tasks/' element={<TaskList />} />
+
+
               <Route path='/employees/' element={<EmployeeList />} />
               <Route path='/employees/create_employee' element={<CreateEmployee />} />
               <Route path='/template_list/' element={<TemplateList />} />
               <Route path='/calendar' element={<Calendar />} />
 
+              <Route path='/announcements/create_anncouncement' element={<SetAnnouncement />} />
+
             </Route>
 
-              <Route path='*' element={<ErrorPage />} />
+            <Route path='*' element={<ErrorPage />} />
 
         </Routes>
 
     </Router>
   )
 }
+
+export interface AuthContextType {
+  auth: boolean;
+  user: EmployeeProps | null;
+  loading: boolean;
+  setAuth: (auth: boolean) => void;
+  setUser: (user: EmployeeProps | null) => void;
+}
+
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+/**
+ * Get the current auth context
+ * 
+ * Use this to see through a user's data
+ * 
+ * @returns the current auth context
+ */
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
 
 /**
  * Bridge Component for login verification
@@ -65,22 +98,23 @@ export default function App() {
 export function Verification() {
     const [auth, isAuth] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(true)
+    const [user, setUser] = useState<EmployeeProps | null>(null)
     const location = useLocation()
 
     useEffect(() => {
       // Check if user is logged in
       const checkForValidation = async () => {
         setLoading(true)
+
         try {
-          const reponse_code = await checkUser()
+          const user = await checkUser()
+          setUser(user)
+          isAuth(true)
           
-          if (reponse_code === 200) {
-            console.log("User verified")
-            isAuth(true)
-          }
         } catch (error) {
           console.error("Error checking user:", error);
           isAuth(false)
+          setUser(null)
         } finally {
           setLoading(false)
         }
@@ -97,7 +131,11 @@ export function Verification() {
       return <LoadingComponent />
     }
 
-    return (auth ? <Outlet/> : <Home />)
+    return (
+      <AuthContext.Provider value={{ auth, user, loading, setAuth: isAuth, setUser }}>
+        {auth ? <Outlet /> : <Home />}
+      </AuthContext.Provider>
+    )
 }
 
 /**
