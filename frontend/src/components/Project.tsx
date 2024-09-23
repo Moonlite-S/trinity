@@ -5,7 +5,6 @@ import { createProject, getProjectList, getProject, updateProject, deleteProject
 import { useNavigate, useParams } from "react-router-dom";
 import DataTable, { Direction, TableColumn } from "react-data-table-component";
 import { FilterProps, ProjectProps } from "../interfaces/project_types";
-import { getAllEmployeeNameAndEmail } from "../api/employee";
 import { ProjectFormCreation, ProjectFormUpdate } from "./ProjectForm";
 import { Route_Button } from "./Buttons";
 import { useAuth } from "../App";
@@ -473,7 +472,3 @@ export function ProjectDeleteConfimation() {
 
     )
 }
-function return_all_users_name_and_email() {
-    throw new Error("Function not implemented.");
-}
-

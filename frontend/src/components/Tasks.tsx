@@ -274,11 +274,11 @@ export function EditTask() {
 
   console.log(task)
 
-  const onProjectChange = async(e: ChangeEvent<HTMLInputElement>) => {
-    const newProject = e.target.value
+  // const onProjectChange = async(e: ChangeEvent<HTMLInputElement>) => {
+  //   const newProject = e.target.value
     
-    console.log("DO THIS LATER")
-  }
+  //   console.log("DO THIS LATER")
+  // }
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => { 
     e.preventDefault()
