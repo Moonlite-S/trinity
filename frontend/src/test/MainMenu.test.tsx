@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { Login } from '../components/Home'
 import { MainMenu } from '../components/MainMenu'
 import { TestRouterWrapper } from './utils'
@@ -30,28 +30,6 @@ describe('MainMenu', () => {
     })
 
     describe('when the user is logged in', () => {
-        it('should display the main menu', async () => {
-            render(
-                <TestRouterWrapper 
-                initialEntries={['/main_menu']}
-                routes={[
-                    {path: '/main_menu', element: <MainMenu />}
-                ]}
-                authContextValue={{ auth: true,
-                    user: { name: 'Sean', email: 'sean@example.com', username: 'sean', password: '123', role: 'Manager' },
-                    loading: false,
-                    setAuth: vi.fn(), 
-                    setUser: vi.fn() }} />
-            )
-
-            await waitFor(() => {
-                expect(screen.getByTestId('location-display')).toHaveTextContent('/main_menu')
-            }) 
-
-            expect(screen.getByText(/main menu/i)).toBeInTheDocument()
-            expect(screen.getByText(/logout/i)).toBeInTheDocument()
-        })
-        
         it('should display the nav buttons', () => {
             render(
                 <TestRouterWrapper 
@@ -77,5 +55,92 @@ describe('MainMenu', () => {
             expect(screen.getByText(/employee list/i)).toBeInTheDocument()
             expect(screen.getByText(/create employee/i)).toBeInTheDocument()
         })
+
+        it('should display the user information', () => {
+            render(
+                <TestRouterWrapper 
+                initialEntries={['/main_menu']}
+                routes={[
+                    {path: '/main_menu', element: <MainMenu />}
+                ]}
+                authContextValue={{ auth: true,
+                    user: { name: 'Sean', email: 'sean@example.com', username: 'sean', password: '123', role: 'Manager' },
+                    loading: false,
+                    setAuth: vi.fn(), 
+                    setUser: vi.fn() }} />
+            )
+
+            expect(screen.getByText(/sean/i)).toBeInTheDocument()
+            expect(screen.getByText(/manager/i)).toBeInTheDocument()
+        })
+
+        it('should display the logout button', () => {
+            render(
+                <TestRouterWrapper 
+                initialEntries={['/main_menu']}
+                routes={[
+                    {path: '/main_menu', element: <MainMenu />}
+                ]}
+                authContextValue={{ auth: true,
+                    user: { name: 'Sean', email: 'sean@example.com', username: 'sean', password: '123', role: 'Manager' },
+                    loading: false,
+                    setAuth: vi.fn(), 
+                    setUser: vi.fn() }} />
+            )
+
+            expect(screen.getByText(/logout/i)).toBeInTheDocument()
+        })
+
+        it('should display no announcements', () => {
+            render(
+                <TestRouterWrapper 
+                initialEntries={['/main_menu']}
+                routes={[
+                    {path: '/main_menu', element: <MainMenu />}
+                ]}
+                authContextValue={{ auth: true,
+                    user: { name: 'Sean', email: 'sean@example.com', username: 'sean', password: '123', role: 'Manager' },
+                    loading: false,
+                    setAuth: vi.fn(), 
+                    setUser: vi.fn() }} />
+            )
+
+            expect(screen.getByText(/no announcements at the moment/i)).toBeInTheDocument()
+        })
+
+        it('should display no projects', () => {
+            render(
+                <TestRouterWrapper 
+                initialEntries={['/main_menu']}
+                routes={[
+                    {path: '/main_menu', element: <MainMenu />}
+                ]}
+                authContextValue={{ auth: true,
+                    user: { name: 'Sean', email: 'sean@example.com', username: 'sean', password: '123', role: 'Manager' },
+                    loading: false,
+                    setAuth: vi.fn(), 
+                    setUser: vi.fn() }} />
+            )
+
+            expect(screen.getByText(/no projects assigned to you/i)).toBeInTheDocument()
+        })
+
+        it('should display no tasks', () => {
+            render(
+                <TestRouterWrapper 
+                initialEntries={['/main_menu']}
+                routes={[
+                    {path: '/main_menu', element: <MainMenu />}
+                ]}
+                authContextValue={{ auth: true,
+                    user: { name: 'Sean', email: 'sean@example.com', username: 'sean', password: '123', role: 'Manager' },
+                    loading: false,
+                    setAuth: vi.fn(), 
+                    setUser: vi.fn() }} />
+            )
+
+            expect(screen.getByText(/no tasks assigned to you/i)).toBeInTheDocument()
+        })
+
     })
 })

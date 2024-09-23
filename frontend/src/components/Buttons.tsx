@@ -57,7 +57,8 @@ export function CreateableSelectionComponent({defaultValue = '', multiple, optio
         : {value: defaultValue, label: defaultValue}
 
     return (
-        <CreatableSelect defaultValue={selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
+        <>
+        <CreatableSelect inputId={name} defaultValue={selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
         styles = {{
             control: (baseStyles: any, state: any) => ({
                 ...baseStyles,
@@ -74,7 +75,9 @@ export function CreateableSelectionComponent({defaultValue = '', multiple, optio
                     backgroundColor: '#cacacc',
                 },
             })
-        }}/>
+        }}
+        />
+        </>
     )
 }
 
@@ -103,7 +106,7 @@ export function SelectionComponent({defaultValue = '', multiple, options, name, 
 
 
     return (
-        <Select defaultValue={selectDefaultValue} onChange={onChange ? onChange : () => selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
+        <Select id={name} defaultValue={selectDefaultValue} onChange={onChange ? onChange : () => selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
         styles = {{
             control: (baseStyles: any, state: any) => ({
                 ...baseStyles,
@@ -122,7 +125,9 @@ export function SelectionComponent({defaultValue = '', multiple, options, name, 
                 
             })
 
-        }}/>
+        }}
+        
+        />
     )
 }
 

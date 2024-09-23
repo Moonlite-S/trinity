@@ -93,17 +93,17 @@ export function ProjectFormCreation(
         <div className="flex flex-col gap-10 p-24 mx-auto max-w-screen-lg bg-zinc-50" >
             <div className="flex flex-row justify-center gap-5">
                 <label htmlFor="project_id" className="py-2">Project ID:</label>
-                <input defaultValue={ProjectID} className="bg-slate-200 rounded-md border-zinc-500 border" type="text" name="project_id"/>
+                <input id='project_id' defaultValue={ProjectID} className="bg-slate-200 rounded-md border-zinc-500 border" type="text" name="project_id"/>
                 
                 <label htmlFor="project_name" className="py-2" >Project Name:</label>
-                <input className="bg-white border border-zinc-500 rounded-md focus:outline-none focus:ring focus:ring-orange-400" type="text" name="project_name" autoFocus required/>
+                <input id='project_name' className="bg-white border border-zinc-500 rounded-md focus:outline-none focus:ring focus:ring-orange-400" type="text" name="project_name" autoFocus required/>
             </div>
         
             <div className="flex flex-row gap-5 justify-between">
                 <div className="flex flex-col gap-5 justify-between">
                     <div className="flex flex-row justify-between gap-5">
                         <label htmlFor="status" className="py-2">Project Status:</label>
-                        <select name="status" className="bg-white rounded-md p-2 border border-zinc-500">
+                        <select id='status' name="status" className="bg-white rounded-md p-2 border border-zinc-500">
                             <option value={'ACTIVE'}>Active</option>
                             <option value={'COMPLETED'}>Completed</option>
                             <option value={'CANCELLED'}>Cancelled</option>
@@ -113,12 +113,12 @@ export function ProjectFormCreation(
 
                     <div className="flex flex-row justify-between gap-5">
                         <label htmlFor="start_date" className="py-2">Date Created:</label>
-                        <input value={DateStart} onChange={onDateStartChange} className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="date" name="start_date" required/>
+                        <input id='start_date' value={DateStart} onChange={onDateStartChange} className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="date" name="start_date" required/>
                     </div>
 
                     <div className="flex flex-row justify-between gap-5">
                         <label htmlFor="end_date" className="py-2">Due Date:</label>
-                        <input className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="date" name="end_date" required/>
+                        <input id='end_date' className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="date" name="end_date" required/>
                     </div>
                 </div>
 
@@ -129,12 +129,12 @@ export function ProjectFormCreation(
                     </div>
 
                     <div className="flex flex-row justify-between gap-5">
-                        <label >Client Name</label>
+                        <label htmlFor="client_name" >Client Name:</label>
                         <CreateableSelectionComponent options={Clients} name="client_name" defaultValue={""}/>
                     </div>
                     
                     <div className="flex flex-row justify-between gap-5">
-                        <label >City</label>
+                        <label htmlFor="city" >City:</label>
                         <CreateableSelectionComponent defaultValue={""} options={Cities} name="city"/>
                     </div>
                 </div>
@@ -143,23 +143,23 @@ export function ProjectFormCreation(
             <div className="flex flex-row gap-5 justify-between">
                 <div className="flex flex-row ">
                     <label htmlFor="folder_location" className="py-2">Folder Name:</label>
-                    <input defaultValue={ProjectID} className="mx-2 p-2 bg-slate-200 border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="text" name="folder_location" />
+                    <input id='folder_location' defaultValue={ProjectID} className="mx-2 p-2 bg-slate-200 border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="text" name="folder_location" />
                 </div>
 
                 <div className="flex flex-row justify-between gap-5">
-                    <label htmlFor="template" className="py-2">Template:</label>
+                    <label htmlFor="template" className="py-2" aria-label="template">Template:</label>
                     <SelectionComponent options={templates} name="template"/>
                 </div>
             </div>
 
             <div className="flex flex-col gap-5">
                 <label  htmlFor="description">Project description:</label>
-                <textarea defaultValue={""} className="bg-white border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" placeholder="Enter description or other details" name="description"/>
+                <textarea id='description' defaultValue={""} className="bg-white border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" placeholder="Enter description or other details" name="description"/>
             </div>
 
             <div title="If you are the project managers assigned to this project, you will not receive an email.">
                 <label htmlFor="notify_manager" className="py-2" >Notify Manager:</label>
-                <input type="checkbox" name="notify_manager" className="mx-2 bg-slate-200 border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" defaultChecked />
+                <input id='notify_manager' type="checkbox" name="notify_manager" className="mx-2 bg-slate-200 border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" defaultChecked />
             </div>
         </div>
 

@@ -58,7 +58,6 @@ export function ContactForm() {
 
         <h2 className='p-3'>Want to know more about us?</h2>
 
-
         <div className='flex flex-col'>
 
           <label htmlFor='email' className='mb-3 mt-3'>E-mail</label>
