@@ -1,54 +1,73 @@
-import { useEffect, useMemo, useState } from "react";
-import { Error_Component, Header, Route_Button } from "./misc";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { FormEvent, useEffect, useMemo, useState } from "react";
+import { Error_Component, Header, TaskCard } from "./misc";
 import { createProject, getProjectList, getProject, updateProject, deleteProject } from "../api/projects";
 import { useNavigate, useParams } from "react-router-dom";
 import DataTable, { Direction, TableColumn } from "react-data-table-component";
-import { FilterProps, UpdateProjectProps } from "../interfaces/project_types";
-import { getEmployeeNameList } from "../api/employee";
-import { ProjectForm } from "./ProjectForm";
+import { FilterProps, ProjectProps } from "../interfaces/project_types";
+import { getAllEmployeeNameAndEmail } from "../api/employee";
+import { ProjectFormCreation, ProjectFormUpdate } from "./ProjectForm";
+import { Route_Button } from "./Buttons";
+import { useAuth } from "../App";
+import { filterTasksByProject } from "../api/tasks";
+import { TaskProps } from "../interfaces/tasks_types";
 
 /**
  * ### [Route for ('/create_project')]
  * 
  * This component shows a ProjectForm component to create a new project.
+ * 
  */
 export function CreateProject() {
-    const [projectManagers, setProjectManagers] = useState<string[]>([])
+    const { user } = useAuth();
     const [errorString, setErrorString] = useState<string>()
     const navigate = useNavigate()
 
-    const onSubmit = async (event: any) => {
+    const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-
-        const formData = new FormData(event.target)
+        
+        const formData = new FormData(event.currentTarget)
         const data = Object.fromEntries(formData)
 
-        console.log(data)
+        if (data.notify_manager === "on" && data.manager !== user?.email) {
+                const to = data.manager // Change this so that it's the user's email
+                const subject = "New Project (" + data.project_name + ") Assigned to you"
+                const body = "You have been assigned a new project, " + data.project_name + ". Please check it out."
+
+                const mail_url = `mailto:${encodeURIComponent(String(to))}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+
+                window.location.href = mail_url
+            }
 
         try {
-            await createProject(data)
-            // Component that signals that a project has been created
-            alert("Project created successfully!")
-            navigate("/projects")
-        } catch (error) {
-            console.error("Error creating project:", error);
-            setErrorString("Error creating project: " + error)
+            setErrorString(undefined)
+            const result_code = await createProject(data)
+            
+            console.log(data)
+            console.log(result_code)
+
+            // Error handling
+            switch (result_code) {
+                case 201:
+                    alert("Project created successfully!")
+                    navigate("/projects")
+                    break
+                case 400:
+                    setErrorString("Bad Request: Invalid data. Please make sure all fields are filled out. Error: " + result_code)
+                    break
+                case 403:
+                    setErrorString("Forbidden: You are not authorized to create projects. Error: " + result_code)
+                    break
+                default:
+                    throw new Error("Error creating project: " + result_code)
+            }
+
+        } catch (error: unknown) {
+            console.error("Something went wrong: ", error)
+            setErrorString("Error 500")
         }
     }
 
-    useEffect(() => {
-        const get_managers = async () => {
-            try {
-                const managers = await getEmployeeNameList()
-                setProjectManagers(managers)
-            } catch (error) {
-                console.error("Error fetching managers:", error);
-                setErrorString("Error fetching managers: " + error)
-            }
-        }
-
-        get_managers()
-    }, [])
     return (
         <>
             <Header />
@@ -61,7 +80,7 @@ export function CreateProject() {
 
             </div>
 
-            <ProjectForm button_text="Create Project" projectManagerList={projectManagers} onSubmit={onSubmit} />
+            <ProjectFormCreation onSubmit={onSubmit} />
 
         </>
     )
@@ -73,19 +92,17 @@ export function CreateProject() {
  * This component fetches a list of projects and shows them in a table.
  * 
  * TODO: 
- *  - Add a button to create a new project (so we can have one button in the Main Menu)
- *  - Add a search bar
- *  - Look for a custom component for the table that has search, sort, and pagination
+ *  - Fix Default Project Manager
  */
 export function UpdateProjectList() {
-    const [projectList, setProjectList] = useState<UpdateProjectProps[]>([])
+    const [projectList, setProjectList] = useState<ProjectProps[]>([])
     const [projectLoaded, setProjectLoaded] = useState<boolean>(false)
 
     useEffect(() => {
         // This is where the list of projects will be fetched
         const fetchProjects = async () => {
             try {
-                const data: Array<UpdateProjectProps> = await getProjectList()
+                const data: Array<ProjectProps> = await getProjectList()
                 
                 setProjectList(data)
                 setProjectLoaded(true)
@@ -119,8 +136,7 @@ export function UpdateProjectList() {
  */
 export function UpdateProject() {
     const { id } = useParams<string>()
-    const [projectManager, setProjectManagers] = useState<string[]>([])
-    const [currentProject, setCurrentProject] = useState<UpdateProjectProps>()
+    const [currentProject, setCurrentProject] = useState<ProjectProps>()
     const [errorString, setErrorString] = useState<string>()
     const [loading, setLoading] = useState<boolean>(true)
     const navigate = useNavigate()
@@ -132,18 +148,9 @@ export function UpdateProject() {
 
             try {
                 const data = await getProject(id)
-                const managers = await getEmployeeNameList()
-
-                if (data.manager && !managers.includes(data.manager)) {
-                    console.error("There's no mangaer with that name: ", data.manager)
-                    console.error("We will automatically include it, but please create the employee before creating a project")
-
-                    setErrorString("There is no manager in the database with that name. \n We will automatically include it, but please create the employee before creating a project.")
-                    managers.push(data.manager)
-                }
 
                 setCurrentProject(data)
-                setProjectManagers(managers)
+
                 setLoading(false)
             } catch (error) {
                 console.error("Error fetching project:", error);
@@ -152,14 +159,18 @@ export function UpdateProject() {
         }
 
         project()
-    }, [])
+    }, [id, navigate])
 
-    const onSubmit = async(event: any) => {
+    const onSubmit = async(event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         
         try {
-            const form_data = new FormData(event.target)
+            const form_data = new FormData(event.currentTarget)
+
             const data = Object.fromEntries(form_data)
+
+            console.log("Data: ", data)
+
             const response = await updateProject(data, id)
 
             switch (response) {
@@ -191,7 +202,8 @@ export function UpdateProject() {
 
             {loading ? <div>Loading...</div> 
             : 
-            <ProjectForm button_text="Update Project" projectManagerList={projectManager} onSubmit={onSubmit} formProps={currentProject} />}
+            <ProjectFormUpdate onSubmit={onSubmit} formProps={currentProject} />}
+            
         </>
     )
 }
@@ -206,8 +218,8 @@ export function ProjectStatusReport() {
      * TODO:
      * - Make the page printable
      */
-    const [project, setProject] = useState<UpdateProjectProps[]>()
-    const [manager, setManagers] = useState<string[]>([])
+    const [project, setProject] = useState<ProjectProps[]>()
+    const [managers, setManagers] = useState<string[]>([])
 
     useEffect(() => {
         const get_data = async () => {
@@ -217,15 +229,22 @@ export function ProjectStatusReport() {
                 throw new Error("Error fetching project list")
             }
 
-            const unique_managers = [...new Set(response.map(project => project.manager))]
+            const unique_managers = [...new Set(response.map(project => project.manager.name))];
 
+            console.log("test", response)
+
+            console.log("Unique Managers: ", unique_managers)
+            
             setManagers(unique_managers)
             
             setProject(response)
         }
 
+
         get_data()
     }, [])
+
+    console.log("Managers: ", managers)
 
     return(
         <>
@@ -235,9 +254,9 @@ export function ProjectStatusReport() {
 
             {project && project.length === 0 && <h1 className="flex justify-center py-2">No projects found</h1>}
 
-            {manager && manager.map(manager => 
-            <div key={manager} className="my-5">
-                <h4 className="px-2">Total Projects: {project && project.filter(project => project.manager === manager).length}</h4>
+            {managers && managers.map((manager, index) => 
+            <div key={index} className="my-5">
+                <h4 className="px-2">Total Projects: {project && project.filter(project => project.manager.name === manager).length}</h4>
                 <div className="grid grid-cols-5 p-4 border-b-2 bg-slate-50">
                     <h3>{manager}</h3>
                     <h3>Project ID</h3>
@@ -247,8 +266,8 @@ export function ProjectStatusReport() {
                 </div>
 
                 <div>
-                    {project && project.filter(project => project.manager === manager).map(project => 
-                    <div key={project.project_id} className="grid grid-cols-5 px-2 py-4 hover:bg-slate-100 transition border-b">
+                    {project && project.filter(project => project.manager.name === manager).map((project, index) => 
+                    <div key={index} className="grid grid-cols-5 px-2 py-4 hover:bg-slate-100 transition border-b">
                         <div>
                             
                         </div>
@@ -262,7 +281,7 @@ export function ProjectStatusReport() {
                             {project && project.client_name}
                         </div>
                         <div>
-                            {project && project.notes}
+                            {project && project.description}
                         </div>
                     </div>
                     )}
@@ -312,32 +331,54 @@ const FilterComponent = ({ filterText, onFilter, onClear }: FilterProps) => (
  * @param param0 data The props of a give row
  * 
  */
-const ExpandableRowComponent = ({ data }: { data: UpdateProjectProps }) => (
+const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
+    const [tasks, setTasks] = useState<TaskProps[]>([])
+
+    useEffect(() => {
+        console.log("Data: ", data)
+        const get_tasks = async () => {
+            const response = await filterTasksByProject(data.project_id)
+            setTasks(response)
+        }
+
+        get_tasks()
+
+    }, [data])
+
+    console.log("Tasks: ", tasks)
+
+    return (
     <div className="flex flex-col gap-5 bg-slate-50">
         
-        <div className="p-5 flex flex-row gap-5">
+        <div className="p-5 flex flex-col gap-5">
 
             <div>
                 <h3>Description:</h3>
-                {data.notes && <p>{data.notes}</p>}
+                {data.description && <p>{data.description}</p>}
             </div>
 
             <div>
                 <h3>Tasks:</h3>
-                <p>(This is where ongoing tasks come in)</p>
+                {tasks.length > 0 ? tasks.map(task => 
+                    <div key={task.task_id} className="w-1/2"> 
+                        <TaskCard task={task} />
+                    </div>
+                ) 
+                : 
+                <p>No tasks found</p>
+                }
             </div>
 
         </div>
 
         <div className="flex flex-row gap-5 m-5">
             <Route_Button route={"/projects/update_project/" + data.project_id} text="Edit"/>
-            <Route_Button route={"/projects/project_status_report/" + data.project_id} text="Report"/>
-            <Route_Button route={"/create_template"} text="Create Template"/>
             <Route_Button route={"/projects/delete/" + data.project_id} text="Delete" isDelete/>
         </div>
 
     </div>
-)
+    )
+}
 
 /**
  * The Table Component that lists the projects
@@ -347,17 +388,17 @@ const ExpandableRowComponent = ({ data }: { data: UpdateProjectProps }) => (
  * @param param0 projectList - List of projects 
  * @param param1 projectLoaded - Boolean to check if projects have been loaded
  */
-function ProjectUpdateTable({ projectList, projectLoaded }: { projectList: UpdateProjectProps[], projectLoaded: boolean }) {
+function ProjectUpdateTable({ projectList, projectLoaded }: { projectList: ProjectProps[], projectLoaded: boolean }) {
     const [filterText, setFilterText] = useState<string>('')
     const [resetPaginationToggle, setResetPaginationToggle] = useState<boolean>(false)
 
-    const filteredProjects: UpdateProjectProps[] = projectList.filter(item => item.project_name.toLowerCase().includes(filterText.toLowerCase()))
+    const filteredProjects: ProjectProps[] = projectList.filter(item => item.project_name.toLowerCase().includes(filterText.toLowerCase()))
 
     // Column Names
-    const columns: TableColumn<UpdateProjectProps>[] = [
+    const columns: TableColumn<ProjectProps>[] = [
         { name: "Project ID", selector: row => row.project_id, sortable: true },
         { name: "Project Name", selector: row => row.project_name, sortable: true },
-        { name: "Project Manager", selector: row => row.manager, sortable: true },
+        { name: "Project Manager", selector: row => row.manager.name, sortable: true },
         { name: "Status", selector: row => row.status, sortable: true },
         { name: "Customer", selector: row => row.client_name, sortable: true },
         { name: "City", selector: row => row.city, sortable: true },
@@ -432,3 +473,7 @@ export function ProjectDeleteConfimation() {
 
     )
 }
+function return_all_users_name_and_email() {
+    throw new Error("Function not implemented.");
+}
+

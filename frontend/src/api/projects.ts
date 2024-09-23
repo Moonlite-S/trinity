@@ -1,15 +1,18 @@
-import { UpdateProjectProps } from "../interfaces/project_types";
+import { ProjectCreationProps, ProjectProps } from "../interfaces/project_types";
 import AxiosInstance from "../components/Axios";
+import { AxiosError } from "axios";
 
 /**
  * Fetches a list of projects
  * 
- * @ param {string} the user's role so filter out projects they can't see (not yet implemented)
- * @ returns (supposed to be) a list of projects
+ * @ filter optional: filters the list of projects based on field
+ * @ returns (supposed to be) a list of ProjectProps
  */
-export async function getProjectList(): Promise<UpdateProjectProps[]> {
+export async function getProjectList(filter?: string): Promise<ProjectProps[]> {
     try {
-        const response = await AxiosInstance.get('api/projects')
+        const response = await AxiosInstance.get('api/projects' + (filter ? '/' + filter : ''))
+
+        console.log(response)
 
         if (response.status === 200) {
             return response.data
@@ -29,7 +32,7 @@ export async function getProjectList(): Promise<UpdateProjectProps[]> {
  * @param id the project id of the project
  * @returns An object of type UpdateProjectProps
  */
-export async function getProject(id: string): Promise<UpdateProjectProps> {
+export async function getProject(id: string): Promise<ProjectProps> {
     try {
         const response = await AxiosInstance.get('api/projects/id/' + id)
 
@@ -55,22 +58,33 @@ export async function getProject(id: string): Promise<UpdateProjectProps> {
  * 
  * TODO: 
  * - Backend needs to perform a check to make sure the project doesn't already exist
+ * - Currently can't catch the error if project_id already existsq
  */
-export async function createProject(project_data: { [key: string]: FormDataEntryValue }): Promise<UpdateProjectProps> {
+export async function createProject(project_data: { [key: string]: FormDataEntryValue }): Promise<number> {
     try {
         const response = await AxiosInstance.post('api/projects/', project_data)
 
         console.log(response)
 
-        if (response.status === 201) {
-            return response.data
-        } else {
-            throw new Error('Error creating project')
-        }
+        return 201
+    } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+            if (error.response?.status === 400) {
+                if (error.response.data['project_id']) {
+                    // 409 Conflict
+                    return 409
+                } else {
+                    // 400 Bad Request
+                    return 400
+                }
+            } else if (error.response?.status === 403) {
+                // 403 Forbidden
+                return 403
+            }
+        } 
 
-    } catch (error) {
-        console.error("Server Error: ",error)
-        throw error
+        console.error("Server Error: ", error)
+        return 500
     }
 }
 
@@ -80,19 +94,20 @@ export async function updateProject(project_data: { [key: string]: FormDataEntry
 
         console.log(response)
 
-        if (response.status === 200) {
-            return response.status
-        } else if (response.status === 403) {
-            // You have no permissions
-            console.error("Forbidden. Error", response.status)
-            return response.status
-        } else {
-            throw new Error('Error updating project')
-        }
+        return 200
 
-    } catch (error) {
-        console.error("Server Error: ",error)
-        throw error
+    } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+            if (error.response?.status === 400) {
+                // 400 Bad Request
+                return 400
+            } else if (error.response?.status === 403) {
+                // 403 Forbidden
+                return 403
+            }
+        }
+        console.error("Server Error: ", error)
+        return 500
     }
 }
 
@@ -102,17 +117,48 @@ export async function deleteProject(id: string | undefined): Promise<number> {
 
         console.log(response)
 
-        if (response.status === 204) {
-            return response.status
-        } else if (response.status === 403) {
-            // You have no permissions
-            console.error("Forbidden. Error", response.status)
-            return response.status
+        return 204
+    } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+            if (error.response?.status === 400) {
+                // 400 Bad Request
+                return 400
+            } else if (error.response?.status === 403) {
+                // 403 Forbidden
+                return 403
+            }
+        }
+        console.error("Server Error: ", error)
+        return 500
+    }
+}
+
+export async function getDataForProjectCreation(date: string): Promise<ProjectCreationProps> {
+    try {
+        const response = await AxiosInstance.get('api/projects/project_creation', { params: { date: date } })
+
+        if (response.status === 200) {
+            return response.data
         } else {
-            throw new Error('Error deleting project')
+            throw new Error('Error fetching project creation data')
+        }
+    } catch (error) {
+        console.error("Server Error: ", error)
+        throw error
+    }
+}
+
+export async function getProjectByDate(year: string, month: string): Promise<ProjectProps[]> {
+    try {
+        const response = await AxiosInstance.get('api/projects/by_date', { params: { year: year, month: month} })
+
+        if (!response) {
+            throw new Error("Error fetching project list")
         }
 
-    } catch (error) {
+        return response.data
+
+    } catch (error) {  
         console.error("Server Error: ",error)
         throw error
     }

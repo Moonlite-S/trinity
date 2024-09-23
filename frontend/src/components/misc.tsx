@@ -1,6 +1,9 @@
 // For miscelaneous components
-import { useNavigate } from 'react-router-dom';
+import {useNavigate } from 'react-router-dom';
 import logo from '/trinity_logo.png'
+import { TaskProps } from '../interfaces/tasks_types';
+import { AnnouncementProps } from '../interfaces/announcement_types';
+import { ProjectProps } from '../interfaces/project_types';
 
 // Header Component for all pages
 export function Header() {
@@ -17,21 +20,47 @@ export function Header() {
   )
 }
 
-/** General Orange button */
-export function Route_Button({route, text, isDelete}: {route: string, text: string, isDelete?: boolean}) {
-  const navigate = useNavigate();
-  const css = isDelete ? 'bg-red-300 rounded p-4 my-2 hover:bg-red-400 transition' : 
-  'bg-orange-300 rounded p-4 my-2 hover:bg-orange-400 transition';
-
-  return(
-    <button className={css} onClick={() =>navigate(route)}>{text}</button>
-  )
-}
-
+// eslint-disable-next-line react-refresh/only-export-components
 export function Error_Component({ errorString }: { errorString: string }) {
   return (
       <div className="justify-center mx-auto p-5 bg-red-500">
           <p className="text-white">{errorString}</p>
       </div>
+  )
+}
+
+export function TaskCard ({task} : {task: TaskProps}) {
+    const formatProjectName = task.project_id.split('|')[1]
+    const formatCompanyName = task.project_id.split('|')[2]
+
+    return (
+    <div className=" bg-slate-100 p-4 my-4 mx-2 rounded-md shadow-md">
+        <h3>{formatProjectName}</h3>
+        <h4 className='font-bold'>Task: {task.title}</h4> 
+        <p className="py-4 break-words">{task.description}</p>
+        <p className="text-red-800">Due: {task.due_date}</p>
+        <p>From Project: {formatCompanyName}</p>
+    </div>
+    )
+}
+
+export function AnnouncementCard({announcement} : {announcement: AnnouncementProps}) {
+    return (
+    <div className="bg-slate-100 p-2 my-4 mx-2 rounded-md shadow-md">
+        <h3>{announcement.title}</h3>
+        <p>{announcement.content}</p>
+        <p>{announcement.author}</p>
+    </div>
+    )
+}
+
+export function ProjectCard ({project} : {project: ProjectProps}) {
+  return (
+  <div className="bg-slate-100 p-2 my-4 mx-2 rounded-md shadow-md">
+      <h3>{project.project_name}</h3>
+      <p>Client: {project.client_name}</p>
+      <p className="py-4">Notes: {project.description ? project.description : '(No Notes Written)'}</p>
+      <p className="text-red-800">Next Deadline: {project.end_date}</p>
+  </div>
   )
 }

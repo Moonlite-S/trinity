@@ -1,4 +1,5 @@
 import { FormEvent } from "react"
+import { EmployeeProps } from "./employee_type"
 
 export type ProjectStatus = 
     "ACTIVE" |
@@ -8,19 +9,19 @@ export type ProjectStatus =
 
 export type quarter = "Q1" | "Q2" | "Q3" | "Q4"
 
-export type UpdateProjectProps = {
+export type ProjectProps = {
     project_id: string
     project_name: string
-    manager: string
+    manager: EmployeeProps
     city: string
     quarter: quarter
     client_name: string
     start_date: string
     end_date: string
-    notes?: string
+    description?: string
     status: ProjectStatus
     folder_location: string
-    project_template: string
+    project_template: string,
 }
 
 export type FilterProps = {
@@ -29,39 +30,32 @@ export type FilterProps = {
     onClear: () => void
 }
 
-export type ProjectManagerCustomerCityProps =  {
-    city: string;
-    current_manager: string;
-    customer_name: string;
-    projectManagerList: string[] | undefined;
-};
-
-export type ProjectStatusAndDateProps =  {
-    end_date: string;
-    project_status: ProjectStatus;
-    start_date: string;
-};
-
 export type ProjectFormProps = {
-    button_text: string
-    projectManagerList?: string[]
     onSubmit: (event: FormEvent<HTMLFormElement>) => void
 
     // For Project Update
-    formProps?: UpdateProjectProps
+    formProps?: ProjectProps
 }
 
-export type ProjectNameIDProps =  {
-    project_id: string;
-    project_name: string;
-};
+export type ProjectCreationProps = {
+    project_count: number,
+    users: string[]
+    client_names: string[]
+    cities: string[]
+    current_user: string[]
+}
 
-export type ProjectFormMiddleProps =  {
-    city: string;
-    current_manager: string;
-    customer_name: string;
-    end_date: string;
-    project_status: ProjectStatus;
-    projectManagerList?: string[];
-    start_date: string;
-};
+
+export type SelectionComponentProps = {
+    defaultValue?: string,
+    value?: string,
+    multiple?: boolean,
+    options: { value: string, label: string }[] | undefined,
+    name: string    
+    onChange?: () => void
+}
+
+export type SelectButtonProps = {
+    label: string
+    value: string
+}

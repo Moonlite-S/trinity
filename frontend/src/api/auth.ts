@@ -1,4 +1,6 @@
+import { AxiosError } from 'axios';
 import AxiosInstance from '../components/Axios';
+import { EmployeeProps } from '../interfaces/employee_type';
 
 /**
  * This sends a GET request to the backend and verifies a user's authentication status
@@ -8,32 +10,62 @@ import AxiosInstance from '../components/Axios';
  * 
  * @returns a repsponse code representing if the user is verified or not
  */
-export async function checkUser(): Promise<number> {
+export async function checkUser(): Promise<EmployeeProps> {
     try {
       const response = await AxiosInstance.get('api/user')
-
       const data = response.data
-
       console.log(data)
-
-      if (data){
-        console.log("User verified")
-        return 200
-      } else {
-        console.log("User not verified")
-        return 401
-      }
+      return data
 
     } catch (error) {
-      console.error("Network Error: ",error)
-      return 500
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 401) {
+          // 401 Unauthorized
+          throw new Error('Unauthorized')
+        } else if (error.response?.status === 403) {
+          // 403 Forbidden
+          throw new Error('Forbidden')
+        } else {
+          console.error("Axios error: ", error)
+          throw new Error('Network Error')
+        }
+      } else if (error instanceof Error) {
+        console.error("Error: ", error)
+        throw new Error('Network Error')
+      } else {
+        console.error("Unknown error: ", error)
+        throw new Error('Network Error')
+      }
     }
+}
+
+/**
+ * This sends a GET request to the backend and gets the current user's information
+ * 
+ * @returns the current user's information
+ * 
+ * (Personally I think we can just put this as the checkUser function instead. I'll just need to alter the function that uses it)
+ */
+export async function getCurrentUser(): Promise<EmployeeProps> {
+  try {
+    const response = await AxiosInstance.get('api/user')
+    const data = response.data
+
+    console.log(data)
+
+    return response.data
+
+  } catch (error) {
+    console.error("Network Error: ",error)
+    throw new Error("Network Error")
+  }
 }
 
 type LoginProps = {
     email: string,
     password: string
 }
+
 /**
  * This sends a POST request to the backend and logs in a user
  * This function returns a boolean representing if the login was successfully authenticated.
@@ -45,26 +77,31 @@ type LoginProps = {
  */
 export async function login({email, password }: LoginProps): Promise<number> {
     try {
-      const response = await AxiosInstance.post('api/login', {
+      await AxiosInstance.post('api/login', {
         email: email,
         password: password
       })
 
-      const data = response.data
-
-      console.log(data)
-
-      if (data) {
-        console.log("login successful")
-        return 200
-      } else {
-        console.log("login failed")
-        return 401
-      }
-
+      return 200
     } catch (error) {
-      console.error("Network Error: ",error)
-      return 500
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 401) {
+          // 401 Unauthorized
+          return 401
+        } else if (error.response?.status === 403) {
+          // 403 Forbidden
+          return 403
+        } else {
+          console.error("Axios error: ", error)
+          return 500
+        }
+    } else if (error instanceof Error) {
+        console.error("Error: ", error)
+        return 500
+      } else {
+        console.error("Unknown error: ", error)
+        return 500
+      }
     }
 }
 
