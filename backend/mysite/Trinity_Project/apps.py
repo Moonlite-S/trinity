@@ -7,3 +7,4 @@ class ProjectConfig(AppConfig):
     
     def ready(self):
         import Trinity_Project.signals
+        import Trinity_Project.graphapi

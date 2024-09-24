@@ -1,5 +1,7 @@
 import json
-from msal import ConfidentialClientApplication
+from urllib.parse import parse_qs, urlparse
+import webbrowser
+from msal import ConfidentialClientApplication, PublicClientApplication
 import requests
 import os
 from dotenv import load_dotenv
@@ -10,54 +12,99 @@ class GraphAPI():
     '''
     ###A class that uses MSAL for authentication and user profiles.
     Ideally, this is how we're going to authenticate our users.
-
-    
     '''
+    MS_GRAPH_API_URL = 'https://graph.microsoft.com/v1.0'
 
     def __init__(self):
-        self.client_id = os.getenv('CLIENT_ID')
-        self.client_secret = os.getenv('CLIENT_SECRET')
-        self.tenant_id = os.getenv('TENANT_ID')
+        self.client_id = '44b016a4-9378-4875-9473-7033edbc120b'
+        self.authority = "https://login.microsoftonline.com/consumers"
+        self.scopes = ["Files.Read", "Files.ReadWrite"]
+        self.redirect_uri = "http://localhost:8000"
 
-        self.authority = f"https://login.microsoftonline.com/{self.tenant_id}"
-
-        self.msal_app = ConfidentialClientApplication(
-            client_id=self.client_id,
-            authority=self.authority,
-            client_credential=self.client_secret
+        self.app = PublicClientApplication(
+            self.client_id,
+            authority=self.authority
         )
 
-        self.scopes = ["https://graph.microsoft.com/.default"]
+        self.access_token = self.get_access_token()
 
-        self.result = self.msal_app.acquire_token_silent(
-            scopes=self.scopes, 
-            account=None
-        )
+    def get_access_token(self):
+        accounts = self.app.get_accounts()
+        if accounts:
+            result = self.app.acquire_token_silent(self.scopes, account=accounts[0])
+            if result:
+                return result['access_token']
 
-        if not self.result:
-            self.result = self.msal_app.acquire_token_for_client(scopes=self.scopes)
-
-        if "access_token" in self.result:
-            self.access_token = self.result["access_token"]
-        else:
-            raise Exception('No access_token found.')
-
-    def get_auth_url(self, redirect_uri):
-        return self.msal_app.get_authorization_request_url(self.scopes, redirect_uri=redirect_uri)
-
-    def acquire_token_by_code(self, code, redirect_uri):
-        return self.msal_app.acquire_token_by_authorization_code(code, scopes=self.scopes, redirect_uri=redirect_uri)
-
-    def get_all_users(self, access_token):
-        headers = {
-            'Authorization': f'Bearer {access_token}',
-            'Content-Type': 'application/json'
+        flow = self.app.initiate_auth_code_flow(scopes=self.scopes, redirect_uri=self.redirect_uri)
+        auth_url = flow['auth_uri']
+        
+        print(f"Please go to this URL and authorize the app: {auth_url}")
+        webbrowser.open(auth_url)
+        
+        auth_response = input("Enter the full redirect URL: ")
+        
+        parsed_url = urlparse(auth_response)
+        query_dict = parse_qs(parsed_url.query)
+        
+        auth_response_dict = {
+            'code': query_dict.get('code', [None])[0],
+            'state': query_dict.get('state', [None])[0],
         }
-        response = requests.get('https://graph.microsoft.com/v1.0/users', headers=headers)
-        return response
+        
+        result = self.app.acquire_token_by_auth_code_flow(flow, auth_response_dict)
 
-    def test(self):
-        print(json.dumps(self.get_all_users(self.access_token).json(), indent=4))
+        if "access_token" in result:
+            return result["access_token"]
+        else:
+            print("Full error response:")
+            print(json.dumps(result, indent=2))
+            raise Exception(f'No access token found. Error: {result.get("error")}. Error description: {result.get("error_description")}')
 
+    def get_folder_link(self, folder_name):
+        headers = {'Authorization': f'Bearer {self.access_token}'}
+        
+        # First, check in root folders
+        root_folders = self.list_root_folders()
+        for name, url in root_folders:
+            if name.lower() == folder_name.lower():
+                return url
+        
+        # If not found in root, search in all folders
+        search_url = f'{self.MS_GRAPH_API_URL}/me/drive/root/search(q=\'{folder_name}\')'
+        response = requests.get(search_url, headers=headers)
+        
+        if response.status_code == 200:
+            search_results = response.json().get('value', [])
+            for item in search_results:
+                if item.get('name').lower() == folder_name.lower() and item.get('folder'):
+                    return item.get('webUrl')
+            
+            print(f"Folder '{folder_name}' not found.")
+            return None
+        else:
+            print("Error response:")
+            print(json.dumps(response.json(), indent=2))
+            raise Exception(f'Failed to search for folder. Status code: {response.status_code}')
+    
+    def list_root_folders(self):
+        headers = {'Authorization': f'Bearer {self.access_token}'}
+        
+        # Query parameters to filter for only folders and select specific fields
+        params = {
+            '$filter': 'folder ne null',
+            '$select': 'name,webUrl'
+        }
+        
+        response = requests.get(f'{self.MS_GRAPH_API_URL}/me/drive/root/children', headers=headers, params=params)
+        
+        if response.status_code == 200:
+            folders = response.json().get('value', [])
+            return [(folder['name'], folder['webUrl']) for folder in folders]
+        else:
+            print("Error response:")
+            print(json.dumps(response.json(), indent=2))
+            raise Exception(f'Failed to list root folders. Status code: {response.status_code}')
+        
 graphapi = GraphAPI()
-graphapi.test()
+print(graphapi.list_root_folders())
+print(graphapi.get_folder_link('Test'))
