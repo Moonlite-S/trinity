@@ -34,13 +34,15 @@ export function TaskCard ({task} : {task: TaskProps}) {
     const formatCompanyName = task.project_id.split('|')[2]
 
     return (
-    <div className=" bg-slate-100 p-4 my-4 mx-2 rounded-md shadow-md">
-        <h3>{formatProjectName}</h3>
-        <h4 className='font-bold'>Task: {task.title}</h4> 
-        <p className="py-4 break-words">{task.description}</p>
-        <p className="text-red-800">Due: {task.due_date}</p>
-        <p>From Project: {formatCompanyName}</p>
-    </div>
+    <a href="https://onedrive.live.com/?cid=ccb859f08aa718d1&id=CCB859F08AA718D1!se45563fe218e4c4186d0c3cc64182850">
+      <div className=" bg-slate-100 p-4 my-4 mx-2 rounded-md shadow-md">
+          <h3>{formatProjectName}</h3>
+          <h4 className='font-bold'>Task: {task.title}</h4> 
+          <p className="py-4 break-words">{task.description}</p>
+          <p className="text-red-800">Due: {task.due_date}</p>
+          <p>From Project: {formatCompanyName}</p>
+      </div>
+    </a>
     )
 }
 

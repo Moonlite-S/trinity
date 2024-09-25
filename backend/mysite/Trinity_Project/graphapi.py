@@ -104,7 +104,3 @@ class GraphAPI():
             print("Error response:")
             print(json.dumps(response.json(), indent=2))
             raise Exception(f'Failed to list root folders. Status code: {response.status_code}')
-        
-graphapi = GraphAPI()
-print(graphapi.list_root_folders())
-print(graphapi.get_folder_link('Test'))
