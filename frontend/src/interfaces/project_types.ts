@@ -55,7 +55,7 @@ export type SelectionComponentProps = {
     onChange?: () => void
 }
 
-export type SelectButtonProps = {
+export type ProjectSelectProps = {
     label: string
     value: string
 }

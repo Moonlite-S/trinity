@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import PermissionDenied
 
 from .azure_file_share import AzureFileShareClient
 from .models import Announcements, Project, Task,ProjectChangeLog, TaskChangeLog, User
@@ -159,7 +160,7 @@ def project_list(request):
                 if serializer.validated_data['template'] == '':
                     folder.create_empty_project_folder(serializer.validated_data['folder_location'])
                 else:
-                    folder.create_template_project_folder(seralizer.validated_data['folder_location'], serializer.validated_data['template'])
+                    folder.create_template_project_folder(serializer.validated_data['folder_location'], serializer.validated_data['template'])
                 
                 project = Project.objects.create(manager=manager_obj, **serializer.validated_data)
 
@@ -450,3 +451,23 @@ def project_delete_log(request):
     if request.method == 'DELETE':
         ProjectChangeLog.objects.all().delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET'])
+def submittal_creation_data(request):
+    payload = authenticate_jwt(request)
+
+    data_to_send = {}
+
+    # Gets all active projects
+    projects = Project.objects.filter(status='ACTIVE').values_list('project_id', 'project_name')
+    data_to_send['projects'] = list(projects)
+
+    # Gets lists of users (project managers and team members)
+    users = User.objects.filter(role__in=['Manager', 'Administrator', 'Team Member'], is_active=True).values_list('email', 'name')
+    data_to_send['users'] = list(users)
+
+    # Get list of client names
+    client_names = Project.objects.values_list('client_name', flat=True).distinct() 
+    data_to_send['client_names'] = list(client_names)
+
+    return Response(data_to_send, status=status.HTTP_200_OK)

@@ -55,6 +55,7 @@ export function ProjectFormCreation(
                 const obj_cities = response.cities.map((value: string) => {
                     return { value: value, label: value }
                 })
+
                 setClients(obj_client_names)
                 setCities(obj_cities)
             } catch (error) {
@@ -62,7 +63,7 @@ export function ProjectFormCreation(
                 setErrorString("Error fetching project list: " + error)
             }
         }
-        
+
         get_project_data()
     },[])
     
