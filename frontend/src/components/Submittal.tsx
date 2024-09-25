@@ -37,7 +37,7 @@ export function ViewSubmittals() {
         <>
             <Header />
 
-            <div className="flex flex-col gap-5 bg-slate-50">
+            <div className="flex flex-col gap-5 p-5 ">
                 <h1>Submittals</h1>
             </div>
 
@@ -114,8 +114,8 @@ function SubmittalFormCreation() {
         get_submittals_data()
     }, [])
     return (
-        <form>
-            <div className="grid grid-cols-4 grid-flow-row gap-5 bg-slate-50 p-5 m-5 rounded-lg">
+        <form className="w-1/2 mx-auto">
+            <div className="grid grid-cols-4 grid-flow-row gap-5 bg-slate-50 p-8 m-5 rounded-lg">
                 <div className="flex flex-col gap-2 col-span-2">
                     <label>Project Name</label>
                     <SelectionComponent defaultValue={""} options={projects} name="project_name" />
