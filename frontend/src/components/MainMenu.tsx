@@ -252,7 +252,8 @@ export function MainNavBar() {
         <Button_Card text="Your Tasks" route="/tasks" />
         <Button_Card text="Create Task" route="/tasks/create_task" />
         <Button_Card text="Report" route="/report" />
-        <Button_Card text="Submittal" route="/submittal" />
+        <Button_Card text="Create Submittal" route="/submittal/create_submittal" />
+        <Button_Card text="View Submittals" route="/submittal" />
         <Button_Card text="Proposal" route="/proposal" />
         <Button_Card text="Calendar" route="/calendar" />
         <Button_Card text="Calls" route="/calls" />
