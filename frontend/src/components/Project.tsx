@@ -374,6 +374,11 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
         <div className="flex flex-row gap-5 m-5">
             <Route_Button route={"/projects/update_project/" + data.project_id} text="Edit"/>
             <Route_Button route={"/projects/delete/" + data.project_id} text="Delete" isDelete/>
+            <a href="https://onedrive.live.com/?cid=ccb859f08aa718d1&id=CCB859F08AA718D1!se45563fe218e4c4186d0c3cc64182850" target="_blank" rel="noopener noreferrer">
+                <button className="bg-blue-300 rounded p-4 my-2 hover:bg-blue-400 transition">
+                        View on OneDrive
+                </button>
+            </a>
         </div>
 
     </div>
