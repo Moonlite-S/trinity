@@ -4,6 +4,14 @@ import { useAuth } from "../App";
 import { Header } from "./misc";
 import { FormEvent } from "react";
 
+/**
+ * ### Route for ('/announcements/create')
+ * 
+ * Creates an announcement
+ * 
+ * TODO: Should be a manager or admin
+ * TODO: Need to automatically delete after a certain amount of time
+ */
 export function SetAnnouncement() {
     const { user } = useAuth();
     const navigate = useNavigate();

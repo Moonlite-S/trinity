@@ -444,7 +444,6 @@ def announcement(request):
                 return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
 
 @api_view(['DELETE'])
 def project_delete_log(request):

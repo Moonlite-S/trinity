@@ -90,8 +90,6 @@ export function CreateProject() {
  * 
  * This component fetches a list of projects and shows them in a table.
  * 
- * TODO: 
- *  - Fix Default Project Manager
  */
 export function UpdateProjectList() {
     const [projectList, setProjectList] = useState<ProjectProps[]>([])
@@ -325,9 +323,7 @@ const FilterComponent = ({ filterText, onFilter, onClear }: FilterProps) => (
  * 
  * This is where the description of the project will be stored
  * 
- * But also I want buttons to see a report or edit the project
- * 
- * @param param0 data The props of a give row
+ * @param data The props of a give row
  * 
  */
 const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
@@ -384,8 +380,8 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
  * 
  * Features sorting by any field, and filtering by Project Name currently.
  * 
- * @param param0 projectList - List of projects 
- * @param param1 projectLoaded - Boolean to check if projects have been loaded
+ * @param projectList - List of projects 
+ * @param projectLoaded - Boolean to check if projects have been loaded
  */
 function ProjectUpdateTable({ projectList, projectLoaded }: { projectList: ProjectProps[], projectLoaded: boolean }) {
     const [filterText, setFilterText] = useState<string>('')
@@ -444,9 +440,7 @@ function ProjectUpdateTable({ projectList, projectLoaded }: { projectList: Proje
 /**
  * Delete Confirmation Page for Projects
  * 
- * Need to make have a sort of backup before deleting the project
- * or have multiple confirmation pages
- * 
+ * TODO: NEEDS AUTHORIZATION FROM ADMIN
  */
 export function ProjectDeleteConfimation() {
     const { id } = useParams<string>();
@@ -472,7 +466,3 @@ export function ProjectDeleteConfimation() {
 
     )
 }
-function return_all_users_name_and_email() {
-    throw new Error("Function not implemented.");
-}
-

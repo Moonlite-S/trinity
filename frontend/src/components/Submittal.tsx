@@ -3,7 +3,15 @@ import { getDataForSubmittalCreation } from "../api/submittal";
 import { BottomFormButton, SelectionComponent } from "./Buttons";
 import { Header } from "./misc";
 import { ProjectSelectProps } from "../interfaces/project_types";
+import DataTable, { Direction, TableColumn } from "react-data-table-component";
+import { Submittal } from "../interfaces/submittal";
 
+/**
+ * ### Route for ('/submittals/create_submittal')   
+ * 
+ * Shows the form to create a new submittal
+ * 
+ */
 export default function CreateSubmittal() {
     return (
         <>
@@ -18,6 +26,12 @@ export default function CreateSubmittal() {
     )
 }
 
+/**
+ * ### Route for ('/submittals')   
+ * 
+ * Shows the list of active submittals
+ * 
+ */
 export function ViewSubmittals() {
     return (
         <>
@@ -26,10 +40,45 @@ export function ViewSubmittals() {
             <div className="flex flex-col gap-5 bg-slate-50">
                 <h1>Submittals</h1>
             </div>
+
+            <SubmittalList />
         </>
     )
 }
 
+/**
+ * The Table Component that lists the submittals
+ */
+function SubmittalList() {
+    const columns: TableColumn<Submittal>[] = [
+        { name: "Project ID", selector: row => row.project_id, sortable: true },
+        { name: "Status", selector: row => row.submittal_status, sortable: true },
+        { name: "Date Created", selector: row => row.submittal_date, sortable: true },
+        { name: "Assigned To", selector: row => row.assigned_to, sortable: true },
+        { name: "Description", selector: row => row.description, sortable: true },
+        { name: "Notes", selector: row => row.notes, sortable: true },
+    ]
+
+    const data: Submittal[] = []
+
+    return (
+        <DataTable
+            columns={columns}
+            data={data}
+            direction={Direction.AUTO}
+            persistTableHead
+            highlightOnHover
+            expandableRows
+            selectableRows
+            pagination
+            subHeader
+        />
+    )
+}
+
+/**
+ * The Form Component that creates a new submittal
+ */
 function SubmittalFormCreation() {
     const [projects, setProjects] = useState<ProjectSelectProps[]>([])
     const [clients, setClients] = useState<ProjectSelectProps[]>([])
@@ -84,7 +133,7 @@ function SubmittalFormCreation() {
 
                 <div className="flex flex-col gap-2">
                     <label>Recieved Date</label>
-                    <input type="date" placeholder="Submittal Date" name="submittal_date" className="border border-black rounded-md p-1"/>
+                    <input type="date" placeholder="Submittal Date" name="submittal_date" className="border border-black rounded-md p-1" defaultValue={new Date().toLocaleDateString("en-CA")}/>
                 </div>
 
                 <div className="flex flex-col gap-2">
