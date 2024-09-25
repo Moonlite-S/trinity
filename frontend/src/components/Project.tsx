@@ -374,7 +374,7 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
         <div className="flex flex-row gap-5 m-5">
             <Route_Button route={"/projects/update_project/" + data.project_id} text="Edit"/>
             <Route_Button route={"/projects/delete/" + data.project_id} text="Delete" isDelete/>
-            <a href={'localexplorer:L:\\projects\\' + data.folder_location} target="_blank">
+            <a href={'localexplorer:L:\\projects\\' + data.folder_location} >
                 <button className="bg-blue-300 rounded p-4 my-2 hover:bg-blue-400 transition">Open Folder</button>
             </a>
         </div>
