@@ -16,6 +16,7 @@ from datetime import datetime,timezone,timedelta
 from django.contrib.auth import authenticate
 from .utils import authenticate_jwt
 from datetime import datetime, timedelta
+from django.middleware.csrf import get_token
 #from backend.mysite.Trinity_Project import serializers
 
 # Create your views here.
@@ -52,10 +53,11 @@ class LoginView(APIView):
         }
         
         token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
-        
         response = Response()
-        
         response.set_cookie(key='jwt_token', value=token, httponly=True, samesite='None', secure=True)
+        
+        csrf_token = get_token(request)
+        response.set_cookie(key='csrftoken', value=csrf_token, httponly=False, samesite='None', secure=True)
         response.data = {
             'jwt': token,
             'user': user.name,
@@ -152,14 +154,13 @@ def project_list(request):
         if serializer.is_valid():
             try:
                 manager = serializer.validated_data.pop('manager')
-                
                 manager_obj = User.objects.get(email=manager)
 
                 # Template Creation (Gunna be a more indepth implementation later)
                 if serializer.validated_data['template'] == '':
                     folder.create_empty_project_folder(serializer.validated_data['folder_location'])
                 else:
-                    folder.create_template_project_folder(seralizer.validated_data['folder_location'], serializer.validated_data['template'])
+                    folder.create_template_project_folder(serializer.validated_data['folder_location'], serializer.validated_data['template'])
                 
                 project = Project.objects.create(manager=manager_obj, **serializer.validated_data)
 

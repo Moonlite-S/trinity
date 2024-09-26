@@ -20,6 +20,7 @@ export function Calendar() {
     const [currentFormat, setCurrentFormat] = useState<string>("full")
 
     const [currentMonth, setCurrentMonth] = useState(new Date());
+    
     const [currentWeek, setCurrentWeek] = useState(() => {
         const today = new Date();
         const diff = today.getDate() - today.getDay();
@@ -70,8 +71,8 @@ export function Calendar() {
         }
         fetchProjects()
 
-    }, [currentMonth, currentWeek])
-    
+    }, [currentMonth])
+
     //max-w-md my-5 mx-auto bg-slate-200 rounded-lg shadow-md p-6
     return (
         <>
@@ -198,41 +199,53 @@ function WeeklyCalendar({ currentWeek, handlePrevWeek, handleNextWeek, projectsD
  * - Refactor the code so that I can just map out the divs instead of manually puttting each day ofthe week
  */
 function WeekLayout({ currentWeek, projectList }: { currentWeek: Date, projectList: CalendarProps[] }) {
+    const currentDay = currentWeek.getDate() - 1
+
     const projects: ProjectProps[] = projectList.flatMap((project) => project.projects || []);
 
-    // Calculate the start of the week (Sunday)
-    const startOfWeek = new Date(currentWeek);
-    startOfWeek.setDate(currentWeek.getDate() - currentWeek.getDay());
+    //Pads days to the beginning of the week
+    const days_to_skip = () => {
+        const firstDayOfMonth = new Date(currentWeek.getFullYear(), currentWeek.getMonth(), 1);
+        const day = firstDayOfMonth.toLocaleDateString('en-US', { weekday: 'long' });
+
+        switch (day) {
+            case 'Monday':
+                return 1
+            case 'Tuesday':
+                return 2
+            case 'Wednesday':
+                return 3
+            case 'Thursday':
+                return 4
+            case 'Friday':
+                return 5
+            case 'Saturday':
+                return 6
+            default:
+                return 0
+        }
+    }
 
     return (
         <div className="grid grid-cols-7 gap-2">
-            {Array.from({ length: 7 }, (_, index) => {
-                const currentDate = new Date(startOfWeek);
-                currentDate.setDate(startOfWeek.getDate() + index);
-                
-                const isCurrentMonth = currentDate.getMonth() === currentWeek.getMonth();
-                const dayNumber = currentDate.getDate();
+            {currentDay <= 7 && Array.from({ length: days_to_skip() }, (_, index) => (
+                <div key={index} className="p-14 border border-gray-300 bg-gray-200 text-center"/>
+            ))}
 
+            {Array.from({ length: 7 }, (_, index) => {
+                const dayNumber = currentDay + index;
+                const lastDayOfMonth = new Date(currentWeek.getFullYear(), currentWeek.getMonth() + 1, 0).getDate();
                 return (
-                    <div 
-                        key={index} 
-                        className={`h-screen ${index % 2 === 0 ? 'bg-slate-100' : ''} 
-                                    ${isCurrentMonth ? '' : 'opacity-50'} text-center`}
-                    >
-                        <WeekDayCard 
-                            day_number={dayNumber - 1} 
-                            projects={projects}
-                            isCurrentMonth={isCurrentMonth}
-                        />
+                    <div key={index} className={`h-screen ${index % 2 === 0 ? 'bg-slate-100' : ''} text-center`}>
+                        {dayNumber <= lastDayOfMonth && projects.length > 0 && 
+                            <WeekDayCard day_number={dayNumber} projects={projects} />
+                        }
                     </div>
                 );
             })}
         </div>
     )
 }
-
-
-
 
 /**
  * Component that layouts and renders each day of the month
@@ -297,14 +310,14 @@ function MonthDayCard({ day_number, projects }: DayButtonProps) {
     )
 }
 
-function WeekDayCard({ day_number, projects, isCurrentMonth }: DayButtonProps & { isCurrentMonth: boolean }) {
+function WeekDayCard({ day_number, projects }: DayButtonProps) {
     return (
-        <div className={`h-screen border border-gray-300 text-center shadow-md ${isCurrentMonth ? '' : 'bg-gray-100'}`}>
-            <h3 className={`text-xl font-semibold mb-5 ${isCurrentMonth ? '' : 'text-gray-500'}`}>
+        <div className="h-screen border border-gray-300  text-center shadow-md ">
+            <h3 className='text-xl font-semibold mb-5'>
                 {day_number + 1}
             </h3>
-            <div className="overflow-y-auto">
-            {projects && projects.length > 0 && isCurrentMonth &&
+            <div className="overflow-y-auto ">
+            {projects && projects.length > 0 && 
                 <ListProjectsOnDayWeekly projects={projects} day_number={day_number} />
             }
             </div>
