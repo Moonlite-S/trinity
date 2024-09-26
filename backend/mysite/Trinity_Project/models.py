@@ -1,5 +1,5 @@
-from telnetlib import STATUS
 import uuid
+from telnetlib import STATUS
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
@@ -27,7 +27,7 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
     
 class Project(models.Model):
-    project_id=models.CharField(max_length=50,unique=True,primary_key=True,default=uuid.uuid4)
+    project_id=models.CharField(max_length=50, unique=True, primary_key=True, default=uuid.uuid4)
     project_name=models.CharField(max_length=50)
     manager=models.ForeignKey("User", on_delete=models.CASCADE, related_name="projects")
     client_name=models.CharField(max_length=50)
@@ -66,7 +66,7 @@ class Project(models.Model):
         return {}
 
 class User(AbstractUser):
-    name=models.CharField(max_length=50, unique=True)
+    name=models.CharField(max_length=50)
     email=models.EmailField(max_length=50, unique=True)
     password=models.CharField(max_length=255)
     role=models.CharField(max_length=50)
@@ -99,20 +99,21 @@ class Task(models.Model):
     title=models.CharField(max_length=50)
     description=models.CharField(max_length=50)
     assigned_to=models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks")
-    project_id=models.ForeignKey(Project, to_field='project_id', on_delete=models.CASCADE, related_name="project")
+    project_id=models.ForeignKey(Project, on_delete=models.CASCADE, related_name="tasks")
     due_date=models.DateField()
     is_approved = models.BooleanField(default=True)
     
-    def save(self, *args, **kwargs):
-        if self.pk:  # Update scenario
-            old_instance = Task.objects.get(pk=self.pk)
-            # Filter out reverse relationships
-            self._old_values = {
-                field.name: getattr(old_instance, field.name)
-                for field in self._meta.get_fields()
-                if isinstance(field, models.Field)
-            }
-        super(Task, self).save(*args, **kwargs)
+    # THIS IS A FUCKING ISSUE
+    # def save(self, *args, **kwargs):
+    #     if self.task_id:  # Update scenario
+    #         old_instance = Task.objects.get(task_id=self.pk)
+    #         # Filter out reverse relationships
+    #         self._old_values = {
+    #             field.name: getattr(old_instance, field.name)
+    #             for field in self._meta.get_fields()
+    #             if isinstance(field, models.Field)
+    #         }
+    #     super(Task, self).save(*args, **kwargs)
 
     def get_old_values(self):
         if hasattr(self, '_old_values'):
@@ -129,14 +130,6 @@ class Submittal(models.Model):
     status=models.CharField(max_length=50)
     notes=models.TextField()
     
-
-class VerificationCode(models.Model):
-    number = models.CharField(max_length=5, blank=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    
-    def __str__(self):
-        return f"ID: {self.task_id} | {self.title} | {self.assigned_to}"
-
 class Announcements(models.Model):
     title=models.CharField(max_length=255)
     content=models.TextField(max_length=255)

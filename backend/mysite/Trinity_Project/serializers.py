@@ -25,6 +25,11 @@ class TaskSerializer(serializers.ModelSerializer):
 
     def __str__(self):
         return f"ID: {self.task_id} | {self.title} | {self.assigned_to}"
+
+# class TaskSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model=Task
+#         fields = ['task_id','title','description','assigned_to','project_id','due_date']
     
 class UserNameSerializer(serializers.ModelSerializer):
     class Meta:
@@ -71,10 +76,6 @@ class AnnouncmentsSerializer(serializers.ModelSerializer):
         model = Announcements
         fields = ['title', 'content', 'author', 'date']
 
-class TaskSerializer(serializers.ModelSerializer):
-    class Meta:
-        model=Task
-        fields = ['task_id','title','description','assigned_to','project_id','due_date']
 
 class SubmittalSerializer(serializers.ModelSerializer):
     project = serializers.PrimaryKeyRelatedField(queryset=Project.objects.all(),write_only=True)  # Allow project_id to be written

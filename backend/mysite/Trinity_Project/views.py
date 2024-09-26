@@ -84,7 +84,8 @@ class UserView(APIView):
 class LogoutView(APIView):
     def post(self, request):
         response = Response()
-        response.delete_cookie('jwt')
+        response.delete_cookie('jwt_token')
+        response.delete_cookie('csrftoken')
         response.data = {
             'message': 'success'
         }
@@ -201,8 +202,7 @@ def project_detail(request, project_id):
 
         return Response(serializer.data)
     elif request.method == 'PUT':
-
-        if project.manager != payload['name'] and not payload['is_superuser']:
+        if project.manager.name != payload['name'] and not payload['is_superuser']:
             raise PermissionDenied("You do not have permission to edit this project.")
 
         serializer = ProjectSerializer(project, data=request.data)
@@ -272,7 +272,7 @@ def user_list(request):
 
 @api_view(['GET','POST'])
 def task_list(request):
-
+    payload = authenticate_jwt(request)
     if request.method == 'GET':
         tasks = Task.objects.all()
         serializer = TaskSerializer(tasks, many=True)
@@ -287,22 +287,32 @@ def task_list(request):
             # Same with Project model
             assigned_to = serializer.validated_data.pop('assigned_to')
             project_id = serializer.validated_data.pop('project_id')
+            task_id = serializer.validated_data.pop('task_id')
 
             try: 
                 user = User.objects.get(email=assigned_to)
                 project = Project.objects.get(project_id=project_id)
-                
-                task = Task.objects.create(assigned_to=user, project_id=project, **serializer.validated_data)
+                print(user)
+                print(project)
+
+                print(serializer.validated_data)
+
+                task = Task.objects.create(
+                    assigned_to=user,
+                    project_id=project,
+                    task_id=task_id,
+                    **serializer.validated_data
+                )
 
                 return Response(TaskSerializer(task).data, status=status.HTTP_201_CREATED)
 
             except User.DoesNotExist:
-                print(f"User {assigned_to} does not exist.")
-                return Response(status=status.HTTP_404_NOT_FOUND)
+                print("User does not exist")
+                return Response({"error": f"User with email {assigned_to} does not exist."}, status=status.HTTP_404_NOT_FOUND)
             
             except Project.DoesNotExist:
-                print(f"Project {project_id} does not exist.")
-                return Response(status=status.HTTP_404_NOT_FOUND)
+                print("Project does not exist")
+                return Response({"error": f"Project with ID {project_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
             
             except Exception as ex:
                 print(f"An error occurred while creating the task: {ex}")
@@ -337,7 +347,7 @@ def task_detail(request, task_id):
     elif request.method == 'PUT':
         # if manager != user.name and not user.is_superuser:
         #     raise PermissionDenied("You do not have permission to edit this task.")
-        serializer = TaskSerializer(task, data=request.data)
+        serializer = TaskSerializer(task, data=request.data, partial=True)
         if serializer.is_valid():
             manager_obj = serializer.validated_data.pop('assigned_to')
             project_obj = serializer.validated_data.pop('project_id')
@@ -543,7 +553,7 @@ def submittal_detail(request,submittal_id):
 def submittal_by_assigned_to(request,assigned_to):
     
     try:
-        submittals=Submittal.objects.filter(assigned_to=assigned_to)
+        submittals=Submittal.objects.filter(user__email=assigned_to)
     except Submittal.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     
@@ -553,8 +563,6 @@ def submittal_by_assigned_to(request,assigned_to):
         else:
             serializer = SubmittalSerializer(submittals,many=True)
         return Response(serializer.data)
-        
-    pass
 
 
     # try:
