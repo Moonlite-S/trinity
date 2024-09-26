@@ -9,7 +9,7 @@ import { EditTask, TaskList, Tasks } from './components/Tasks';
 import { CreateEmployee, EmployeeList } from './components/Employee'
 import { TemplateList } from './components/Template'
 import { ErrorPage } from './components/Error'
-import { Calendar } from './components/Calendar';
+import { MonthlyCalendar, WeeklyCalendar } from './components/Calendar';
 import { Header } from './components/misc'
 import { EmployeeProps } from './interfaces/employee_type'
 import { SetAnnouncement } from './components/Announcement'
@@ -45,7 +45,8 @@ export default function App() {
               <Route path='/employees/' element={<EmployeeList />} />
               <Route path='/employees/create_employee' element={<CreateEmployee />} />
               <Route path='/template_list/' element={<TemplateList />} />
-              <Route path='/calendar' element={<Calendar />} />
+              <Route path='/monthly_calendar' element={<MonthlyCalendar />} />
+              <Route path='/weekly_calendar' element={<WeeklyCalendar />} />
 
               <Route path='/announcements/create_anncouncement' element={<SetAnnouncement />} />
 

@@ -45,7 +45,8 @@ export function ProjectFormCreation(
 
                 const project_count = String(response.project_count + 1).padStart(3, "0") 
 
-                setProjectID(DateStart + "-" + project_count)
+                const date_start = DateStart.split('-')[0] + '-' + DateStart.split('-')[1]
+                setProjectID(date_start + "-" + project_count)
                 setDefaultManager(response.current_user[0])
                 
                 setProjectManagers(response.users)
@@ -68,11 +69,12 @@ export function ProjectFormCreation(
     },[])
     
     const onDateStartChange = async(event: React.ChangeEvent<HTMLInputElement>) => {
-        const value = event.target.value
-        setDateStart(value)
+        const date = event.target.value
+        const value = event.target.value.split('-')[0] + '-' + event.target.value.split('-')[1]
+        setDateStart(date)
 
         try {
-            const response = await getDataForProjectCreation(value)
+            const response = await getDataForProjectCreation(date)
 
             if (!response) {
                 throw new Error("Error fetching project list")

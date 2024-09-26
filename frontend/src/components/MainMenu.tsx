@@ -255,7 +255,7 @@ export function MainNavBar() {
         <Button_Card text="Create Submittal" route="/submittal/create_submittal" />
         <Button_Card text="View Submittals" route="/submittal" />
         <Button_Card text="Proposal" route="/proposal" />
-        <Button_Card text="Calendar" route="/calendar" />
+        <Button_Card text="Calendar" route="/monthly_calendar" />
         <Button_Card text="Calls" route="/calls" />
         <Button_Card text="Employee List" route="/employees/" />
         <Button_Card text="Create Employee" route="/employees/create_employee" />
