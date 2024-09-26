@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Header } from "./misc";
-import { format, addMonths, subMonths, getDaysInMonth, subWeeks, addWeeks } from 'date-fns';
+import { format, addMonths, subMonths, getDaysInMonth, subWeeks, addWeeks, addDays, endOfWeek, startOfWeek } from 'date-fns';
 import { ProjectProps } from '../interfaces/project_types';
 import { getProjectByDate } from '../api/projects';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { CalendarProps, DayButtonProps } from '../interfaces/calendar_type';
 import { Route_Button } from './Buttons';
 
 /**
- * ### [Route for ('/calendar')]
+ * ### [Route for ('/monthly_calendar')]
  * 
  * This component shows the calendar for the current month.
  * The calendar shows projects that are due in that month.
@@ -16,29 +16,14 @@ import { Route_Button } from './Buttons';
  * TODO:
  * - Show links to each project due
  */
-export function Calendar() {
-    const [currentFormat, setCurrentFormat] = useState<string>("full")
-
+export function MonthlyCalendar() {
     const [currentMonth, setCurrentMonth] = useState(new Date());
     
-    const [currentWeek, setCurrentWeek] = useState(() => {
-        const today = new Date();
-        const diff = today.getDate() - today.getDay();
-        return new Date(today.setDate(diff));
-    });
     const [projectsDueThisMonth, setProjectsDueThisMonth] = useState<CalendarProps[]>([]);
     const daysInMonth = getDaysInMonth(currentMonth);
 
     const handlePrevMonth = () => {
         setCurrentMonth(subMonths(currentMonth, 1));
-    }
-
-    const handleNextWeek = () => {
-        setCurrentWeek(addWeeks(currentWeek, 1))
-    }
-
-    const handlePrevWeek = () => {
-        setCurrentWeek(subWeeks(currentWeek, 1))
     }
 
     const handleNextMonth = () => {
@@ -78,21 +63,17 @@ export function Calendar() {
         <>
         <Header />
 
-        <div className='flex justify-center'>
-            <select onChange={(e) => setCurrentFormat(e.target.value)} className='max-w-md my-5 mx-auto rounded-lg shadow-md p-6 bg-slate-100 hover:bg-slate-200 transition cursor-pointer' defaultValue={currentFormat}>
-                <option value="full">Full Calendar</option>
-                <option value="weekly">Weekly Calendar</option>
-            </select>
+        <div className='flex justify-center gap-4'>
+            <button onClick={() => setCurrentMonth(new Date())} className='p-4 bg-orange-300 rounded hover:bg-orange-400 transition'>
+                Today
+            </button>
+
+            <Link to="/weekly_calendar" className='p-4 bg-orange-300 rounded hover:bg-orange-400 transition'>
+                Weekly Calendar
+            </Link>
         </div>
 
-        {currentFormat === "full" &&
-            <FullCalendar currentMonth={currentMonth} handlePrevMonth={handlePrevMonth} handleNextMonth={handleNextMonth} daysInMonth={daysInMonth} projectsDueToday={projectsDueThisMonth} />
-        }
-
-        {currentFormat === "weekly" &&
-            <WeeklyCalendar currentWeek={currentWeek} handlePrevWeek={handlePrevWeek} handleNextWeek={handleNextWeek} projectsDueToday={projectsDueThisMonth} />
-        }
-
+        <FullCalendar currentMonth={currentMonth} handlePrevMonth={handlePrevMonth} handleNextMonth={handleNextMonth} daysInMonth={daysInMonth} projectsDueToday={projectsDueThisMonth} />
         </>
     )
 }
@@ -141,109 +122,6 @@ function FullCalendar({ currentMonth, handlePrevMonth, handleNextMonth, daysInMo
             <Route_Button route="/main_menu" text="Back to Main Menu" />
         </div>
         </>
-    )
-}
-
-type WeeklyCalendarProps = {
-    currentWeek: Date
-    handlePrevWeek: () => void
-    handleNextWeek: () => void
-    projectsDueToday: CalendarProps[]
-}
-
-function WeeklyCalendar({ currentWeek, handlePrevWeek, handleNextWeek, projectsDueToday }: WeeklyCalendarProps) {
-    return (
-        <>
-        <div className="my-5 mx-auto rounded-lg shadow-md p-6">
-            <div className="flex justify-between mb-4">
-                <button onClick={handlePrevWeek} className='p-4 bg-orange-300 rounded hover:bg-orange-400 transition'>
-                    Previous
-                </button>
-
-                <h2 className="text-2xl font-semibold">
-                    {format(currentWeek, 'MMMM yyyy')}
-                </h2>
-
-                <button onClick={handleNextWeek} className='p-4 bg-orange-300 rounded hover:bg-orange-400 transition'>
-                    Next
-                </button>
-            </div>
-
-            <div className="grid grid-cols-7 gap-2">
-                <h4 className="text-center">Sun</h4>
-                <h4 className="text-center">Mon</h4>
-                <h4 className="text-center">Tue</h4>
-                <h4 className="text-center">Wed</h4>
-                <h4 className="text-center">Thu</h4>
-                <h4 className="text-center">Fri</h4>
-                <h4 className="text-center">Sat</h4>
-            </div>
-
-            <WeekLayout currentWeek={currentWeek} projectList={projectsDueToday}  />
-    
-        </div>
-
-        <div className="flex justify-center mt-4">
-            <Route_Button route="/main_menu" text="Back to Main Menu" />
-        </div>
-        </>
-    )
-}
-
-/**
- * Component that layouts and renders each day of the week
- * 
- * TODO: 
- * - Pad out the last week with blanks so that it connects well with the next month. (Just like how you padded it out in the begining)
- * - Add the project list
- * - Refactor the code so that I can just map out the divs instead of manually puttting each day ofthe week
- */
-function WeekLayout({ currentWeek, projectList }: { currentWeek: Date, projectList: CalendarProps[] }) {
-    const currentDay = currentWeek.getDate() - 1
-
-    const projects: ProjectProps[] = projectList.flatMap((project) => project.projects || []);
-
-    //Pads days to the beginning of the week
-    const days_to_skip = () => {
-        const firstDayOfMonth = new Date(currentWeek.getFullYear(), currentWeek.getMonth(), 1);
-        const day = firstDayOfMonth.toLocaleDateString('en-US', { weekday: 'long' });
-
-        switch (day) {
-            case 'Monday':
-                return 1
-            case 'Tuesday':
-                return 2
-            case 'Wednesday':
-                return 3
-            case 'Thursday':
-                return 4
-            case 'Friday':
-                return 5
-            case 'Saturday':
-                return 6
-            default:
-                return 0
-        }
-    }
-
-    return (
-        <div className="grid grid-cols-7 gap-2">
-            {currentDay <= 7 && Array.from({ length: days_to_skip() }, (_, index) => (
-                <div key={index} className="p-14 border border-gray-300 bg-gray-200 text-center"/>
-            ))}
-
-            {Array.from({ length: 7 }, (_, index) => {
-                const dayNumber = currentDay + index;
-                const lastDayOfMonth = new Date(currentWeek.getFullYear(), currentWeek.getMonth() + 1, 0).getDate();
-                return (
-                    <div key={index} className={`h-screen ${index % 2 === 0 ? 'bg-slate-100' : ''} text-center`}>
-                        {dayNumber <= lastDayOfMonth && projects.length > 0 && 
-                            <WeekDayCard day_number={dayNumber} projects={projects} />
-                        }
-                    </div>
-                );
-            })}
-        </div>
     )
 }
 
@@ -310,22 +188,6 @@ function MonthDayCard({ day_number, projects }: DayButtonProps) {
     )
 }
 
-function WeekDayCard({ day_number, projects }: DayButtonProps) {
-    return (
-        <div className="h-screen border border-gray-300  text-center shadow-md ">
-            <h3 className='text-xl font-semibold mb-5'>
-                {day_number + 1}
-            </h3>
-            <div className="overflow-y-auto ">
-            {projects && projects.length > 0 && 
-                <ListProjectsOnDayWeekly projects={projects} day_number={day_number} />
-            }
-            </div>
-        </div>
-    )
-}
-
-
 /**
  * Renders all projects due on a specific day
  * @param projects list of projects on a specific day
@@ -353,35 +215,169 @@ function ListProjectsOnDay({ projects }: { projects: ProjectProps[] }) {
     )
 }
 
-
 /**
- * Renders all projects due on a specific day (Weekly version)
- * Needed a new component so I can get the projects render on their respective days
- * @param projects list of projects on a specific day
- * @param day_number the day of the week
- */ 
-function ListProjectsOnDayWeekly({ projects, day_number }: { projects: ProjectProps[], day_number: number }) {
-    const navigate = useNavigate()
+ * ### [Route for ('/calendar/weekly')]
+ * 
+ * This component shows the calendar for the current week.
+ * The calendar shows projects that are due in that week.
+ * 
+ * TODO:
+ * - Show links to each project due
+ */
+export function WeeklyCalendar() {
+    const [currentWeek, setCurrentWeek] = useState(new Date())
+    const [projectsDueThisWeek, setProjectsDueThisWeek] = useState<CalendarProps[]>([])
+    
+    const handlePrevWeek = () => {
+        setCurrentWeek(subWeeks(currentWeek, 1))
+    }
 
+    const handleNextWeek = () => {
+        setCurrentWeek(addWeeks(currentWeek, 1))
+    }
+
+    useEffect(() => {
+        const fetchProjects = async () => {
+            try {
+                const response = await getProjectByDate(currentWeek.getFullYear().toString(), (currentWeek.getMonth() + 1).toString())
+
+                const weekStart = startOfWeek(currentWeek)
+                const weekEnd = endOfWeek(currentWeek)
+
+                console.log("weekStart: ", weekStart)
+                console.log("weekEnd: ", weekEnd)
+
+                setProjectsDueThisWeek(Array.from({ length: 7 }, (_, index) => {
+                    const currentDay = addDays(weekStart, index)
+                    const formattedDate = format(currentDay, 'yyyy-MM-dd')
+
+                    const projects_due = response.filter(
+                        (project) => project.end_date === formattedDate
+                    )
+
+                    return {
+                        day: index,
+                        projects: projects_due
+                    }
+                }))
+
+                console.log("projectsDueThisWeek: ", projectsDueThisWeek)
+
+            } catch (error) {
+                console.error("Server Error: ", error)
+            }
+        }
+        fetchProjects()
+    }, [currentWeek])
+    
     return (
         <>
-        {projects.map((project) => {
-            if (day_number === new Date(project.end_date).getDate()) {
-                return (
-                    <button key={project.project_id} onClick={() => navigate('/projects/update_project/' + project.project_id)} className='w-full'>
-                        <div className='group bg-orange-100 overflow-hidden'>
-                            <div className='text-blue-800 underline font-semibold text-base'>
-                                {project.project_name}
-                            </div>
-                            <div className='bg-orange-200 text-xs '>
-                                {project.description}
-                            </div>
-                        </div>
-                    </button>
-                );
-            }
-            return null;
-        })}
+        <Header />
+
+        <div className='flex justify-center gap-4'>
+            <button onClick={() => setCurrentWeek(new Date())} className='p-4 bg-orange-300 rounded hover:bg-orange-400 transition'>
+                Today
+            </button>
+
+            <Link to="/monthly_calendar" className='p-4 bg-orange-300 rounded hover:bg-orange-400 transition'>
+                Monthly Calendar
+            </Link>
+        </div>
+
+        <div className='my-5 mx-auto rounded-lg shadow-md p-6'>
+            <div className='flex justify-between mb-4'>
+                <button onClick={handlePrevWeek} className='p-4 bg-orange-300 rounded hover:bg-orange-400 transition'>
+                    Previous
+                </button>
+
+                <div className='flex justify-center'>
+                    <h2 className="text-2xl font-semibold">
+                    {format(currentWeek, 'MMMM yyyy')}
+                </h2>
+                </div>
+
+                <button onClick={handleNextWeek} className='p-4 bg-orange-300 rounded hover:bg-orange-400 transition'>
+                    Next
+                </button>
+            </div>
+
+            <div className="grid grid-cols-7 gap-2">
+                <h4 className="text-center">Sun</h4>
+                <h4 className="text-center">Mon</h4>
+                <h4 className="text-center">Tue</h4>
+                <h4 className="text-center">Wed</h4>
+                <h4 className="text-center">Thu</h4>
+                <h4 className="text-center">Fri</h4>
+                <h4 className="text-center">Sat</h4>
+            </div>
+
+            <div className='grid grid-cols-7 gap-2 text-center'>
+                {Array.from({ length: 7 }, (_, index) => {
+                    const currentDate = addDays(startOfWeek(currentWeek), index);
+                    return (
+                        <WeekDayCard 
+                            key={index}
+                            date={currentDate}
+                            projects={projectsDueThisWeek[index]?.projects}
+                            alternate_color={index % 2 === 0}
+                        />
+                    );
+                })}
+            </div>
+        </div>
+
+        <div className="flex justify-center mt-4">
+            <Route_Button route="/main_menu" text="Back to Main Menu" />
+        </div>
+        </>
+    )
+}
+
+type WeekDayCardProps = {
+    date: Date;
+    projects?: ProjectProps[];
+    alternate_color: boolean;
+}
+
+function WeekDayCard({ date, projects, alternate_color }: WeekDayCardProps) {
+    return (
+        <div className={`h-screen border border-gray-300 text-center ${alternate_color ? 'bg-gray-200' : 'bg-gray-100'}`}>  
+            <div className='text-xl font-semibold mb-5'>
+                {format(date, 'd')}
+            </div>
+
+            <div className='overflow-y-auto'>
+                {projects && projects.length > 0 && (
+                    <ListProjectsOnDayWeekly projects={projects} />
+                )}
+            </div>
+        </div>
+    );
+}
+
+/**
+ * Renders all projects due on a specific day
+ * @param projects list of projects on a specific day
+ */
+function ListProjectsOnDayWeekly({ projects }: { projects: ProjectProps[] }) {
+    const navigate = useNavigate()
+
+    return(
+        <>
+        {projects.map((project) => (
+            <button key={project.project_id} onClick={() =>navigate('/projects/update_project/' + project.project_id)} className='w-full mb-5'>
+                <div className='group bg-orange-100 overflow-hidden'>
+                    <div className='text-blue-800 underline font-semibold text-xl'>
+                        {project.project_name}
+                    </div>
+
+                    <div className='bg-orange-200 text-base '>
+                        {project.description}
+                    </div>
+                </div>
+            </button>
+        ))
+        }
         </>
     )
 }
