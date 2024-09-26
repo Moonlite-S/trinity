@@ -2,7 +2,6 @@ from django.urls import  path
 from django.contrib import admin
 from . import views
 from rest_framework.authtoken.views import obtain_auth_token
-
 urlpatterns = [
     path("", views.index, name="index"),
     path("projects/", views.project_list,name="project_list"),
@@ -23,6 +22,11 @@ urlpatterns = [
     path("task/project_id/<str:project_id>",views.task_filter_by_project_id),
     path("task/assigned_to/<str:email>",views.task_filter_by_user),
     path("announcements/",views.announcement),
+    path("submittal/creation_data", views.submittal_creation_data),
+    path("task/assigned_to/<str:name>",views.task_filter_by_name),
+    path("verify/", views.verify_view),
     path("delete_log",views.project_delete_log),
-    path("submittal/creation_data", views.submittal_creation_data)
+    path("submittal/",views.submittal_list),
+    path("submittal/id/<str:submittal_id>",views.submittal_detail),
+    path("submittal/name/<str:assigned_to>",views.submittal_by_assigned_to)
 ]

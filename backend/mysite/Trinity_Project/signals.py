@@ -10,13 +10,16 @@ logger=logging.getLogger('Trinity_Project')
 
 @receiver(post_save, sender=Project)
 def log_project_change(sender, instance,created, **kwargs):
-    
+    #check if the project is created instead of edited
+    #this if statement makes it so that only one object is create instead of creating a new
+    #object for every field
     if created:
         # Retrieve the user using middleware
         user = CurrentUserMiddleware.get_current_user()
 
         if not user:
             return
+        #created the project log object 
         ProjectChangeLog.objects.create(
                 project_id=f'{instance.project_id}',
                 project_name=f'{instance.project_name}',
@@ -94,7 +97,7 @@ def log_project_delete(sender, instance, **kwargs):
 #logs when a task gets changed
 @receiver(post_save, sender=Task)
 def log_task_change(sender, instance,created, **kwargs):
-    # Check if this is an update (not a creation)
+    #check if the task is created instead of edited
     if created:
         # Retrieve the user using middleware
         user = CurrentUserMiddleware.get_current_user()

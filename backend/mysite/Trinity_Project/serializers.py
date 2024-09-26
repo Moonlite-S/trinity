@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Project, Task, Announcements, User
-
+from .models import Project, Submittal, Task
+from .models import User
 class BasicUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -51,9 +52,10 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'name','email','password','role','date_joined', 'tasks', 'projects']
+
         extra_kwargs = {
             'password': {'write_only': True}
-            }
+        }
     
     def create(self, validated_data):
         password = validated_data.pop('password', None)
@@ -68,3 +70,19 @@ class AnnouncmentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Announcements
         fields = ['title', 'content', 'author', 'date']
+
+class TaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Task
+        fields = ['task_id','title','description','assigned_to','project_id','due_date']
+
+class SubmittalSerializer(serializers.ModelSerializer):
+    project = serializers.PrimaryKeyRelatedField(queryset=Project.objects.all(),write_only=True)  # Allow project_id to be written
+    project_id=serializers.CharField(source='project.project_id',read_only=True)
+    client_name=serializers.CharField(source='project.client_name',read_only=True)
+    project_name=serializers.CharField(source='project.project_name',read_only=True)
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(),write_only=True)
+    assigned_to=serializers.CharField(source='user.name',read_only=True)
+    class Meta:
+        model=Submittal
+        fields = ['submittal_id','project','project_id','client_name','received_date','project_name','sub_description','type','user','assigned_to','status','notes']

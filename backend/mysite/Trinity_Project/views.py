@@ -8,8 +8,8 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.exceptions import PermissionDenied
 
 from .azure_file_share import AzureFileShareClient
-from .models import Announcements, Project, Task,ProjectChangeLog, TaskChangeLog, User
-from .serializers import AnnouncmentsSerializer, ProjectSerializer, ProjectSerializerUserObjectVer, TaskSerializer, UserNameAndEmail, UserNameSerializer, UserSerializer
+from .models import Announcements, PendingChange, Project, Submittal, Task,ProjectChangeLog, TaskChangeLog, User
+from .serializers import AnnouncmentsSerializer, ProjectSerializer, ProjectSerializerUserObjectVer, TaskSerializer, UserNameAndEmail, UserNameSerializer, UserSerializer, SubmittalSerializer
 from rest_framework.views import APIView
 import jwt, datetime
 from datetime import datetime,timezone,timedelta
@@ -19,6 +19,9 @@ from .utils import authenticate_jwt
 from datetime import datetime, timedelta
 from django.middleware.csrf import get_token
 #from backend.mysite.Trinity_Project import serializers
+from django.contrib.auth import authenticate,login,logout,get_user_model
+from rest_framework.exceptions import PermissionDenied
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 class RegisterView(APIView):
@@ -313,7 +316,11 @@ def task_detail(request, task_id):
         task=Task.objects.get(task_id=task_id)
     except Task.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-
+    
+    if not task.is_approved:
+        return HttpResponse("This task is pending approval and cannot be viewed.")
+    
+    print(f"Task project_id: {task.project_id}")
     #get project manager name from project_id
     try:
         project=Project.objects.get(project_id=task.project_id.project_id)
@@ -342,11 +349,27 @@ def task_detail(request, task_id):
                 return Response(data={"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
             
             except Project.DoesNotExist:
-
                 return Response(data={"error": "Project not found"}, status=status.HTTP_404_NOT_FOUND)
             
             serializer.validated_data['assigned_to'] = manager  
             serializer.validated_data['project_id'] = project
+
+            for field, new_value in serializer.validated_data.items():
+                old_value = getattr(task, field)
+                
+                if old_value != new_value:
+                    # Create a PendingChange entry instead of saving directly
+                    PendingChange.objects.create(
+                        task=task,
+                        field_name=field,
+                        old_value=old_value,
+                        new_value=new_value,
+                        requested_by=user
+                    )
+                
+            # Mark the project as pending approval
+            task.is_approved = False
+            task.save(update_fields=['is_approved'])
 
             serializer.save()
             print(serializer.data)
@@ -471,3 +494,76 @@ def submittal_creation_data(request):
     data_to_send['client_names'] = list(client_names)
 
     return Response(data_to_send, status=status.HTTP_200_OK)
+
+@login_required
+@api_view(['GET','POST'])
+def submittal_list(request):
+    
+    if request.method == 'GET':
+        submittals=Submittal.objects.all()
+        serializer = SubmittalSerializer(submittals, many=True)
+        return Response(serializer.data)
+    
+    if request.method == 'POST':
+        serializer=SubmittalSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@login_required
+@api_view(['GET','PUT','DELETE'])
+def submittal_detail(request,submittal_id):
+    user = request.user
+    try:
+        submittal=Submittal.objects.get(submittal_id=submittal_id)
+    except Submittal.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        serializer = SubmittalSerializer(submittal)
+        return Response(serializer.data)
+    
+    elif request.method == 'PUT':
+        serializer = SubmittalSerializer(submittal)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    elif request.method == 'DELETE':
+        submittal.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+            
+
+@login_required
+@api_view(['GET'])
+def submittal_by_assigned_to(request,assigned_to):
+    
+    try:
+        submittals=Submittal.objects.filter(assigned_to=assigned_to)
+    except Submittal.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        if submittals.count() == 1:
+            serializer = SubmittalSerializer(submittals.first())
+        else:
+            serializer = SubmittalSerializer(submittals,many=True)
+        return Response(serializer.data)
+        
+    pass
+
+
+    # try:
+    #     tasks=Task.objects.filter(project_id=project_id)
+    # except Task.DoesNotExist:
+    #     return Response(status=status.HTTP_404_NOT_FOUND)
+    # if request.method == 'GET':
+    #     if tasks.count() ==1:
+    #         serializer = TaskSerializer(tasks.first())
+    #     else:
+    #         serializer = TaskSerializer(tasks,many=True)
+    #     return Response(serializer.data)
