@@ -1,3 +1,4 @@
+from os import name
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, JsonResponse
 from openai import AuthenticationError
@@ -441,7 +442,7 @@ def submittal_detail(request,submittal_id):
 def submittal_by_assigned_to(request,assigned_to):
     
     try:
-        submittals=Submittal.objects.filter(user=assigned_to)
+        submittals=Submittal.objects.filter(user__name=assigned_to)
     except Submittal.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     
