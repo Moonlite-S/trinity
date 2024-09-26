@@ -1,8 +1,10 @@
+from telnetlib import STATUS
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
 import random
 from phonenumber_field.modelfields import PhoneNumberField
+import uuid
 
 #from backend.mysite.Trinity_Project import generate_id
 
@@ -30,7 +32,7 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
     
 class Project(models.Model):
-    project_id=models.CharField(max_length=50)
+    project_id=models.CharField(max_length=50,unique=True,primary_key=True,default=uuid.uuid4)
     project_name=models.CharField(max_length=50)
     manager=models.CharField(max_length=50)
     client_name=models.CharField(max_length=50)
@@ -46,26 +48,29 @@ class Project(models.Model):
     
     def save(self, *args, **kwargs):
         if self.pk:  # Update scenario
-            old_instance = Project.objects.get(pk=self.pk)
-            # Filter out reverse relationships
-            self._old_values = {
-                field.name: getattr(old_instance, field.name)
-                for field in self._meta.get_fields()
-                if isinstance(field, models.Field)
-            }
+            try:
+                old_instance = Project.objects.get(pk=self.pk)
+                # Filter out reverse relationships
+                self._old_values = {
+                    field.name: getattr(old_instance, field.name)
+                    for field in self._meta.get_fields()
+                    if isinstance(field, models.Field)
+                }
+            except Project.DoesNotExist:
+                # Handle the case where the instance doesn't exist anymore
+                self._old_values = {}
+        else:
+            self._old_values = {}
+
         super(Project, self).save(*args, **kwargs)
 
     def get_old_values(self):
         if hasattr(self, '_old_values'):
             return self._old_values
         return {}
-    # def save(self, *args, **kwargs):
-    #     if not self.id:
-    #         self.id = generate_id()
-    #     super().save(*args, **kwargs)
-        
+
 class User(AbstractUser):
-    name=models.CharField(max_length=50)
+    name=models.CharField(max_length=50, unique=True)
     email=models.EmailField(max_length=50, unique=True)
     password=models.CharField(max_length=255)
     role=models.CharField(max_length=50)
@@ -82,12 +87,13 @@ class User(AbstractUser):
         return f"{self.name} | {self.email}"
 
 class Task(models.Model):
-    task_id=models.CharField(max_length=50, unique=True)
+    task_id=models.CharField(max_length=50, unique=True, primary_key=True)
     title=models.CharField(max_length=50)
     description=models.CharField(max_length=50)
     assigned_to=models.CharField(max_length=50)
     project_id=models.CharField(max_length=50)
     due_date=models.DateField()
+    is_approved = models.BooleanField(default=True)
     
     def save(self, *args, **kwargs):
         if self.pk:  # Update scenario
@@ -105,7 +111,16 @@ class Task(models.Model):
             return self._old_values
         return {}
 
-
+class Submittal(models.Model):
+    submittal_id=models.CharField(max_length=50, primary_key=True)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="project")
+    received_date=models.DateField()
+    sub_description=models.TextField()
+    type=models.CharField(max_length=50)
+    user=models.ForeignKey(User, on_delete=models.CASCADE, related_name="submittals")
+    status=models.CharField(max_length=50)
+    notes=models.TextField()
+    
 
 class VerificationCode(models.Model):
     number = models.CharField(max_length=5, blank=True)
@@ -153,6 +168,17 @@ class TaskChangeLog(models.Model):
     changed_by = models.CharField(max_length=50)
     change_time = models.DateTimeField(auto_now_add=True)
     change_description = models.TextField()
+    is_approved = models.BooleanField(default=True)
     
     def __str__(self):
         return f"Change to {self.task_title} by {self.changed_by} at {self.change_time}"      
+    
+class PendingChange(models.Model):
+    task = models.ForeignKey(Task, to_field="task_id", on_delete=models.CASCADE)
+    field_name=models.CharField(max_length=50)
+    old_value=models.TextField()
+    new_value=models.TextField()
+    requested_by=models.ForeignKey(User, on_delete=models.CASCADE)
+    approved = models.BooleanField(default=False)
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateField(auto_now=True)

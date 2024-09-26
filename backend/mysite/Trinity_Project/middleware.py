@@ -1,7 +1,7 @@
 from threading import local
 
 _user = local()
-#This get the current user for log changes class
+#This get the current user for log and task changes class
 class CurrentUserMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
