@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Header } from "./misc";
-import { format, addMonths, subMonths, getDaysInMonth, subWeeks, addWeeks, addDays } from 'date-fns';
+import { format, addMonths, subMonths, getDaysInMonth, subWeeks, addWeeks } from 'date-fns';
 import { ProjectProps } from '../interfaces/project_types';
 import { getProjectByDate } from '../api/projects';
 import { useNavigate } from 'react-router-dom';
@@ -63,13 +63,14 @@ export function Calendar() {
                         projects: projects_due
                     }
                 }))
+
             } catch (error) {
                 console.error("Server Error: ",error)
             }
         }
         fetchProjects()
 
-    }, [currentMonth])
+    }, [currentMonth, currentWeek])
     
     //max-w-md my-5 mx-auto bg-slate-200 rounded-lg shadow-md p-6
     return (
@@ -197,72 +198,35 @@ function WeeklyCalendar({ currentWeek, handlePrevWeek, handleNextWeek, projectsD
  * - Refactor the code so that I can just map out the divs instead of manually puttting each day ofthe week
  */
 function WeekLayout({ currentWeek, projectList }: { currentWeek: Date, projectList: CalendarProps[] }) {
+    const projects: ProjectProps[] = projectList.flatMap((project) => project.projects || []);
 
-    //Pads days to the beginning of the week
-    const days_to_skip = () => {
-        const firstDayOfMonth = new Date(currentWeek.getFullYear(), currentWeek.getMonth(), 1);
-        const day = firstDayOfMonth.toLocaleDateString('en-US', { weekday: 'long' });
-        console.log(currentWeek)
-        console.log(day);
-        console.log(currentWeek.getDate());
-        switch (day) {
-            case 'Monday':
-                return 1
-            case 'Tuesday':
-                return 2
-            case 'Wednesday':
-                return 3
-            case 'Thursday':
-                return 4
-            case 'Friday':
-                return 5
-            case 'Saturday':
-                return 6
-            default:
-                return 0
-        }
-    }
+    // Calculate the start of the week (Sunday)
+    const startOfWeek = new Date(currentWeek);
+    startOfWeek.setDate(currentWeek.getDate() - currentWeek.getDay());
 
     return (
         <div className="grid grid-cols-7 gap-2">
-            {currentWeek.getDate() <= 7 && Array.from({ length: days_to_skip() }, (_, index) => (
-                <div key={index} className="p-14 border border-gray-300 bg-gray-200 text-center"/>
-            ))}
+            {Array.from({ length: 7 }, (_, index) => {
+                const currentDate = new Date(startOfWeek);
+                currentDate.setDate(startOfWeek.getDate() + index);
+                
+                const isCurrentMonth = currentDate.getMonth() === currentWeek.getMonth();
+                const dayNumber = currentDate.getDate();
 
-            <div className='h-screen bg-slate-100 text-center'>
-                <h4 className='text-xl font-semibold'>{format(currentWeek, 'dd')}</h4>
-            </div>
-
-            <div className='h-screen text-center'>
-                <h4 className='text-xl font-semibold'>{format(addDays(currentWeek, 1), 'dd') }</h4>
-            </div>
-
-            <div className='h-screen bg-slate-100 text-center'>
-                <h4 className='text-xl font-semibold'>{format(addDays(currentWeek, 2), 'dd')}</h4>
-            </div>
-
-            <div className='h-screen  text-center'>
-                <h4 className='text-xl font-semibold'>{format(addDays(currentWeek, 3), 'dd')}</h4>
-            </div>
-
-            <div className='h-screen bg-slate-100 text-center'>
-                <h4 className='text-xl font-semibold'>{format(addDays(currentWeek, 4), 'dd')}</h4>
-            </div>
-
-            <div className='h-screen text-center'>
-                <h4 className='text-xl font-semibold'>{format(addDays(currentWeek, 5), 'dd')}</h4>
-            </div>
-
-            <div className='h-screen bg-slate-100 text-center'>
-                <h4 className='text-xl font-semibold'>{format(addDays(currentWeek, 6), 'dd')}</h4>
-            </div>
-
-            {/* 
-            ))}
-
-            {projectList.map((project_day, index) => (
-               <WeekDayCard key={index} day_number={project_day.day} projects={project_day.projects} /> 
-            ))} */}
+                return (
+                    <div 
+                        key={index} 
+                        className={`h-screen ${index % 2 === 0 ? 'bg-slate-100' : ''} 
+                                    ${isCurrentMonth ? '' : 'opacity-50'} text-center`}
+                    >
+                        <WeekDayCard 
+                            day_number={dayNumber - 1} 
+                            projects={projects}
+                            isCurrentMonth={isCurrentMonth}
+                        />
+                    </div>
+                );
+            })}
         </div>
     )
 }
@@ -275,11 +239,11 @@ function WeekLayout({ currentWeek, projectList }: { currentWeek: Date, projectLi
  * @param {number} daysInMonth
  */
 function MonthLayout({ currentMonth, projectList }: { daysInMonth: number, currentMonth: Date, projectList: CalendarProps[] }) {
-
     // Pads days to the beginning of the month
     const days_to_skip = () => {
-        currentMonth.setDate(1)
-        const day = currentMonth.toLocaleDateString('en-US', { weekday: 'long' })
+        const tempMonth = currentMonth
+        tempMonth.setDate(1)
+        const day = tempMonth.toLocaleDateString('en-US', { weekday: 'long' })
 
         switch (day) {
             case 'Monday':
@@ -333,16 +297,15 @@ function MonthDayCard({ day_number, projects }: DayButtonProps) {
     )
 }
 
-function WeekDayCard({ day_number, projects }: DayButtonProps) {
+function WeekDayCard({ day_number, projects, isCurrentMonth }: DayButtonProps & { isCurrentMonth: boolean }) {
     return (
-        <div className="h-screen border border-gray-300  text-center shadow-md ">
-            <div className="text-xl font-bold">
+        <div className={`h-screen border border-gray-300 text-center shadow-md ${isCurrentMonth ? '' : 'bg-gray-100'}`}>
+            <h3 className={`text-xl font-semibold mb-5 ${isCurrentMonth ? '' : 'text-gray-500'}`}>
                 {day_number + 1}
-            </div>
-
-            <div className="overflow-y-auto h-44">
-            {projects && projects.length > 0 && 
-                <ListProjectsOnDay projects={projects} />
+            </h3>
+            <div className="overflow-y-auto">
+            {projects && projects.length > 0 && isCurrentMonth &&
+                <ListProjectsOnDayWeekly projects={projects} day_number={day_number} />
             }
             </div>
         </div>
@@ -355,7 +318,7 @@ function WeekDayCard({ day_number, projects }: DayButtonProps) {
  * @param projects list of projects on a specific day
  */
 function ListProjectsOnDay({ projects }: { projects: ProjectProps[] }) {
-    const navigate = useNavigate();
+    const navigate = useNavigate()
 
     return(
         <>
@@ -363,7 +326,7 @@ function ListProjectsOnDay({ projects }: { projects: ProjectProps[] }) {
             <button key={project.project_id} onClick={() =>navigate('/projects/update_project/' + project.project_id)} className='w-full'>
                 <div className='group bg-orange-100 overflow-hidden'>
                     <div className='text-blue-800 underline font-semibold text-base'>
-                            {project.project_name}
+                        {project.project_name}
                     </div>
 
                     <div className='bg-orange-200 text-xs '>
@@ -373,6 +336,39 @@ function ListProjectsOnDay({ projects }: { projects: ProjectProps[] }) {
             </button>
         ))
         }
+        </>
+    )
+}
+
+
+/**
+ * Renders all projects due on a specific day (Weekly version)
+ * Needed a new component so I can get the projects render on their respective days
+ * @param projects list of projects on a specific day
+ * @param day_number the day of the week
+ */ 
+function ListProjectsOnDayWeekly({ projects, day_number }: { projects: ProjectProps[], day_number: number }) {
+    const navigate = useNavigate()
+
+    return (
+        <>
+        {projects.map((project) => {
+            if (day_number === new Date(project.end_date).getDate()) {
+                return (
+                    <button key={project.project_id} onClick={() => navigate('/projects/update_project/' + project.project_id)} className='w-full'>
+                        <div className='group bg-orange-100 overflow-hidden'>
+                            <div className='text-blue-800 underline font-semibold text-base'>
+                                {project.project_name}
+                            </div>
+                            <div className='bg-orange-200 text-xs '>
+                                {project.description}
+                            </div>
+                        </div>
+                    </button>
+                );
+            }
+            return null;
+        })}
         </>
     )
 }

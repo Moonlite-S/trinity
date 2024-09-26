@@ -124,6 +124,9 @@ export function Verification() {
 
       checkForValidation()
 
+      // TEMPORARY
+      isAuth(true)
+
     }, [location]);
     
     // Change this to a custom loading screen
