@@ -441,7 +441,7 @@ def submittal_detail(request,submittal_id):
 def submittal_by_assigned_to(request,assigned_to):
     
     try:
-        submittals=Submittal.objects.filter(assigned_to=assigned_to)
+        submittals=Submittal.objects.filter(user=assigned_to)
     except Submittal.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     
@@ -452,7 +452,6 @@ def submittal_by_assigned_to(request,assigned_to):
             serializer = SubmittalSerializer(submittals,many=True)
         return Response(serializer.data)
         
-    pass
 
 
     # try:
