@@ -364,6 +364,16 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
                 }
             </div>
 
+            <div>
+                <h3>Submittal Overview:</h3>
+                <div>
+                    <h4>Total Submittals: </h4>
+                    <h4>Total Submittals Received: </h4>
+                    <h4>Total Submittals Approved: </h4>
+                    <h4>Total Submittals Rejected: </h4>
+                </div>
+            </div>
+
         </div>
 
         <div className="flex flex-row gap-5 m-5">

@@ -496,7 +496,8 @@ def submittal_creation_data(request):
     data_to_send['projects'] = list(projects)
 
     # Gets lists of users (project managers and team members)
-    users = User.objects.filter(role__in=['Manager', 'Administrator', 'Team Member'], is_active=True).values_list('email', 'name')
+    # THIS ONE USES THE PRIMARY KEY (pk) AND NOT THE EMAIL
+    users = User.objects.filter(role__in=['Manager', 'Administrator', 'Team Member'], is_active=True).values_list('pk', 'name')
     data_to_send['users'] = list(users)
 
     # Get list of client names
@@ -575,3 +576,18 @@ def submittal_by_assigned_to(request,assigned_to):
     #     else:
     #         serializer = TaskSerializer(tasks,many=True)
     #     return Response(serializer.data)
+
+@login_required
+@api_view(['GET'])
+def submittal_by_project_id(request, project_id):
+    try:
+        submittals = Submittal.objects.filter(project__project_id=project_id)
+    except Submittal.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        try:
+            serializer = SubmittalSerializer(submittals, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)

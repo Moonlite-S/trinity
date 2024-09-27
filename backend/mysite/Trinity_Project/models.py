@@ -103,17 +103,23 @@ class Task(models.Model):
     due_date=models.DateField()
     is_approved = models.BooleanField(default=True)
     
-    # THIS IS A FUCKING ISSUE
-    # def save(self, *args, **kwargs):
-    #     if self.task_id:  # Update scenario
-    #         old_instance = Task.objects.get(task_id=self.pk)
-    #         # Filter out reverse relationships
-    #         self._old_values = {
-    #             field.name: getattr(old_instance, field.name)
-    #             for field in self._meta.get_fields()
-    #             if isinstance(field, models.Field)
-    #         }
-    #     super(Task, self).save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        if self.pk:  # Update scenario
+            try:
+                old_instance = Task.objects.get(task_id=self.pk)
+                # Filter out reverse relationships
+                self._old_values = {
+                    field.name: getattr(old_instance, field.name)
+                    for field in self._meta.get_fields()
+                    if isinstance(field, models.Field)
+                }
+            except Task.DoesNotExist:
+                # Handle the case where the instance doesn't exist anymore
+                self._old_values = {}
+        else:
+            self._old_values = {}
+
+        super(Task, self).save(*args, **kwargs)
 
     def get_old_values(self):
         if hasattr(self, '_old_values'):

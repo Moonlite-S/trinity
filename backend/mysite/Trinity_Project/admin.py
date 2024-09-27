@@ -11,7 +11,6 @@ admin.site.register(Submittal)
 
 #This is another way to do it that also you more option with this
 @admin.register(ProjectChangeLog)
-
 class ProjectChangeLogAdmin(admin.ModelAdmin):
     list_display = ('project_id','project_name','manager','client_name','city','start_date','end_date','description','status', 'changed_by', 'change_time', 'change_description')
     list_filter = ('project_id', 'changed_by', 'change_time')

@@ -76,7 +76,6 @@ class AnnouncmentsSerializer(serializers.ModelSerializer):
         model = Announcements
         fields = ['title', 'content', 'author', 'date']
 
-
 class SubmittalSerializer(serializers.ModelSerializer):
     project = serializers.PrimaryKeyRelatedField(queryset=Project.objects.all(),write_only=True)  # Allow project_id to be written
     project_id=serializers.CharField(source='project.project_id',read_only=True)

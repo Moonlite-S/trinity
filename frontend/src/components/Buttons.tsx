@@ -92,7 +92,8 @@ export function SelectionComponent({defaultValue = '', multiple, options, name, 
     // If the default option value is not found, it will be undefined
     // This would cause an error if the manager's email is not found
     if (!defaultOptionValue) {
-        console.warn("No default option value found for", name, "with options", options)
+        // Kinda annoying to see in the console
+        //console.warn("No default option value found for", name, "with options", options)
     }
     
     // Sets default to the defaultOption if it exists
@@ -100,7 +101,6 @@ export function SelectionComponent({defaultValue = '', multiple, options, name, 
     const selectDefaultValue = defaultOption
     ? defaultOption
     : {value: defaultOptionValue ? defaultOptionValue : defaultValue, label: defaultValue}
-
 
     return (
         <Select defaultValue={selectDefaultValue} onChange={onChange ? onChange : () => selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
