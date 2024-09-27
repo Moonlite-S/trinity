@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from datetime import timedelta
 from azure.identity import DefaultAzureCredential
 
 # Load .env file
@@ -75,6 +76,7 @@ MIDDLEWARE = [
     'django_otp.middleware.OTPMiddleware',
     'django_auto_logout.middleware.auto_logout',
     'Trinity_Project.middleware.CurrentUserMiddleware',
+    'Trinity_Project.middleware.AutoLogoutMiddleware',
     'two_factor.middleware.threadlocals.ThreadLocals',
 ]
 
@@ -212,12 +214,13 @@ LOGIN_URL = "two_factor:login"
 #LOGIN_URL = "api/login"
 
 AUTO_LOGOUT = {
-    'IDLE_TIME': 6000, 
+    'IDLE_TIME': timedelta(minutes=3), 
     'REDIRECT_TO_LOGIN_IMMEDIATELY': True,
     'MESSAGE': 'The session has expired. Please login again to continue.',
     } 
 
 
-SESSION_COOKIE_SECURE = False  
-CSRF_COOKIE_SECURE = False     
+SESSION_COOKIE_SECURE = True  
+CSRF_COOKIE_SECURE = True 
+CSRF_COOKIE_AGE=   timedelta(hours=8) 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'

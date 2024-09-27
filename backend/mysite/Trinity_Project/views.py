@@ -1,4 +1,5 @@
 from os import name
+from urllib import response
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, JsonResponse
 from openai import AuthenticationError
@@ -28,6 +29,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from .models import PendingChange
+from django.middleware.csrf import get_token
 
 
 
@@ -57,7 +59,10 @@ def login_view(request):
 
     else:
         raise AuthenticationFailed('User not found!')
-
+    response=Response()
+    csrf_token = get_token(request)
+    response.set_cookie(key='csrftoken', value=csrf_token, httponly=False, samesite='None', secure=True)
+    
     return Response({"message": "Successfully logged in."}, status=200)
 
 @login_required
@@ -99,8 +104,16 @@ def user_edit(request,user_email):
 
 @api_view(['POST'])
 def logout_view(request):
+    # Log the user out
     logout(request)
-    return Response({"message": "Successfully logged out."}, status=200)
+
+    # Create the response object
+    response = Response({"message": "Successfully logged out."}, status=200)
+
+    # Delete the CSRF token from the response cookies
+    response.delete_cookie('csrftoken')
+
+    return response
 
 def index(request):
     return HttpResponse("Hello, world. You're at the Project index.")
