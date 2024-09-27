@@ -63,7 +63,8 @@ export function Tasks() {
       description: form_data.get('description') as string,
       assigned_to: form_data.get('assigned_to') as string,
       due_date: form_data.get('due_date') as string,
-      project_id: SelectedProject.project_id
+      project_id: SelectedProject.project_id,
+      status: 'active'
     }
 
     console.log(data_to_send.project_id)
@@ -291,7 +292,8 @@ export function EditTask() {
       description: form_data.get('description') as string,
       assigned_to: form_data.get('assigned_to') as string,
       due_date: form_data.get('due_date') as string,
-      project_id: form_data.get('project_id') as string
+      project_id: form_data.get('project_id') as string,
+      status: 'active'
     }
 
     console.log(data_to_send)
