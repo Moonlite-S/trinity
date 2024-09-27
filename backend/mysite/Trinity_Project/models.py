@@ -101,6 +101,7 @@ class Task(models.Model):
     assigned_to=models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks")
     project_id=models.ForeignKey(Project, on_delete=models.CASCADE, related_name="tasks")
     due_date=models.DateField()
+    status=models.CharField(max_length=50, default="active")
     is_approved = models.BooleanField(default=True)
     
     def save(self, *args, **kwargs):
@@ -128,13 +129,16 @@ class Task(models.Model):
 
 class Submittal(models.Model):
     submittal_id=models.CharField(max_length=50, primary_key=True)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="project")
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="submittals")
     received_date=models.DateField()
     sub_description=models.TextField()
     type=models.CharField(max_length=50)
     user=models.ForeignKey(User, on_delete=models.CASCADE, related_name="submittals")
     status=models.CharField(max_length=50)
     notes=models.TextField()
+
+    def __str__(self):
+        return f"Submittal ID: {self.submittal_id} | Project: {self.project.project_name} | Status: {self.status}"
     
 class Announcements(models.Model):
     title=models.CharField(max_length=255)

@@ -9,7 +9,7 @@ from rest_framework.exceptions import PermissionDenied
 
 from .azure_file_share import AzureFileShareClient
 from .models import Announcements, PendingChange, Project, Submittal, Task,ProjectChangeLog, TaskChangeLog, User
-from .serializers import AnnouncmentsSerializer, ProjectSerializer, ProjectSerializerUserObjectVer, TaskSerializer, UserNameAndEmail, UserNameSerializer, UserSerializer, SubmittalSerializer
+from .serializers import AnnouncmentsSerializer, ProjectSerializer, ProjectSerializerUserObjectVer, ProjectSerializerWithSubmittals, TaskSerializer, UserNameAndEmail, UserNameSerializer, UserSerializer, SubmittalSerializer
 from rest_framework.views import APIView
 import jwt, datetime
 from datetime import datetime,timezone,timedelta
@@ -148,8 +148,7 @@ def project_list(request):
 
     if request.method == 'GET':    
         projects = Project.objects.all()
-
-        serializer = ProjectSerializerUserObjectVer(projects, many=True)
+        serializer = ProjectSerializerWithSubmittals(projects, many=True)
         return Response(serializer.data)
     
     if request.method == 'POST':

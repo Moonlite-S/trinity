@@ -12,12 +12,11 @@ export type SubmittalCreation = {
 export type Submittal = {
     submittal_id: string
     project_id: string
-    client_name: string
     received_date: string
     project_name: string
     sub_description: string
-    type: string
+    type: "mechanical" | "electrical" | "plumbing" | "fire_protection" | "other"
     assigned_to: string
-    status: string
+    status: "open" | "closed"
     notes: string
 }

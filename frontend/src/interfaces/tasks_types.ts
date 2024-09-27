@@ -5,7 +5,6 @@ export type TaskProps = {
     assigned_to: string
     project_id: string
     due_date: string
-
-    //status: string
+    status: "active" | "completed"
     //priority: string
 }

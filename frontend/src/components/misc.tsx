@@ -29,7 +29,18 @@ export function Error_Component({ errorString }: { errorString: string }) {
   )
 }
 
+/**
+ * TaskCard Component
+ * 
+ * @param task - The task to be displayed
+ * @returns A card displaying the task's details
+ * 
+ * TODO:
+ * - Add the person who created the task
+ */
 export function TaskCard ({task} : {task: TaskProps}) {
+    // The project_id is using the __str__ representation of the object
+    // So i just need to split to get the project name and company name
     const formatProjectName = task.project_id.split('|')[1]
     const formatCompanyName = task.project_id.split('|')[2]
 

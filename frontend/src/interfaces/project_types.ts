@@ -1,5 +1,6 @@
 import { FormEvent } from "react"
 import { EmployeeProps } from "./employee_type"
+import { Submittal } from "./submittal_types"
 
 export type ProjectStatus = 
     "ACTIVE" |
@@ -22,6 +23,7 @@ export type ProjectProps = {
     status: ProjectStatus
     folder_location: string
     project_template: string,
+    submittals?: Submittal[]
 }
 
 export type FilterProps = {

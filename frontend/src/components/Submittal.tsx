@@ -65,9 +65,8 @@ function SubmittalList() {
     const columns: TableColumn<Submittal>[] = [
         { name: "Submittal ID", selector: row => row.submittal_id, sortable: true },
         { name: "Project", selector: row => row.project_name, sortable: true },
-        { name: "Client", selector: row => row.client_name, sortable: true },
-        { name: "Status", selector: row => row.status, sortable: true },
-        { name: "Type", selector: row => row.type, sortable: true },
+        { name: "Status", selector: row => row.status.toUpperCase(), sortable: true },
+        { name: "Type", selector: row => {if (row.type === "fire_protection") return "FIRE PROTECTION"; else return row.type.toUpperCase()}, sortable: true },
         { name: "Date Received", selector: row => row.received_date, sortable: true },
         { name: "Assigned To", selector: row => row.assigned_to, sortable: true },
         { name: "Description", selector: row => row.sub_description, sortable: true },
