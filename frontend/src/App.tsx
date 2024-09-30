@@ -13,7 +13,7 @@ import { MonthlyCalendar, WeeklyCalendar } from './components/Calendar';
 import { Header } from './components/misc'
 import { EmployeeProps } from './interfaces/employee_type'
 import { SetAnnouncement } from './components/Announcement'
-import CreateSubmittal, { ViewSubmittals } from './components/Submittal'
+import CreateSubmittal, { EditSubmittal, ViewSubmittals } from './components/Submittal'
 
 // Main Router for the application
 export default function App() {
@@ -41,6 +41,7 @@ export default function App() {
 
               <Route path='/submittal/create_submittal' element={<CreateSubmittal />} />
               <Route path='/submittal/' element={<ViewSubmittals />} />
+              <Route path='/submittal/:id' element={<EditSubmittal />} />
 
               <Route path='/employees/' element={<EmployeeList />} />
               <Route path='/employees/create_employee' element={<CreateEmployee />} />

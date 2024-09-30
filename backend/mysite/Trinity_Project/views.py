@@ -537,7 +537,8 @@ def submittal_detail(request,submittal_id):
         return Response(serializer.data)
     
     elif request.method == 'PUT':
-        serializer = SubmittalSerializer(submittal)
+        serializer = SubmittalSerializer(submittal, data=request.data, partial=True)
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -547,7 +548,6 @@ def submittal_detail(request,submittal_id):
         submittal.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
             
-
 @login_required
 @api_view(['GET'])
 def submittal_by_assigned_to(request,assigned_to):

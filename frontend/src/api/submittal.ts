@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 import AxiosInstance from "../components/Axios";
-import { Submittal, SubmittalCreation } from "../interfaces/submittal_types";
+import { SubmittalProps } from "../interfaces/submittal_types";
 
 /**
  * @returns a list of projects and users for the submittal creation page
@@ -27,7 +27,7 @@ export async function getDataForSubmittalCreation() {
 
 //**Argument must be a Submittal object
 //**Returns the status code of the response
-export async function createSubmittal(submittalData: SubmittalCreation): Promise<Number> {
+export async function createSubmittal(submittalData: SubmittalProps): Promise<Number> {
     try {
         const response = await AxiosInstance.post('api/submittal/', submittalData)
         return response.status
@@ -48,10 +48,25 @@ export async function createSubmittal(submittalData: SubmittalCreation): Promise
     }
 }
 
-export async function getSubmittalsByProjectId(projectId: string): Promise<SubmittalCreation[]> {
+export async function updateSubmittal(submittalData: SubmittalProps): Promise<Number> {
     try {
-        const response = await AxiosInstance.get(`api/submittal/project_id/${projectId}`)
-        return response.data as SubmittalCreation[]
+        const response = await AxiosInstance.put('api/submittal/id/' + submittalData.submittal_id, submittalData)
+        return response.status
+
+    } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+            return error.response?.status ?? 500
+        } else if (error instanceof Error) {
+            return 500
+        }
+        return 500
+    }
+}   
+
+export async function getSubmittalById(submittalId: string): Promise<SubmittalProps> {
+    try {
+        const response = await AxiosInstance.get(`api/submittal/id/${submittalId}`)
+        return response.data as SubmittalProps
     } catch (error: unknown) {
         if (error instanceof AxiosError) {
             throw error.response?.data
@@ -62,10 +77,24 @@ export async function getSubmittalsByProjectId(projectId: string): Promise<Submi
     }
 }
 
-export async function getSubmittals(): Promise<Submittal[]> {
+export async function getSubmittalsByProjectId(projectId: string): Promise<SubmittalProps[]> {
+    try {
+        const response = await AxiosInstance.get(`api/submittal/project_id/${projectId}`)
+        return response.data as SubmittalProps[]
+    } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+            throw error.response?.data
+        } else if (error instanceof Error) {
+            throw error.message
+        }
+        throw new Error("Unknown error")
+    }
+}
+
+export async function getSubmittals(): Promise<SubmittalProps[]> {
     try {
         const response = await AxiosInstance.get('api/submittal/')
-        return response.data as Submittal[]
+        return response.data as SubmittalProps[]
     } catch (error: unknown) {
         if (error instanceof AxiosError) {
             throw error.response?.data
@@ -89,3 +118,4 @@ export async function deleteSubmittal(submittalId: string): Promise<Number> {
         throw new Error("Unknown error")
     }
 }
+

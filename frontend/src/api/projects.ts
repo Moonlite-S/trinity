@@ -60,23 +60,15 @@ export async function getProject(id: string): Promise<ProjectProps> {
  * - Backend needs to perform a check to make sure the project doesn't already exist
  * - Currently can't catch the error if project_id already existsq
  */
-export async function createProject(project_data: { [key: string]: FormDataEntryValue }): Promise<number> {
+export async function createProject(project_data: ProjectProps): Promise<Number> {
     try {
         const response = await AxiosInstance.post('api/projects/', project_data)
-
-        console.log(response)
-
-        return 201
+        return response.status
     } catch (error: unknown) {
         if (error instanceof AxiosError) {
-            if (error.response?.status === 400) {
-                if (error.response.data['project_id']) {
-                    // 409 Conflict
-                    return 409
-                } else {
+                if (error.response?.status === 400) {
                     // 400 Bad Request
-                    return 400
-                }
+                return 400
             } else if (error.response?.status === 403) {
                 // 403 Forbidden
                 return 403
@@ -88,9 +80,9 @@ export async function createProject(project_data: { [key: string]: FormDataEntry
     }
 }
 
-export async function updateProject(project_data: { [key: string]: FormDataEntryValue }, id: string | undefined): Promise<number> {
+export async function updateProject(project_data: ProjectProps): Promise<Number> {
     try {
-        const response = await AxiosInstance.put('api/projects/id/' + id, project_data)
+        const response = await AxiosInstance.put('api/projects/id/' + project_data.project_id, project_data)
 
         console.log(response)
 

@@ -1,7 +1,7 @@
-import { SelectionComponentProps } from "../interfaces/project_types";
 import CreatableSelect from "react-select/creatable";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
+import { SelectionComponentProps } from "../interfaces/button_types";
 
 /** General Orange button */
 export function Route_Button({route, text, isDelete}: {route: string, text: string, isDelete?: boolean}) {
@@ -21,6 +21,14 @@ export function Back_Button() {
 
     return(
         <button type="button" className={css} onClick={() => navigate(-1)}>Back</button>
+    )
+}
+
+export function OrangeButton({children, onClick}: {children: React.ReactNode, onClick?: () => void}){
+    return (
+        <button className="bg-orange-300 rounded px-4 py-2 ml-5 transition hover:bg-orange-400" onClick={onClick}>
+            {children}
+        </button>
     )
 }
 
@@ -44,7 +52,7 @@ export function BottomFormButton({ button_text }: { button_text: string}) {
     );
 }
 
-export function CreateableSelectionComponent({defaultValue = '', multiple, options, name}: SelectionComponentProps){
+export function CreateableSelectionComponent({defaultValue = '', multiple, options, name, onChange}: SelectionComponentProps){
     if (!options) {
         options = [{value: '', label: ''}];
     }
@@ -57,7 +65,7 @@ export function CreateableSelectionComponent({defaultValue = '', multiple, optio
         : {value: defaultValue, label: defaultValue}
 
     return (
-        <CreatableSelect defaultValue={selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
+        <CreatableSelect value={selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} onChange={onChange} isClearable 
         styles = {{
             control: (baseStyles: any, state: any) => ({
                 ...baseStyles,
@@ -103,48 +111,7 @@ export function SelectionComponent({defaultValue = '', multiple, options, name, 
     : {value: defaultOptionValue ? defaultOptionValue : defaultValue, label: defaultValue}
 
     return (
-        <Select defaultValue={selectDefaultValue} onChange={onChange ? onChange : () => selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
-        styles = {{
-            control: (baseStyles: any, state: any) => ({
-                ...baseStyles,
-                borderColor: state.isFocused ? 'orange' : 'gray',
-                boxShadow: state.isFocused ? '0 0 0 2px orange' : 'none',
-                '&:hover': {
-                    borderColor: state.isFocused ? 'orange' : 'gray',
-                },
-            }),
-            option: () => ({
-                padding: '5px 10px',
-                rounded: '5px',
-                '&:hover': {
-                    backgroundColor: '#cacacc',
-                },
-                
-            })
-
-        }}/>
-    )
-}
-
-export function SelectionComponentValue({defaultValue = '', multiple, options, name, onChange}: SelectionComponentProps){
-    if (!options) {
-        options = [{value: '', label: ''}];
-    }
-
-    const defaultOption = options.find((option) => option.label === defaultValue)
-    
-    // This one is specifically for the manager (getting the email for defaultmanager)
-    const defaultOptionValue = options.find((option) => option.label === defaultValue)?.value
-    
-    // Sets default to the defaultOption if it exists
-    // if not, uses DefaultValue
-    const selectDefaultValue = defaultOption
-    ? defaultOption
-    : {value: defaultOptionValue ? defaultOptionValue : defaultValue, label: defaultValue}
-    console.log("Select Option Value: ", selectDefaultValue)
-
-    return (
-        <Select value={selectDefaultValue} onChange={onChange ? onChange : () => selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
+        <Select value={selectDefaultValue} onChange={onChange} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
         styles = {{
             control: (baseStyles: any, state: any) => ({
                 ...baseStyles,

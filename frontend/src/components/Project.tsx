@@ -1,15 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Error_Component, Header } from "./misc";
-import { createProject, getProjectList, getProject, updateProject, deleteProject } from "../api/projects";
+import { getProjectList, getProject, deleteProject } from "../api/projects";
 import { useNavigate, useParams } from "react-router-dom";
 import DataTable, { Direction, TableColumn } from "react-data-table-component";
 import { FilterProps, ProjectProps } from "../interfaces/project_types";
 import { ProjectFormCreation, ProjectFormUpdate } from "./ProjectForm";
 import { Route_Button } from "./Buttons";
-import { useAuth } from "../App";
 import { filterTasksByProject } from "../api/tasks";
-import { Submittal } from "../interfaces/submittal_types";
+import { SubmittalProps } from "../interfaces/submittal_types";
 
 /**
  * ### [Route for ('/create_project')]
@@ -18,54 +17,7 @@ import { Submittal } from "../interfaces/submittal_types";
  * 
  */
 export function CreateProject() {
-    const { user } = useAuth();
     const [errorString, setErrorString] = useState<string>()
-    const navigate = useNavigate()
-
-    const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-        
-        const formData = new FormData(event.currentTarget)
-        const data = Object.fromEntries(formData)
-
-        if (data.notify_manager === "on" && data.manager !== user?.email) {
-                const to = data.manager // Change this so that it's the user's email
-                const subject = "New Project (" + data.project_name + ") Assigned to you"
-                const body = "You have been assigned a new project, " + data.project_name + ". Please check it out."
-
-                const mail_url = `mailto:${encodeURIComponent(String(to))}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
-
-                window.location.href = mail_url
-            }
-
-        try {
-            setErrorString(undefined)
-            const result_code = await createProject(data)
-            
-            console.log(data)
-            console.log(result_code)
-
-            // Error handling
-            switch (result_code) {
-                case 201:
-                    alert("Project created successfully!")
-                    navigate("/projects")
-                    break
-                case 400:
-                    setErrorString("Bad Request: Invalid data. Please make sure all fields are filled out. Error: " + result_code)
-                    break
-                case 403:
-                    setErrorString("Forbidden: You are not authorized to create projects. Error: " + result_code)
-                    break
-                default:
-                    throw new Error("Error creating project: " + result_code)
-            }
-
-        } catch (error: unknown) {
-            console.error("Something went wrong: ", error)
-            setErrorString("Error 500")
-        }
-    }
 
     return (
         <>
@@ -79,7 +31,7 @@ export function CreateProject() {
 
             </div>
 
-            <ProjectFormCreation onSubmit={onSubmit} />
+            <ProjectFormCreation/>
 
         </>
     )
@@ -134,7 +86,6 @@ export function UpdateProjectList() {
 export function UpdateProject() {
     const { id } = useParams<string>()
     const [currentProject, setCurrentProject] = useState<ProjectProps>()
-    const [errorString, setErrorString] = useState<string>()
     const [loading, setLoading] = useState<boolean>(true)
     const navigate = useNavigate()
 
@@ -158,48 +109,13 @@ export function UpdateProject() {
         project()
     }, [id, navigate])
 
-    const onSubmit = async(event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-        
-        try {
-            const form_data = new FormData(event.currentTarget)
-
-            const data = Object.fromEntries(form_data)
-
-            console.log("Data: ", data)
-
-            const response = await updateProject(data, id)
-
-            switch (response) {
-                case 200:
-                    alert("Project updated successfully!")
-                    navigate("/projects")
-                    break;
-                case 403:
-                    setErrorString("Failed to update project. Error code: " + response + " Forbidden. Only the current project manager can update the project.")
-                    break;
-                case 404:
-                    setErrorString("Failed to update project. Error code: " + response + " Not Found")
-                    break;
-                default:    
-                    setErrorString("Failed to update project. Error code: " + response)
-            }
-
-        } catch (error) {
-            console.error("Error updating project:", error);
-            throw error; // Re-throw the error so the caller can handle it if needed
-        }
-    }
-
     return (
         <>
             <Header />
 
-            {errorString && <Error_Component errorString={errorString} />}
-
             {loading ? <div>Loading...</div> 
             : 
-            <ProjectFormUpdate onSubmit={onSubmit} formProps={currentProject} />}
+            <ProjectFormUpdate formProps={currentProject} />}
             
         </>
     )
@@ -326,7 +242,7 @@ const FilterComponent = ({ filterText, onFilter, onClear }: FilterProps) => (
  * 
  */
 const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
-    const [submittals, setSubmittals] = useState<Submittal[]>([])
+    const [submittals, setSubmittals] = useState<SubmittalProps[]>([])
 
     const [taskCounts, setTaskCounts] = useState<{
         total: number,
