@@ -48,6 +48,8 @@ export function useTaskFormHandler(
     
         const form_data = new FormData(e.currentTarget);
 
+        console.log("currentTaskData", form_data)
+
         const convert_project_obj_str_to_id = currentTaskData.project_id.split('|')[0].slice(4).trim()
     
         // Basically send everything aside from the project title
@@ -58,7 +60,7 @@ export function useTaskFormHandler(
           description: form_data.get('description') as string,
           assigned_to: form_data.get('assigned_to') as string,
           due_date: form_data.get('due_date') as string,
-          project_id: convert_project_obj_str_to_id,
+          project_id: method === "PUT" ? convert_project_obj_str_to_id : form_data.get('project') as string, // Another hacky solution that I need to fix later
           status: 'active'
         }
     

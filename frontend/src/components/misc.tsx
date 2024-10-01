@@ -66,9 +66,11 @@ export function AnnouncementCard({announcement} : {announcement: AnnouncementPro
 }
 
 export function ProjectCard ({project} : {project: ProjectProps}) {
+  const manager = typeof project.manager === 'string' ? project.manager : project.manager.name
   return (
   <div className="bg-slate-100 p-2 my-4 mx-2 rounded-md shadow-md">
       <h3>{project.project_name}</h3>
+      <h4>Current Manager: {manager}</h4>
       <p>Client: {project.client_name}</p>
       <p className="py-4">Notes: {project.description ? project.description : '(No Notes Written)'}</p>
       <p className="text-red-800">Next Deadline: {project.end_date}</p>
