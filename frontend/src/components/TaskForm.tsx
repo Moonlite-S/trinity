@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { getDataForTaskCreation } from "../api/tasks"
-import { useAuth } from "../App"
 import { SelectionButtonProps } from "../interfaces/button_types"
 import { TaskFormBaseProps, TaskProps } from "../interfaces/tasks_types"
 import { SelectionComponent } from "./Buttons"
 import { useTaskFormHandler } from "../hooks/taskFormHandler"
 
 export function TaskForm() {
-    const { user } = useAuth()
     const navigate = useNavigate()
   
     const [projects, setProjects] = useState<SelectionButtonProps[]>([])

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from "react";
-import { Error_Component, Header } from "./misc";
+import { Header } from "./misc";
 import { getProjectList, getProject, deleteProject } from "../api/projects";
 import { useNavigate, useParams } from "react-router-dom";
 import DataTable, { Direction, TableColumn } from "react-data-table-component";
@@ -17,13 +17,13 @@ import { SubmittalProps } from "../interfaces/submittal_types";
  * 
  */
 export function CreateProject() {
-    const [errorString, setErrorString] = useState<string>()
+    //const [errorString, setErrorString] = useState<string>()
 
     return (
         <>
             <Header />
 
-            {errorString && <Error_Component errorString={errorString} />}
+            {/* {errorString && <Error_Component errorString={errorString} />} */}
 
             <div className="justify-center mx-auto p-5">
 
