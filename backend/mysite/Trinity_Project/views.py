@@ -58,10 +58,10 @@ class LoginView(APIView):
         
         token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
         response = Response()
-        response.set_cookie(key='jwt_token', value=token, httponly=True, samesite='None', secure=True)
+        response.set_cookie(key='jwt_token', value=token, httponly=True, samesite='None', secure=True, max_age=3600)
         
         csrf_token = get_token(request)
-        response.set_cookie(key='csrftoken', value=csrf_token, httponly=False, samesite='None', secure=True)
+        response.set_cookie(key='csrftoken', value=csrf_token, httponly=False, samesite='None', secure=True, max_age=3600)
         response.data = {
             'jwt': token,
             'user': user.name,
