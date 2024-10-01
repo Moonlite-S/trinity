@@ -4,7 +4,6 @@ import { createProject, getDataForProjectCreation, updateProject } from "../api/
 import { FormEvent } from "react"
 import { EmployeeProps } from "../interfaces/employee_type"
 
-
 export const useProjectFormHandler = (
     setCurrentProjectData: React.Dispatch<React.SetStateAction<ProjectProps>>,
     navigate: NavigateFunction,

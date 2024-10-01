@@ -77,7 +77,6 @@ class LoginView(APIView):
 class UserView(APIView):
     def get(self, request):
         payload = authenticate_jwt(request)
-        print(payload)
 
         try: 
             user = User.objects.filter(id=payload['id']).first()
@@ -112,8 +111,6 @@ def project_creation_data(request):
     - `client_name`: list of client names
     - `city`: list of cities
 
-    TODO:
-    - Filter users by manager and admin roles only
     '''
     payload = authenticate_jwt(request)
     data_to_send = {}

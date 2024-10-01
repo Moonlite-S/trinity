@@ -83,7 +83,6 @@ export function SubmittalFormEdit({submittal}: {submittal: SubmittalProps}) {
 
     const { onProjectChange, onAssignedToChange, onSubmit } = useSubmittalFormHandler(setCurrentSubmittalData, navigate, "PUT")
 
-
     useEffect(() => {
         const get_submittals_data = async () => {
             const response = await getDataForSubmittalCreation()

@@ -81,19 +81,6 @@ class User(AbstractUser):
     def __str__(self):
         return f"{self.name} | {self.email}"
 
-# We MUST link this model to the User model
-class Client(models.Model):
-    client_id=models.CharField(max_length=50, unique=True)
-    client_name=models.CharField(max_length=50)
-    address=models.CharField(max_length=50)
-    city=models.CharField(max_length=50)
-    state=models.CharField(max_length=50)
-    zip=models.CharField(max_length=50)
-    phone=models.CharField(max_length=50)
-    email=models.EmailField(max_length=50)
-    manager=models.CharField(max_length=50)
-    notes=models.TextField(blank=True)
-
 class Task(models.Model):
     task_id=models.CharField(max_length=50, unique=True, primary_key=True)
     title=models.CharField(max_length=50)
