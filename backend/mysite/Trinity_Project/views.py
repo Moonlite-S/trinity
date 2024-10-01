@@ -62,6 +62,7 @@ class LoginView(APIView):
         
         csrf_token = get_token(request)
         response.set_cookie(key='csrftoken', value=csrf_token, httponly=False, samesite='None', secure=True, max_age=3600)
+        
         response.data = {
             'jwt': token,
             'user': user.name,
@@ -77,9 +78,14 @@ class UserView(APIView):
     def get(self, request):
         payload = authenticate_jwt(request)
 
-        user = User.objects.filter(id=payload['id']).first()
-        serializers = UserSerializer(user)
-        return Response(serializers.data)
+        try: 
+            user = User.objects.filter(id=payload['id']).first()
+            serializers = UserSerializer(user)
+            return Response(serializers.data)
+        
+        except Exception as e:
+            print(f"An error occurred while getting the user: {e}")
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class LogoutView(APIView):
     def post(self, request):
