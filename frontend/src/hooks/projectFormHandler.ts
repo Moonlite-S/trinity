@@ -60,16 +60,6 @@ export const useProjectFormHandler = (
         const formData = new FormData(event.target as HTMLFormElement)
         const formDataObj = Object.fromEntries(formData.entries())
 
-        if (formDataObj.notify_manager === "on" && formDataObj.manager !== user?.email) {
-            const to = formDataObj.manager // Change this so that it's the user's email
-            const subject = "New Project (" + formDataObj.project_name + ") Assigned to you"
-            const body = "You have been assigned a new project, " + formDataObj.project_name + ". Please check it out."
-
-            const mail_url = `mailto:${encodeURIComponent(String(to))}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
-
-            window.location.href = mail_url
-        }
-
         try {
             const method_handler = MethodHandler(method)
 
@@ -77,9 +67,6 @@ export const useProjectFormHandler = (
                 setErrorString(undefined)
                 // I'm not entirely sure why I have to set it to unknown, but it works
                 const result_code = await method_handler(formDataObj as unknown as ProjectProps)
-                
-                console.log(formDataObj)
-                console.log(result_code)
 
                 // Error handling
                 switch (result_code) {
@@ -88,6 +75,16 @@ export const useProjectFormHandler = (
                         navigate("/projects")
                         break
                     case 201:
+                        if (formDataObj.notify_manager === "on" && formDataObj.manager !== user?.email) {
+                            const to = formDataObj.manager // Change this so that it's the user's email
+                            const subject = "New Project (" + formDataObj.project_name + ") Assigned to you"
+                            const body = "You have been assigned a new project, " + formDataObj.project_name + ". Please check it out."
+
+                            const mail_url = `mailto:${encodeURIComponent(String(to))}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+
+                            window.location.href = mail_url
+                        }
+
                         alert("Project created successfully!")
                         navigate("/projects")
                         break

@@ -259,7 +259,7 @@ function ProjectFormBase({ currentProjectData, projectManagerListOptions, Client
 
                     <div className="flex flex-row justify-between gap-5">
                         <label htmlFor="end_date" className="py-2">Due Date:</label>
-                        <input className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="date" name="end_date" required/>
+                        <input className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="date" name="end_date" defaultValue={currentProjectData.end_date} required/>
                     </div>
                 </div>
 
