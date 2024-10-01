@@ -122,6 +122,9 @@ export function UpdateTask({task_data}: {task_data: TaskProps}) {
 }
 
 function TaskFormBase({projects, employees, currentTaskData, onProjectSelectionChange,  onAssignedToChange, onSubmit}: TaskFormBaseProps) {
+
+    const isUpdate: boolean = currentTaskData.task_id !== ""
+
     return (
     <form className="max-w-5xl w-full mx-auto my-5 bg-slate-200 rounded-lg shadow-md p-6 " onSubmit={onSubmit}>
         <div className="grid grid-cols-2 grid-flow-row justify-center gap-4 mb-4">
@@ -171,7 +174,7 @@ function TaskFormBase({projects, employees, currentTaskData, onProjectSelectionC
         </div>
 
         <div className="mx-auto text-center justify-center">
-            <button type="submit" className="bg-orange-300 rounded p-4" >{currentTaskData.task_id ? "Update Task" : "Create Task"}</button>
+            <button type="submit" className="bg-orange-300 rounded p-4" >{isUpdate ? "Update Task" : "Create Task"}</button>
         </div>
     </form>
     )

@@ -53,7 +53,7 @@ export function ProjectFormCreation() {
         { value: 'default', label: 'default' },
     ]
 
-    const { onSubmit, onDateStartChange, onManagerChange, onClientChange, onCityChange } = useProjectFormHandler(setCurrentProjectData, navigate, setErrorString, "POST", user)
+    const { onSubmit, onDateStartChange, onManagerChange, onClientChange, onCityChange } = useProjectFormHandler(setCurrentProjectData, navigate, setErrorString, "POST")
 
     useEffect(() => {
         const get_project_data = async () => {
@@ -132,7 +132,7 @@ export function ProjectFormUpdate(
     const [Cities, setCities] = useState<{ value: string, label: string }[] | undefined>()
     const [errorString, setErrorString] = useState<string>()
 
-    const { onSubmit, onDateStartChange, onManagerChange, onClientChange, onCityChange } = useProjectFormHandler(setCurrentProjectData, navigate, setErrorString, "PUT", user)
+    const { onSubmit, onDateStartChange, onManagerChange, onClientChange, onCityChange } = useProjectFormHandler(setCurrentProjectData, navigate, setErrorString, "PUT")
 
     const projectManagerListOptions = ProjectManagers?.map((value: string) => {
         return { value: value[1], label: value[0] }
@@ -229,6 +229,10 @@ type ProjectFormBaseProps = {
 }
 
 function ProjectFormBase({ currentProjectData, projectManagerListOptions, Clients, Cities, templates, onSubmit, onDateStartChange, onManagerChange, onClientChange, onCityChange }: ProjectFormBaseProps) {
+
+    // This decides the button at the bottom of the form
+    const isUpdate: boolean = currentProjectData.project_id !== ""
+
     return (
         <form id="project_creation" onSubmit={onSubmit}  method="post">
         <div className="flex flex-col gap-10 p-24 mx-auto max-w-screen-lg bg-zinc-50" >
@@ -295,16 +299,11 @@ function ProjectFormBase({ currentProjectData, projectManagerListOptions, Client
 
             <div className="flex flex-col gap-5">
                 <label  htmlFor="description">Project description:</label>
-                <textarea defaultValue={""} className="bg-white border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" placeholder="Enter description or other details" name="description"/>
-            </div>
-
-            <div title="If you are the project managers assigned to this project, you will not receive an email.">
-                <label htmlFor="notify_manager" className="py-2" >Notify Manager:</label>
-                <input type="checkbox" name="notify_manager" className="mx-2 bg-slate-200 border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" defaultChecked />
+                <textarea className="bg-white border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" placeholder="Enter description or other details" defaultValue={currentProjectData.description} name="description"/>
             </div>
         </div>
 
-        <BottomFormButton button_text="Create Project"/>
+        <BottomFormButton button_text={isUpdate ? "Update Project" : "Create Project"}/>
 
     </form>
     )

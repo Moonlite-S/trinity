@@ -65,7 +65,7 @@ export function CreateableSelectionComponent({Value = '', multiple, options, nam
         : {value: Value, label: Value}
 
     return (
-        <CreatableSelect value={selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} onChange={onChange} isClearable 
+        <CreatableSelect value={selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} onChange={onChange} 
         styles = {{
             control: (baseStyles: any, state: any) => ({
                 ...baseStyles,
@@ -111,7 +111,7 @@ export function SelectionComponent({Value: defaultValue = '', multiple, options,
     : {value: defaultOptionValue ? defaultOptionValue : defaultValue, label: defaultValue}
 
     return (
-        <Select value={selectDefaultValue} onChange={onChange} options={options} name={name} placeholder="Search" isMulti={multiple} isClearable 
+        <Select value={selectDefaultValue} onChange={onChange} options={options} name={name} placeholder="Search" isMulti={multiple} 
         styles = {{
             control: (baseStyles: any, state: any) => ({
                 ...baseStyles,
@@ -127,7 +127,6 @@ export function SelectionComponent({Value: defaultValue = '', multiple, options,
                 '&:hover': {
                     backgroundColor: '#cacacc',
                 },
-                
             })
 
         }}/>

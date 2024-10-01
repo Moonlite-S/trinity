@@ -144,20 +144,11 @@ export function ProjectStatusReport() {
 
             const unique_managers = [...new Set(response.map(project => project.manager.name))];
 
-            console.log("test", response)
-
-            console.log("Unique Managers: ", unique_managers)
-            
             setManagers(unique_managers)
-            
             setProject(response)
         }
-
-
         get_data()
     }, [])
-
-    console.log("Managers: ", managers)
 
     return(
         <>

@@ -9,7 +9,6 @@ export const useProjectFormHandler = (
     navigate: NavigateFunction,
     setErrorString: React.Dispatch<React.SetStateAction<string | undefined>>,
     method: "POST" | "PUT",
-    user: EmployeeProps
 ) => {
 
     const onDateStartChange = async(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,16 +73,6 @@ export const useProjectFormHandler = (
                         navigate("/projects")
                         break
                     case 201:
-                        if (formDataObj.notify_manager === "on" && formDataObj.manager !== user?.email) {
-                            const to = formDataObj.manager // Change this so that it's the user's email
-                            const subject = "New Project (" + formDataObj.project_name + ") Assigned to you"
-                            const body = "You have been assigned a new project, " + formDataObj.project_name + ". Please check it out."
-
-                            const mail_url = `mailto:${encodeURIComponent(String(to))}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
-
-                            window.location.href = mail_url
-                        }
-
                         alert("Project created successfully!")
                         navigate("/projects")
                         break

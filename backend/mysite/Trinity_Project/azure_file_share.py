@@ -20,6 +20,7 @@ class AzureFileShareClient:
     TODO:
     - Create Template Folder
     - Upload Files to Project Folder
+    - Maybe make the init function automatically get the folder location at init
     '''
     def __init__(self) -> None:
         self.BASE_PATH = "projects/"
@@ -91,13 +92,16 @@ class AzureFileShareClient:
 
         print(f"Folder '{folder_path_name}' created successfully in Azure File Share!")
 
-        self.create_sub_folder_directory(folder_path_name, "Folder1")
-        self.create_sub_folder_directory(folder_path_name, "Folder2")
-        self.create_sub_folder_directory(folder_path_name, "Folder3")
+        self.create_sub_folder_directory(folder_path_name, "Submittals")
+        self.create_sub_folder_directory(folder_path_name, "Documents")
 
     def create_template_project_folder(self, folder_path_name: str, template_name: str) -> None:
         '''
         #### Creates a new project folder from a template
+
+        template_name must be the name of the template folder in the templates directory
+
+        That folder will be copied into the new project folder
 
         :param str folder_path_name: 
             The path to the parent folder to create

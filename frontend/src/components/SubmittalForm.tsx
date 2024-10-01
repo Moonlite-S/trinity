@@ -122,6 +122,8 @@ export function SubmittalFormEdit({submittal}: {submittal: SubmittalProps}) {
 }
 
 function SubmittalFormBase({ submittal, onSubmit, projects, employees, onProjectChange, onAssignedToChange }: SubmittalFormBaseProps) {
+
+    const isUpdate: boolean = submittal?.submittal_id !== ""
     return (
         <form className="w-2/3 mx-auto" onSubmit={onSubmit}>
             <div className="grid grid-cols-4 grid-flow-row gap-5 bg-slate-50 p-8 m-5 rounded-lg">
@@ -177,7 +179,7 @@ function SubmittalFormBase({ submittal, onSubmit, projects, employees, onProject
             </div>
 
             <div className="mx-auto text-center justify-center pt-5 ">   
-                <BottomFormButton button_text="Create" />
+                <BottomFormButton button_text={isUpdate ? "Update" : "Create"} />
             </div>
         </form>
     )

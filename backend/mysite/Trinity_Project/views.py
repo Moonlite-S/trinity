@@ -527,6 +527,22 @@ def submittal_list(request):
         serializer=SubmittalSerializer(data=request.data)
         
         if serializer.is_valid():
+            try:
+                folder = AzureFileShareClient()
+
+                project_folder_location = serializer.validated_data['project'].project_id
+                submittal_folder_location = serializer.validated_data['submittal_id']
+
+                print(f"Project Folder Location: {project_folder_location}")
+                print(f"Submittal Folder Location: {submittal_folder_location}")
+
+                folder.create_sub_folder_directory(project_folder_location + "/Submittals", submittal_folder_location)
+            except Exception as e:
+                print(f"An error occurred while creating the submittal: {e}")
+
+                folder.delete_project_folder(project_folder_location)
+                return Response(data={"error": "An error occurred while creating the submittal folders."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
