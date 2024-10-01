@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 import AxiosInstance from "../components/Axios";
-import { SubmittalProps } from "../interfaces/submittal_types";
+import { SubmittalCreationProps, SubmittalProps } from "../interfaces/submittal_types";
 
 /**
  * @returns a list of projects and users for the submittal creation page
@@ -8,7 +8,7 @@ import { SubmittalProps } from "../interfaces/submittal_types";
  * 
  * @returns 403 if the user is not authorized to access the data
  */
-export async function getDataForSubmittalCreation() {
+export async function getDataForSubmittalCreation(): Promise<SubmittalCreationProps> {
     try {  
         const response = await AxiosInstance.get('api/submittal/creation_data')
         return response.data

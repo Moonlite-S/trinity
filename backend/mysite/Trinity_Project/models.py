@@ -27,7 +27,7 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
     
 class Project(models.Model):
-    project_id=models.CharField(max_length=50, unique=True, primary_key=True, default=uuid.uuid4)
+    project_id=models.CharField(max_length=50, unique=True, primary_key=True)
     project_name=models.CharField(max_length=50)
     manager=models.ForeignKey("User", on_delete=models.CASCADE, related_name="projects")
     client_name=models.CharField(max_length=50)

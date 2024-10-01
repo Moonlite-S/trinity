@@ -52,17 +52,17 @@ export function BottomFormButton({ button_text }: { button_text: string}) {
     );
 }
 
-export function CreateableSelectionComponent({defaultValue = '', multiple, options, name, onChange}: SelectionComponentProps){
+export function CreateableSelectionComponent({Value = '', multiple, options, name, onChange}: SelectionComponentProps){
     if (!options) {
         options = [{value: '', label: ''}];
     }
         
-    const defaultOption = options.find((option) => option.value === defaultValue)
+    const defaultOption = options.find((option) => option.value === Value)
     // Sets default to the defaultOption if it exists
     // if not, uses DefaultValue
     const selectDefaultValue = defaultOption
         ? defaultOption
-        : {value: defaultValue, label: defaultValue}
+        : {value: Value, label: Value}
 
     return (
         <CreatableSelect value={selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} onChange={onChange} isClearable 
@@ -86,7 +86,7 @@ export function CreateableSelectionComponent({defaultValue = '', multiple, optio
     )
 }
 
-export function SelectionComponent({defaultValue = '', multiple, options, name, onChange}: SelectionComponentProps){
+export function SelectionComponent({Value: defaultValue = '', multiple, options, name, onChange}: SelectionComponentProps){
     if (!options) {
         options = [{value: '', label: ''}];
         console.error("No options found for", name)

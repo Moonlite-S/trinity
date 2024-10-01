@@ -1,4 +1,8 @@
+import { FormEvent } from "react"
+import { SelectionButtonProps } from "./button_types"
+
 export type TaskProps = {
+    project: string
     task_id: string
     title: string
     description: string
@@ -8,3 +12,18 @@ export type TaskProps = {
     status: "active" | "completed"
     //priority: string
 }
+
+export type TaskCreationProps = {
+    projects: string[][]
+    employees: string[][]
+}
+
+export type TaskFormBaseProps = {
+    projects: SelectionButtonProps[]
+    employees: SelectionButtonProps[]
+    currentTaskData: TaskProps
+    onProjectSelectionChange: (e: unknown) => void
+    onAssignedToChange: (e: unknown) => void
+    onSubmit: (e: FormEvent<HTMLFormElement>) => void
+}
+

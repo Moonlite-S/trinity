@@ -329,7 +329,6 @@ def task_detail(request, task_id):
     if not task.is_approved:
         return HttpResponse("This task is pending approval and cannot be viewed.")
     
-    print(f"Task project_id: {task.project_id}")
     #get project manager name from project_id
     try:
         project=Project.objects.get(project_id=task.project_id.project_id)
@@ -347,11 +346,12 @@ def task_detail(request, task_id):
         # if manager != user.name and not user.is_superuser:
         #     raise PermissionDenied("You do not have permission to edit this task.")
         serializer = TaskSerializer(task, data=request.data, partial=True)
+
         if serializer.is_valid():
             manager_obj = serializer.validated_data.pop('assigned_to')
             project_obj = serializer.validated_data.pop('project_id')
-
             try:
+                print(f"Project ID: {project_obj}")
                 manager = User.objects.get(email=manager_obj)
                 project = Project.objects.get(project_id=project_obj)
             except User.DoesNotExist:   
@@ -364,24 +364,27 @@ def task_detail(request, task_id):
             serializer.validated_data['project_id'] = project
 
             for field, new_value in serializer.validated_data.items():
-                old_value = getattr(task, field)
+                try:
+                    old_value = getattr(task, field)
                 
-                if old_value != new_value:
-                    # Create a PendingChange entry instead of saving directly
-                    PendingChange.objects.create(
-                        task=task,
-                        field_name=field,
-                        old_value=old_value,
-                        new_value=new_value,
-                        requested_by=user
-                    )
+                    if old_value != new_value:
+                        # Create a PendingChange entry instead of saving directly
+                        PendingChange.objects.create(
+                            task=task,
+                            field_name=field,
+                            old_value=old_value,
+                            new_value=new_value,
+                            requested_by=user
+                        )
+                except Exception as ex:
+                    print(f"An error occurred while creating the pending change: {ex}")
                 
             # Mark the project as pending approval
-            task.is_approved = False
+            # Marked as approved for now (DEBUG)
+            task.is_approved = True
             task.save(update_fields=['is_approved'])
 
             serializer.save()
-            print(serializer.data)
 
             return Response(serializer.data)
 
@@ -390,6 +393,8 @@ def task_detail(request, task_id):
     elif request.method == 'DELETE':
         if manager != user.name and not user.is_superuser:
             raise PermissionDenied("You do not have permission to delete this task.")
+        
+        print(task)
         task.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -590,3 +595,19 @@ def submittal_by_project_id(request, project_id):
             return Response(serializer.data)
         except Exception as e:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def task_creation_data(request):
+    payload = authenticate_jwt(request)
+
+    data_to_send = {}
+
+    # Gets all active projects
+    projects = Project.objects.filter(status='ACTIVE').values_list('project_id', 'project_name')
+    data_to_send['projects'] = list(projects)
+    
+    # Gets all active employees
+    employees = User.objects.filter(role__in=['Manager', 'Administrator', 'Team Member'], is_active=True).values_list('email', 'name')
+    data_to_send['employees'] = list(employees)
+
+    return Response(data_to_send, status=status.HTTP_200_OK)

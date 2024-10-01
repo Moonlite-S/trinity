@@ -37,7 +37,3 @@ export type ProjectCreationProps = {
     current_user: string[]
 }
 
-export type ProjectSelectProps = {
-    label: string
-    value: string
-}

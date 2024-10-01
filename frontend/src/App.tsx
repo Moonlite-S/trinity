@@ -5,7 +5,7 @@ import Home from './components/Home'
 import './App.css'
 import { CreateProject, UpdateProject, UpdateProjectList, ProjectStatusReport, ProjectDeleteConfimation } from './components/Project'
 import { checkUser } from './api/auth'
-import { EditTask, TaskList, Tasks } from './components/Tasks';
+import { TaskList, Tasks } from './components/Tasks';
 import { CreateEmployee, EmployeeList } from './components/Employee'
 import { TemplateList } from './components/Template'
 import { ErrorPage } from './components/Error'
@@ -14,7 +14,7 @@ import { Header } from './components/misc'
 import { EmployeeProps } from './interfaces/employee_type'
 import { SetAnnouncement } from './components/Announcement'
 import CreateSubmittal, { EditSubmittal, ViewSubmittals } from './components/Submittal'
-
+import { EditTask } from './components/Tasks'
 // Main Router for the application
 export default function App() {
   return (

@@ -111,7 +111,7 @@ export function ProjectFormCreation() {
 }
 
 export function ProjectFormUpdate(
-    {formProps}: {formProps?: ProjectProps}
+    {formProps}: {formProps: ProjectProps}
 ) { 
     const { user } = useAuth()
 
@@ -266,17 +266,17 @@ function ProjectFormBase({ currentProjectData, projectManagerListOptions, Client
                 <div className="flex flex-col gap-5 justify-between">
                     <div className="flex flex-row justify-between gap-5">
                         <label htmlFor="manager" >Project Manager:</label>
-                        {currentProjectData.manager.name && <SelectionComponent defaultValue={currentProjectData.manager.name} options={projectManagerListOptions} onChange={onManagerChange} name="manager"/>}
+                        {currentProjectData.manager.name && <SelectionComponent Value={currentProjectData.manager.name} options={projectManagerListOptions} onChange={onManagerChange} name="manager"/>}
                     </div>
 
                     <div className="flex flex-row justify-between gap-5">
                         <label >Client Name</label>
-                        <CreateableSelectionComponent options={Clients} name="client_name" defaultValue={currentProjectData.client_name} onChange={onClientChange}/>
+                        <CreateableSelectionComponent options={Clients} name="client_name" Value={currentProjectData.client_name} onChange={onClientChange}/>
                     </div>
                     
                     <div className="flex flex-row justify-between gap-5">
                         <label >City</label>
-                        <CreateableSelectionComponent defaultValue={currentProjectData.city} options={Cities} name="city" onChange={onCityChange}/>
+                        <CreateableSelectionComponent Value={currentProjectData.city} options={Cities} name="city" onChange={onCityChange}/>
                     </div>
                 </div>
             </div> 

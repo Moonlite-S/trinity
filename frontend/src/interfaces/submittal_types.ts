@@ -1,4 +1,4 @@
-import { ProjectSelectProps } from "./project_types"
+import { SelectionButtonProps } from "./button_types"
 
 export type SubmittalProps = {
     submittal_id: string
@@ -14,9 +14,17 @@ export type SubmittalProps = {
 
 export type SubmittalFormBaseProps = {
     submittal: SubmittalProps;
-    projects: ProjectSelectProps[];
-    employees: ProjectSelectProps[];
+    projects: SelectionButtonProps[];
+    employees: SelectionButtonProps[];
     onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
     onProjectChange: (e: unknown) => void;
     onAssignedToChange: (e: unknown) => void;
 };
+
+export type SubmittalCreationProps = {
+    projects: string[][];
+    users: string[][];
+    client_names: string[];
+}
+
+

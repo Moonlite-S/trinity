@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 import AxiosInstance from "../components/Axios";
-import { TaskProps } from "../interfaces/tasks_types";
+import { TaskCreationProps, TaskProps } from "../interfaces/tasks_types";
 
 export async function postTask(task: TaskProps): Promise<number> {
     try {
@@ -101,6 +101,16 @@ export async function getTaskByID(id: string): Promise<TaskProps> {
     try {
         const response = await AxiosInstance.get('api/task/id/' + id)
 
+        return response.data
+    } catch (error) {
+        console.error(error)
+        throw error
+    }
+}
+
+export async function getDataForTaskCreation(): Promise<TaskCreationProps> {
+    try {
+        const response = await AxiosInstance.get('api/task/creation_data')
         return response.data
     } catch (error) {
         console.error(error)

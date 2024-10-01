@@ -1,19 +1,19 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { getDataForSubmittalCreation} from "../api/submittal"
-import { ProjectSelectProps } from "../interfaces/project_types"
 import { SubmittalProps, SubmittalFormBaseProps } from "../interfaces/submittal_types"
 import { SelectionComponent, BottomFormButton } from "./Buttons"
 import { useSubmittalFormHandler } from "../hooks/submittalFormHandler"
 import { useAuth } from "../App"
+import { SelectionButtonProps } from "../interfaces/button_types"
 /**
  * The Form Component that creates a new submittal
  */
 export function SubmittalFormCreation() {
 
     const { user } = useAuth()
-    const [projects, setProjects] = useState<ProjectSelectProps[]>([])
-    const [employees, setEmployees] = useState<ProjectSelectProps[]>([])
+    const [projects, setProjects] = useState<SelectionButtonProps[]>([])
+    const [employees, setEmployees] = useState<SelectionButtonProps[]>([])
 
     const navigate = useNavigate()
 
@@ -39,12 +39,12 @@ export function SubmittalFormCreation() {
                 throw new Error("Error fetching submittal data")
             }
 
-            const obj_projects = response.projects.map((value: string) => {
+            const obj_projects = response.projects.map((value: string[]) => {
                 return { value: value[0], label: value[1] }
             })
             setProjects(obj_projects)
             
-            const obj_employees = response.users.map((value: string) => {
+            const obj_employees = response.users.map((value: string[]) => {
                 return { value: value[0], label: value[1] }
             })
             setEmployees(obj_employees)
@@ -75,8 +75,8 @@ export function SubmittalFormCreation() {
  * 
  */
 export function SubmittalFormEdit({submittal}: {submittal: SubmittalProps}) {
-    const [projects, setProjects] = useState<ProjectSelectProps[]>([])
-    const [employees, setEmployees] = useState<ProjectSelectProps[]>([])
+    const [projects, setProjects] = useState<SelectionButtonProps[]>([])
+    const [employees, setEmployees] = useState<SelectionButtonProps[]>([])
     
     const [currentSubmittalData, setCurrentSubmittalData] = useState<SubmittalProps>(submittal)
     const navigate = useNavigate()
@@ -92,12 +92,12 @@ export function SubmittalFormEdit({submittal}: {submittal: SubmittalProps}) {
                 throw new Error("Error fetching submittal data")
             }
 
-            const obj_projects = response.projects.map((value: string) => {
+            const obj_projects = response.projects.map((value: string[]) => {
                 return { value: value[0], label: value[1] }
             })
             setProjects(obj_projects)
             
-            const obj_employees = response.users.map((value: string) => {
+            const obj_employees = response.users.map((value: string[]) => {
                 return { value: value[0], label: value[1] }
             })
             setEmployees(obj_employees)
@@ -134,7 +134,7 @@ function SubmittalFormBase({ submittal, onSubmit, projects, employees, onProject
 
                 <div className="flex flex-col gap-2 col-span-2">
                     <label>Project Name</label>
-                    {submittal?.project_name && <SelectionComponent defaultValue={submittal.project_name} options={projects} name="project" onChange={onProjectChange}/>}
+                    {submittal?.project_name && <SelectionComponent Value={submittal.project_name} options={projects} name="project" onChange={onProjectChange}/>}
                 </div>
 
                 <div className="flex flex-col gap-2">
@@ -163,7 +163,7 @@ function SubmittalFormBase({ submittal, onSubmit, projects, employees, onProject
 
                 <div className="flex flex-col gap-2">
                     <label>Assigned To</label>
-                    {submittal?.assigned_to && <SelectionComponent defaultValue={submittal.assigned_to} options={employees} name="user" onChange={onAssignedToChange} />}
+                    {submittal?.assigned_to && <SelectionComponent Value={submittal.assigned_to} options={employees} name="user" onChange={onAssignedToChange} />}
                 </div>
 
                 <div className="flex flex-col gap-2 col-span-4">

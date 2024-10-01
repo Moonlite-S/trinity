@@ -83,6 +83,10 @@ export const useProjectFormHandler = (
 
                 // Error handling
                 switch (result_code) {
+                    case 200:
+                        alert("Project updated successfully!")
+                        navigate("/projects")
+                        break
                     case 201:
                         alert("Project created successfully!")
                         navigate("/projects")
