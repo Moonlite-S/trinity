@@ -14,7 +14,6 @@ export async function checkUser(): Promise<EmployeeProps> {
     try {
       const response = await AxiosInstance.get('api/user')
       const data = response.data
-      console.log(data)
       return data
 
     } catch (error) {

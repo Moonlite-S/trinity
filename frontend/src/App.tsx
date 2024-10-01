@@ -128,9 +128,10 @@ export function Verification() {
       console.log("Checking..")
 
       checkForValidation()
-
+      console.log("Checked")
     }, [location]);
     
+    console.log("User: ", user)
     // Change this to a custom loading screen
     if (loading) {
       return <LoadingComponent />

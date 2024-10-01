@@ -77,6 +77,7 @@ class LoginView(APIView):
 class UserView(APIView):
     def get(self, request):
         payload = authenticate_jwt(request)
+        print(payload)
 
         try: 
             user = User.objects.filter(id=payload['id']).first()
