@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Project, Submittal, Task, User, VerificationCode, ProjectChangeLog,TaskChangeLog,PendingChange
+from .models import Project, Submittal, Task, User, VerificationCode, ProjectChangeLog,TaskChangeLog,PendingChange,RFI
 # Register your models here.
 
 #this line are what make it so that you can create object in the admin page
@@ -8,6 +8,7 @@ admin.site.register(User)
 admin.site.register(Task)
 admin.site.register(VerificationCode)
 admin.site.register(Submittal)
+admin.site.register(RFI)
 
 #This is another way to do it that also you more option with this
 @admin.register(ProjectChangeLog)

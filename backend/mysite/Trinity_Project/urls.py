@@ -31,5 +31,7 @@ urlpatterns = [
     path("delete_log",views.project_delete_log),
     path("submittal/",views.submittal_list),
     path("submittal/id/<str:submittal_id>",views.submittal_detail),
-    path("submittal/name/<str:assigned_to>",views.submittal_by_assigned_to)
+    path("submittal/name/<str:assigned_to>",views.submittal_by_assigned_to),
+    path("rfi/",views.RFI_list),
+    path("rfi/id/<str:rfi_id>",views.RFI_detail)
 ]
