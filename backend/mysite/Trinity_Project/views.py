@@ -10,7 +10,7 @@ from azure.core.exceptions import ResourceExistsError, ResourceNotFoundError
 
 from .azure_file_share import AzureFileShareClient
 from .models import Announcements, PendingChange, Project, Submittal, Task,ProjectChangeLog, TaskChangeLog, User
-from .serializers import AnnouncmentsSerializer, ProjectSerializer, ProjectSerializerUserObjectVer, ProjectSerializerWithSubmittals, TaskSerializer, UserNameAndEmail, UserNameSerializer, UserSerializer, SubmittalSerializer
+from .serializers import AnnouncmentsSerializer, ProjectSerializer, ProjectSerializerUserObjectVer, ProjectSerializerWithSubmittals, TaskSerializer, UserNameAndEmail, UserNameSerializer, UserSerializer, SubmittalSerializer, RFISerializer
 from rest_framework.views import APIView
 import jwt, datetime
 from datetime import datetime,timezone,timedelta
@@ -595,7 +595,45 @@ def submittal_by_assigned_to(request,assigned_to):
         else:
             serializer = SubmittalSerializer(submittals,many=True)
         return Response(serializer.data)
+        
+@login_required
+@api_view(['POST'])
+def schedule_call(request):
+    if request.method == 'POST':
+        start_datetime = request.POST.get('start_datetime')
+        end_datetime = request.POST.get('end_datetime')
+        
+        start_time = datetime.datetime.fromisoformat(start_datetime).isoformat() + "Z"
+        end_time = datetime.datetime.fromisoformat(end_datetime).isoformat() + "Z"
+        
+        
+        meeting_info = GraphAPI.create_online_meeting()
+        
+        if 'joinUrl' in meeting_info:
+            context = {'join_url': meeting_info.get('joinUrl')}
+            return render(request, ' schedule_call.html', context)
+        else:
+            return HttpResponse('Error scheduling meeting')
+        
+    return render(request, 'schedule_call.html', context)
 
+@login_required
+@api_view(['GET','POST'])
+def RFI_list(request):
+    
+    if request.method == 'GET':
+        rfis=RFI.objects.all()
+        serializer =RFISerializer(rfis, many=True)
+        return Response(serializer.data)
+    
+    if request.method == 'POST':
+        serializer=RFISerializer(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # try:
     #     tasks=Task.objects.filter(project_id=project_id)
@@ -658,3 +696,46 @@ def rfi_creation_data(request):
         return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     return Response(data_to_send, status=status.HTTP_200_OK)
+
+@login_required
+@api_view(['GET','PUT','DELETE'])
+def RFI_detail(request,RFI_id):
+    try:
+        rfi=RFI.objects.get(pk=RFI_id)
+    except RFI.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        serializer = RFISerializer(rfi)
+        return Response(serializer.data)
+    
+    elif request.method == 'PUT':
+        serializer = RFISerializer(rfi)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# @login_required
+# @api_view(['GET','PUT','DELETE'])
+# def submittal_detail(request,submittal_id):
+#     user = request.user
+#     try:
+#         submittal=Submittal.objects.get(submittal_id=submittal_id)
+#     except Submittal.DoesNotExist:
+#         return Response(status=status.HTTP_404_NOT_FOUND)
+    
+#     if request.method == 'GET':
+#         serializer = SubmittalSerializer(submittal)
+#         return Response(serializer.data)
+    
+#     elif request.method == 'PUT':
+#         serializer = SubmittalSerializer(submittal)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+#     elif request.method == 'DELETE':
+#         submittal.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)    
+    pass

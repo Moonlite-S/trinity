@@ -1,7 +1,5 @@
 from rest_framework import serializers
-from .models import Project, Task, Announcements, User
-from .models import Project, Submittal, Task
-from .models import User
+from .models import Project, Task, Announcements, User, Submittal, RFI
 class BasicUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -94,3 +92,20 @@ class AnnouncmentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Announcements
         fields = ['title', 'content', 'author', 'date']
+        
+class RFISerializer(serializers.ModelSerializer):
+    project = serializers.PrimaryKeyRelatedField(queryset=Project.objects.all(),write_only=True)  # Allow project_id to be written
+    project_id=serializers.CharField(source='project.project_id',read_only=True)
+    project_name=serializers.CharField(source='project.project_name',read_only=True)
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(),write_only=True)
+    sent_by=serializers.CharField(source='user.name',read_only=True)
+    days_old=serializers.SerializerMethodField()
+    class Meta:
+        model=RFI
+        fields = ['project','project_id','date_received','days_old','project_name','RFI_id','sent_out_date','type','user','sent_by','notes','notes_closed','description']
+    
+    def get_days_old(self, obj):
+        duration = obj.days_old()
+        if duration is not None:
+            return duration
+        return None

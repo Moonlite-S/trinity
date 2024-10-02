@@ -30,4 +30,6 @@ urlpatterns = [
     path("submittal/name/<str:assigned_to>",views.submittal_by_assigned_to),
     path("submittal/project_id/<str:project_id>",views.submittal_by_project_id),
     path("rfi/creation_data", views.rfi_creation_data),
+    path("rfi/",views.RFI_list),
+    path("rfi/id/<str:rfi_id>",views.RFI_detail)
 ]

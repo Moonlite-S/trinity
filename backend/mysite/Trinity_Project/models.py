@@ -1,8 +1,9 @@
-import uuid
+from logging import NOTSET
 from telnetlib import STATUS
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
+from datetime import datetime
 
 # Create your models here.
 class CustomUserManager(BaseUserManager):
@@ -177,3 +178,20 @@ class PendingChange(models.Model):
     approved = models.BooleanField(default=False)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
+    
+class RFI(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="rfi")
+    date_received =models.DateField()
+    RFI_id = models.CharField(max_length=50,primary_key=True)
+    sent_out_date = models.DateField()
+    type = models.CharField(max_length=50)
+    user=models.ForeignKey(User, on_delete=models.CASCADE)
+    notes=models.TextField()
+    notes_closed=models.TextField()
+    description= models.TextField()
+    
+    def days_old(self):
+        if self.date_received:
+            current_date = datetime.now().date()
+            return (current_date - self.date_received).days 
+        return None
