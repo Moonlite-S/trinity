@@ -52,42 +52,52 @@ export function BottomFormButton({ button_text }: { button_text: string}) {
     );
 }
 
-export function CreateableSelectionComponent({Value = '', multiple, options, name, onChange}: SelectionComponentProps){
+export function CreateableSelectionComponent({Value = '', multiple, options, name, onChange, label}: SelectionComponentProps){
     if (!options) {
         options = [{value: '', label: ''}];
     }
         
     const defaultOption = options.find((option) => option.value === Value)
+    
     // Sets default to the defaultOption if it exists
     // if not, uses DefaultValue
     const selectDefaultValue = defaultOption
         ? defaultOption
         : {value: Value, label: Value}
 
+
+    if (Value !== '') {
+        options.splice(options.indexOf({value: Value, label: Value}), 1)
+    }
+
     return (
-        <CreatableSelect value={selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} onChange={onChange} 
-        styles = {{
-            control: (baseStyles: any, state: any) => ({
-                ...baseStyles,
-                borderColor: state.isFocused ? 'orange' : 'gray',
-                boxShadow: state.isFocused ? '0 0 0 2px orange' : 'none',
-                '&:hover': {
+        <div className="flex flex-row justify-between gap-5">
+            <label id={`${name}-label`} htmlFor={name} className="py-2">{label}</label>
+            <CreatableSelect inputId={name} aria-labelledby={`${name}-label`} value={selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} onChange={onChange} 
+            styles = {{
+                control: (baseStyles: any, state: any) => ({
+                    ...baseStyles,
                     borderColor: state.isFocused ? 'orange' : 'gray',
-                },
-            }),
-            option: () => ({
-                padding: '5px 10px',
-                rounded: '5px',
-                '&:hover': {
-                    backgroundColor: '#cacacc',
-                },
-            })
-        }}
-        />
+                    boxShadow: state.isFocused ? '0 0 0 2px orange' : 'none',
+                    minWidth: '200px',
+                    '&:hover': {
+                        borderColor: state.isFocused ? 'orange' : 'gray',
+                    },
+                }),
+                option: () => ({
+                    padding: '5px 10px',
+                    rounded: '5px',
+                    '&:hover': {
+                        backgroundColor: '#cacacc',
+                    },
+                })
+            }}
+            />
+        </div>
     )
 }
 
-export function SelectionComponent({Value: defaultValue = '', multiple, options, name, onChange}: SelectionComponentProps){
+export function SelectionComponent({Value: defaultValue = '', multiple, options, name, onChange, label}: SelectionComponentProps){
     if (!options) {
         options = [{value: '', label: ''}];
         console.error("No options found for", name)
@@ -112,24 +122,28 @@ export function SelectionComponent({Value: defaultValue = '', multiple, options,
     : {value: defaultOptionValue ? defaultOptionValue : defaultValue, label: defaultValue}
 
     return (
-        <Select value={selectDefaultValue} onChange={onChange} options={options} name={name} placeholder="Search" isMulti={multiple} 
-        styles = {{
-            control: (baseStyles: any, state: any) => ({
-                ...baseStyles,
-                borderColor: state.isFocused ? 'orange' : 'gray',
-                boxShadow: state.isFocused ? '0 0 0 2px orange' : 'none',
-                '&:hover': {
+        <div className="flex flex-row justify-between gap-5">
+            {label && <label id={`${name}-label`} htmlFor={name} className="py-2">{label}:</label>}
+            <Select inputId={name} aria-labelledby={`${name}-label`} value={selectDefaultValue} onChange={onChange} options={options} name={name} placeholder="Search" isMulti={multiple} 
+            styles = {{
+                control: (baseStyles: any, state: any) => ({
+                    ...baseStyles,
                     borderColor: state.isFocused ? 'orange' : 'gray',
-                },
-            }),
-            option: () => ({
-                padding: '5px 10px',
-                rounded: '5px',
-                '&:hover': {
-                    backgroundColor: '#cacacc',
-                },
-            })
+                    boxShadow: state.isFocused ? '0 0 0 2px orange' : 'none',
+                    minWidth: '200px',
+                    '&:hover': {
+                        borderColor: state.isFocused ? 'orange' : 'gray',
+                    },
+                }),
+                option: () => ({
+                    padding: '5px 10px',
+                    rounded: '5px',
+                    '&:hover': {
+                        backgroundColor: '#cacacc',
+                    },
+                })
 
-        }}/>
+            }}/>
+        </div>
     )
 }

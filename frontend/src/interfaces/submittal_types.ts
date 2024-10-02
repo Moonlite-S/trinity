@@ -5,10 +5,10 @@ export type SubmittalProps = {
     project: string
     received_date: string
     project_name?: string
-    type: "mechanical" | "electrical" | "plumbing" | "fire_protection" | "other"
+    type: "MECHANICAL" | "ELECTRICAL" | "PLUMBING" | "FIRE_PROTECTION" | "OTHER"
     sub_description: string
     assigned_to: string
-    status: "open" | "closed"
+    status: "OPEN" | "CLOSED"
     notes: string
 }
 

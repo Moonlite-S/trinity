@@ -23,7 +23,7 @@ export type ProjectProps = {
     submittals?: SubmittalProps[]
 }
 
-export type FilterProps = {
+export type ProjectFilterProps = {
     filterText: string
     onFilter: (e: FormEvent<HTMLInputElement>) => void
     onClear: () => void
@@ -36,4 +36,3 @@ export type ProjectCreationProps = {
     cities: string[]
     current_user: string[]
 }
-

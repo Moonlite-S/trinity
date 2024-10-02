@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import { logout } from "../api/auth"
 import { AnnouncementProps } from "../interfaces/announcement_types"
-import { ManagerDashboardProps } from "../interfaces/dashboard_types"
+import { AccountantDashboardProps, MainDashboardProps, } from "../interfaces/dashboard_types"
 import { EmployeeProps } from "../interfaces/employee_type"
 import { ProjectProps } from "../interfaces/project_types"
 import { TaskProps } from "../interfaces/tasks_types"
@@ -35,14 +35,91 @@ export function MainMenuDashboard(
     return (
         <div className="flex flex-row">
             <MainNavBar role={user.role} />
-            {user.role === "Manager" &&
-            <ManagerDashboard user={user} announcements={announcements} sorted_tasks={sorted_tasks} sorted_projects={sorted_projects}/>}
+            {(user.role === "Manager" || user.role === "Team Member") &&
+            <MainDashboard user={user} announcements={announcements} sorted_tasks={sorted_tasks} sorted_projects={sorted_projects}/>}
+            {user.role === "Administrator" &&
+            <AdminDashboard user={user} announcements={announcements} sorted_tasks={sorted_tasks} sorted_projects={sorted_projects}/>}
+            {user.role === "Accountant" &&
+            <AccountantDashboard user={user} announcements={announcements}/>}
         </div>
     );
 }
 
-function ManagerDashboard(
-    {user, announcements, sorted_tasks, sorted_projects}: ManagerDashboardProps
+function MainDashboard(
+    {user, announcements, sorted_tasks, sorted_projects}: MainDashboardProps
+) {
+    return (
+    <div className="flex flex-col h-screen">
+
+        <div className="p-5 mx-auto border flex flex-col mb-2 w-full">
+            <h3>Hello, {user.name}</h3>
+
+            <h3>Role: {user.role}</h3>
+        </div>
+        
+        <div className="p-5 mx-auto border w-full mb-2">
+
+            <h3>Announcements:</h3>
+
+            <div className="overflow-y-auto h-full">
+                {announcements.length > 0 ? announcements.reverse().map((announcement, index) => (
+                    <AnnouncementCard key={index} announcement={announcement} />
+                ))
+                : 
+                <h3>No Announcements at the moment</h3>
+                }
+            </div>
+
+        </div>
+        
+        <div className="grid grid-cols-2 gap-3 justify-center pb-5 h-full mb-4">
+
+            <div className="p-5 mx-auto border w-full overflow-hidden">
+                <h3>Tasks:</h3>
+
+                <div className="overflow-y-auto h-full">
+                    {sorted_tasks.length > 0 ? sorted_tasks.map((task) => (
+                        <TaskCard key={task.task_id} task={task} />
+                    ))
+                    :
+                    <h3>No Tasks assigned to you</h3>}
+                </div>
+
+            </div>
+
+            <div className="flex flex-row justify-center w-full">
+                <div className="p-5 mx-auto border w-full overflow-hidden">
+                    <h3>Submittals:</h3>
+                </div>
+            </div>
+
+            <div className="p-5 mx-auto border w-full overflow-hidden">
+                <h3 className="py-2">Projects:</h3>
+                
+                <div className="overflow-y-auto h-full">
+                    {sorted_projects.length > 0 ? sorted_projects.map((project) => (
+                        <ProjectCard key={project.project_id} project={project} />
+                    ))
+                    :
+                    <h3>No Projects assigned to you</h3>
+                    }
+                </div>
+
+            </div>
+
+            <div className="p-5 mx-auto border w-full overflow-hidden">
+                
+                <h3>RFIs</h3>
+
+            </div>
+
+        </div>
+    </div>
+    )
+}
+
+function AdminDashboard(
+    {user, announcements, sorted_tasks, sorted_projects}: MainDashboardProps
 ) {
     return (
     <div className="grid grid-cols-2 grid-flow-row gap-3 justify-center w-screen p-5 h-screen">
@@ -55,14 +132,14 @@ function ManagerDashboard(
 
         </div>
 
-        <div className="flex flex-row justify-center row-span-5 w-full">
+        <div className="flex flex-row justify-center row-span-4 w-full">
             <div className="p-5 mx-auto border w-full overflow-hidden">
 
                 <h3>Tasks:</h3>
 
                 <div className="overflow-y-auto h-full">
                     {sorted_tasks.length > 0 ? sorted_tasks.map((task) => (
-                        <TaskCard key={task.project_id} task={task} />
+                        <TaskCard key={task.task_id} task={task} />
                     ))
                     :
                     <h3>No Tasks assigned to you</h3>}
@@ -85,11 +162,7 @@ function ManagerDashboard(
             </div>
 
         </div>
-        <div className="flex flex-row justify-center row-span-5 w-full">
-            <div className="p-5 mx-auto border w-full overflow-hidden">
-                <h3>Submittals:</h3>
-            </div>
-        </div>
+        
         <div className="p-5 mx-auto border row-span-2 w-full overflow-hidden">
 
             <h3 className="py-2">Projects:</h3>
@@ -104,6 +177,54 @@ function ManagerDashboard(
             </div>
 
         </div>
+        <div className="flex flex-row justify-center row-span-4 w-full">
+            <div className="p-5 mx-auto border w-full overflow-hidden">
+                <h3>Submittals:</h3>
+            </div>
+        </div>
+
+    </div>
+    )
+}
+
+function AccountantDashboard(
+    {user, announcements}: AccountantDashboardProps
+) {
+    return (
+    <div className="grid grid-cols-2 grid-flow-row gap-3 justify-center w-screen p-5 h-screen">
+
+        <div className="p-5 mx-auto border row-span-1 w-full">
+
+            <h3>Hello, {user.name}</h3>
+
+            <h3>Role: {user.role}</h3>
+
+        </div>
+
+        <div className="p-5 mx-auto border row-span-1 w-full overflow-hidden">
+
+            <h3>Announcements:</h3>
+
+            <div className="overflow-y-auto h-full">
+                {announcements.length > 0 ? announcements.reverse().map((announcement, index) => (
+                    <AnnouncementCard key={index} announcement={announcement} />
+                ))
+                : 
+                <h3>No Announcements at the moment</h3>
+                }
+            </div>
+
+        </div>
+        <div className="flex flex-row justify-center row-span-5 w-full">
+            <div className="p-5 mx-auto border w-full overflow-hidden">
+                <h3>Invoices:</h3>
+            </div>
+        </div>
+        <div className="p-5 mx-auto border row-span-2 w-full overflow-hidden">
+
+            <h3 className="py-2">Billings:</h3>
+
+        </div>
 
     </div>
     )
@@ -114,20 +235,21 @@ export function MainNavBar(
 ) {
     return (
     <div className='p-2 flex flex-col justify-items-center'>
-        {role === "Manager" || role === "Administrator" && <Button_Card text="Create Announcement" route="/announcements/create_anncouncement" />}  
-        {role === "Manager" || role === "Administrator" && <Button_Card text="Create Project" route="/projects/create_project" />}
+        {(role === "Manager" || role === "Administrator") && <Button_Card text="Create Announcement" route="/announcements/create_anncouncement" />}  
+        {(role === "Manager" || role === "Administrator" )&& <Button_Card text="Create Project" route="/projects/create_project" />}
         <Button_Card text="Update Project" route="/projects/" />
         <Button_Card text="Project Status Report" route="/projects/project_status_report" popup_window />
         <Button_Card text="Your Tasks" route="/tasks" />
-        {role === "Manager" || role === "Administrator" && <Button_Card text="Create Task" route="/tasks/create_task" />}
-        {role === "Manager" || role === "Administrator" && <Button_Card text="Report" route="/report" />}
-        {role === "Manager" || role === "Administrator" && <Button_Card text="Create Submittal" route="/submittal/create_submittal" />}
-        {role === "Manager" || role === "Administrator" && <Button_Card text="View Submittals" route="/submittal" />}
-        {role === "Manager" || role === "Administrator" && <Button_Card text="Proposal" route="/proposal" />}
+        {(role === "Manager" || role === "Administrator") && <Button_Card text="Create Task" route="/tasks/create_task" />}
+        {(role === "Manager" || role === "Administrator") && <Button_Card text="View RFI" route="/rfi" />}
+        {(role === "Manager" || role === "Administrator") && <Button_Card text="Create RFI" route="/rfi/create_rfi" />}
+        {(role === "Manager" || role === "Administrator") && <Button_Card text="Create Submittal" route="/submittal/create_submittal" />}
+        {(role === "Manager" || role === "Administrator") && <Button_Card text="View Submittals" route="/submittal" />}
+        {(role === "Manager" || role === "Administrator") && <Button_Card text="Proposal" route="/proposal" />}
         <Button_Card text="Calendar" route="/monthly_calendar" />
-        {role === "Manager" || role === "Administrator" && <Button_Card text="Calls" route="/calls" />}
-        {role === "Manager" || role === "Administrator" && <Button_Card text="Employee List" route="/employees/" />}
-        {role === "Manager" || role === "Administrator" && <Button_Card text="Create Employee" route="/employees/create_employee" />}
+        {(role === "Manager" || role === "Administrator") && <Button_Card text="Calls" route="/calls" />}
+        {(role === "Manager" || role === "Administrator") && <Button_Card text="Employee List" route="/employees/" />}
+        {(role === "Manager" || role === "Administrator") && <Button_Card text="Create Employee" route="/employees/create_employee" />}
 
         <LogOut />
 

@@ -3,6 +3,7 @@ import { filterTasksByProject, postTask, updateTask } from "../api/tasks";
 import { TaskProps } from "../interfaces/tasks_types";
 import { NavigateFunction } from "react-router-dom";
 import { SelectionButtonProps } from "../interfaces/button_types";
+import { MethodHandler } from "../components/misc";
 
 export function useTaskFormHandler(
     setCurrentTaskData: React.Dispatch<React.SetStateAction<TaskProps>>,
@@ -67,7 +68,7 @@ export function useTaskFormHandler(
         console.log(data_to_send)
     
         try {
-            const method_handler = MethodHandler(method);
+            const method_handler = MethodHandler(method, postTask, updateTask);
 
             if (method_handler) {
                 const result_code = await method_handler(data_to_send as TaskProps);
@@ -100,14 +101,5 @@ export function useTaskFormHandler(
         onAssignedToChange,
         onProjectSelectionChange,
         onSubmit
-    }
-}
-
-function MethodHandler(method: "POST" | "PUT") {
-    if (method === "POST"){
-        return postTask
-    }
-    else if (method === "PUT"){
-        return updateTask
     }
 }

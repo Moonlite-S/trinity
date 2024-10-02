@@ -29,4 +29,5 @@ urlpatterns = [
     path("submittal/id/<str:submittal_id>",views.submittal_detail),
     path("submittal/name/<str:assigned_to>",views.submittal_by_assigned_to),
     path("submittal/project_id/<str:project_id>",views.submittal_by_project_id),
+    path("rfi/creation_data", views.rfi_creation_data),
 ]

@@ -22,10 +22,10 @@ export function SubmittalFormCreation() {
         project: "",
         received_date: new Date().toLocaleDateString('en-CA'),
         project_name: "(Search Project)",
-        type: "mechanical",
+        type: "MECHANICAL",
         sub_description: "",
         assigned_to: user?.name ? user.name : "",
-        status: "open",
+        status: "OPEN",
         notes: "",
     })
 
@@ -125,23 +125,23 @@ function SubmittalFormBase({ submittal, onSubmit, projects, employees, onProject
 
     const isUpdate: boolean = submittal?.submittal_id !== ""
     return (
-        <form className="w-2/3 mx-auto" onSubmit={onSubmit}>
-            <div className="grid grid-cols-4 grid-flow-row gap-5 bg-slate-50 p-8 m-5 rounded-lg">
+        <form className="w-3/4 mx-auto" onSubmit={onSubmit}>
+            <div className="grid grid-cols-2 grid-flow-row gap-5 bg-slate-50 p-8 m-5 rounded-lg">
+                <div className="flex flex-col gap-2 col-span-3">
+                    <label>Project Name</label>
+                    <SelectionComponent Value={submittal.project_name} options={projects} name="project" onChange={onProjectChange}/>
+                </div>
 
-                <div className="flex flex-col gap-2 col-span-2">
+                <div className="flex flex-col gap-2">
                     <label>Submittal ID</label>
                     <input type="text" value={submittal?.submittal_id} placeholder="Submittal ID" name="submittal_id" className="border border-black rounded-md p-1" readOnly/>
                 </div>
 
-                <div className="flex flex-col gap-2 col-span-2">
-                    <label>Project Name</label>
-                    {submittal?.project_name && <SelectionComponent Value={submittal.project_name} options={projects} name="project" onChange={onProjectChange}/>}
-                </div>
-
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 ">
                     <label>Recieved Date</label>
                     <input type="date" placeholder="Submittal Date" name="received_date" className="border border-black rounded-md p-1" defaultValue={submittal?.received_date} required/>
                 </div>
+
 
                 <div className="flex flex-col gap-2">
                     <label>Submittal Type</label>
@@ -164,7 +164,7 @@ function SubmittalFormBase({ submittal, onSubmit, projects, employees, onProject
 
                 <div className="flex flex-col gap-2">
                     <label>Assigned To</label>
-                    {submittal?.assigned_to && <SelectionComponent Value={submittal.assigned_to} options={employees} name="user" onChange={onAssignedToChange} />}
+                    <SelectionComponent Value={submittal.assigned_to} options={employees} name="user" onChange={onAssignedToChange} />
                 </div>
 
                 <div className="flex flex-col gap-2 col-span-4">

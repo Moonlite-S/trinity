@@ -1,6 +1,7 @@
 import { NavigateFunction } from "react-router-dom"
 import { createSubmittal, getSubmittalsByProjectId, updateSubmittal } from "../api/submittal"
 import { SubmittalProps } from "../interfaces/submittal_types"
+import { MethodHandler } from "../components/misc"
 
 /**
  * This custom hook handles the submittal form for both creation and editing
@@ -46,7 +47,7 @@ export const useSubmittalFormHandler = (
         console.log("Form Data Object: ", formDataObj)
 
         try {
-            const method_handler = MethodHandler(method)
+            const method_handler = MethodHandler(method, createSubmittal, updateSubmittal)
 
             if (method_handler) {
                 const response = await method_handler(formDataObj as SubmittalProps)
@@ -72,19 +73,4 @@ export const useSubmittalFormHandler = (
     }
 
     return { onProjectChange, onAssignedToChange, onSubmit }
-}
-
-/**
- * This function handles the method of the submittal form
- * @param method "create" will return the createSubmittal function
- * @param method "edit" will return the updateSubmittal function
- * @returns An API call function from submittal.ts that will be used to handle the submittal form
- */
-function MethodHandler(method: "POST" | "PUT") {
-    if (method === "POST"){
-        return createSubmittal
-    }
-    else if (method === "PUT"){
-        return updateSubmittal
-    }
 }

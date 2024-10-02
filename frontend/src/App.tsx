@@ -15,6 +15,7 @@ import { EmployeeProps } from './interfaces/employee_type'
 import { SetAnnouncement } from './components/Announcement'
 import CreateSubmittal, { EditSubmittal, ViewSubmittals } from './components/Submittal'
 import { EditTask } from './components/Tasks'
+import ViewRFI, { CreateRFI } from './components/RFI'
 // Main Router for the application
 export default function App() {
   return (
@@ -49,6 +50,8 @@ export default function App() {
               <Route path='/monthly_calendar' element={<MonthlyCalendar />} />
               <Route path='/weekly_calendar' element={<WeeklyCalendar />} />
 
+              <Route path='/rfi/' element={<ViewRFI />} />
+              <Route path='/rfi/create_rfi' element={<CreateRFI />} />
               <Route path='/announcements/create_anncouncement' element={<SetAnnouncement />} />
 
             </Route>
@@ -128,7 +131,6 @@ export function Verification() {
       console.log("Checking..")
 
       checkForValidation()
-      console.log("Checked")
     }, [location]);
     
     console.log("User: ", user)

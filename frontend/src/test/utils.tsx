@@ -24,6 +24,14 @@ type TestRouterWrapper = {
   authContextValue?: Partial<AuthContextType>
 }
 
+export const test_user_dummy: Partial<AuthContextType> = {
+  auth: true,
+  user: { name: 'Sean', email: 'sean@example.com', username: 'sean', password: '123', role: 'Manager' },
+  loading: false,
+  setAuth: vi.fn(), 
+  setUser: vi.fn() 
+}
+
 // Wrapper for Routing Testing
 export function TestRouterWrapper({
   children,

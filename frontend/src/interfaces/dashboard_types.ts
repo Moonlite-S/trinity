@@ -3,9 +3,14 @@ import { EmployeeProps } from "./employee_type"
 import { ProjectProps } from "./project_types"
 import { TaskProps } from "./tasks_types"
 
-export type ManagerDashboardProps = {
+export type MainDashboardProps = {
     user: EmployeeProps,
     announcements: AnnouncementProps[],
     sorted_tasks: TaskProps[],
     sorted_projects: ProjectProps[]
+}
+
+export type AccountantDashboardProps = {
+    user: EmployeeProps,
+    announcements: AnnouncementProps[],
 }

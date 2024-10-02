@@ -4,7 +4,7 @@ import { Header } from "./misc";
 import { getProjectList, getProject, deleteProject } from "../api/projects";
 import { useNavigate, useParams } from "react-router-dom";
 import DataTable, { Direction, TableColumn } from "react-data-table-component";
-import { FilterProps, ProjectProps } from "../interfaces/project_types";
+import { ProjectFilterProps, ProjectProps } from "../interfaces/project_types";
 import { ProjectFormCreation, ProjectFormUpdate } from "./ProjectForm";
 import { Route_Button } from "./Buttons";
 import { filterTasksByProject } from "../api/tasks";
@@ -85,6 +85,8 @@ export function UpdateProjectList() {
  */
 export function UpdateProject() {
     const { id } = useParams<string>()
+    if (!id) return <div>Loading...</div>
+
     const [currentProject, setCurrentProject] = useState<ProjectProps>()
     const [loading, setLoading] = useState<boolean>(true)
     const navigate = useNavigate()
@@ -92,7 +94,6 @@ export function UpdateProject() {
     useEffect(() => {
         // We need to fetch a list of projects
         const project = async () => {
-            if (!id) return
 
             try {
                 const data = await getProject(id)
@@ -207,7 +208,7 @@ export function ProjectStatusReport() {
  * 
  * At some point, we'll implement the vector search here maybe
  */
-const FilterComponent = ({ filterText, onFilter, onClear }: FilterProps) => (
+const FilterComponent = ({ filterText, onFilter, onClear }: ProjectFilterProps) => (
     <>
         <input
          id="search"

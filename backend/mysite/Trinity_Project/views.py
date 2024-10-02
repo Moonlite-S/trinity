@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.exceptions import PermissionDenied
+from azure.core.exceptions import ResourceExistsError, ResourceNotFoundError
 
 from .azure_file_share import AzureFileShareClient
 from .models import Announcements, PendingChange, Project, Submittal, Task,ProjectChangeLog, TaskChangeLog, User
@@ -537,9 +538,15 @@ def submittal_list(request):
                 print(f"Submittal Folder Location: {submittal_folder_location}")
 
                 folder.create_sub_folder_directory(project_folder_location + "/Submittals", submittal_folder_location)
+
+            except ResourceNotFoundError:
+                return Response(data={"error": "Project Folder does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            except ResourceExistsError:
+                return Response(data={"error": "Submittal Folder already exists."}, status=status.HTTP_400_BAD_REQUEST)
+            
             except Exception as e:
                 print(f"An error occurred while creating the submittal: {e}")
-
                 folder.delete_project_folder(project_folder_location)
                 return Response(data={"error": "An error occurred while creating the submittal folders."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
@@ -629,5 +636,25 @@ def task_creation_data(request):
     # Gets all active employees
     employees = User.objects.filter(role__in=['Manager', 'Administrator', 'Team Member'], is_active=True).values_list('email', 'name')
     data_to_send['employees'] = list(employees)
+
+    return Response(data_to_send, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def rfi_creation_data(request):
+    authenticate_jwt(request)
+
+    data_to_send = {}
+
+    try:
+        # Gets all active projects
+        projects = Project.objects.filter(status='ACTIVE').values_list('project_id', 'project_name')
+        data_to_send['projects'] = list(projects)
+
+        # Gets all active employees
+        employees = User.objects.filter(role__in=['Manager', 'Administrator', 'Team Member'], is_active=True).values_list('email', 'name')
+        data_to_send['employees'] = list(employees)
+    except Exception as e:
+        print(f"An error occurred while fetching RFI creation data: {e}")
+        return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     return Response(data_to_send, status=status.HTTP_200_OK)

@@ -122,20 +122,17 @@ export function UpdateTask({task_data}: {task_data: TaskProps}) {
 }
 
 function TaskFormBase({projects, employees, currentTaskData, onProjectSelectionChange,  onAssignedToChange, onSubmit}: TaskFormBaseProps) {
-
     const isUpdate: boolean = currentTaskData.task_id !== ""
 
     return (
     <form className="max-w-5xl w-full mx-auto my-5 bg-slate-200 rounded-lg shadow-md p-6 " onSubmit={onSubmit}>
         <div className="grid grid-cols-2 grid-flow-row justify-center gap-4 mb-4">
-            <div className='grid grid-rows-2'>
-            <label htmlFor="project_name">Project:</label>
-            {projects && <SelectionComponent options={projects} name='project' Value={currentTaskData.project} onChange={onProjectSelectionChange}/>}
-            </div>
+            {projects && <SelectionComponent label="Project" options={projects} name='project' Value={currentTaskData.project} onChange={onProjectSelectionChange}/>}
 
-            <div className='grid grid-rows-2'>
-                <label htmlFor="task_id" className='mr-4'>Task ID:</label>
+            <div className='flex flex-row gap-5 justify-between'>
+                <label htmlFor="task_id" className=''>Task ID:</label>
                 <input
+                className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400"
                 type="text"
                 placeholder="Enter subject"
                 value={currentTaskData.task_id}
@@ -145,9 +142,10 @@ function TaskFormBase({projects, employees, currentTaskData, onProjectSelectionC
                 />
             </div>
 
-            <div className='grid grid-rows-2'>
-                <label htmlFor="title" className='mr-4'>Task Subject:</label>
+            <div className='flex flex-row gap-5 justify-between'>
+                <label htmlFor="title" className=''>Task Subject:</label>
                 <input
+                className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400"
                 type="text"
                 defaultValue={currentTaskData.title}
                 placeholder="Enter subject"
@@ -156,19 +154,20 @@ function TaskFormBase({projects, employees, currentTaskData, onProjectSelectionC
                 />
             </div>
 
-            <div className='grid grid-rows-2'>
-                <label htmlFor="title" className='mr-4'>Assign To:</label>
-                {employees && <SelectionComponent options={employees} name='assigned_to' Value={currentTaskData.assigned_to} onChange={onAssignedToChange}/>}
+            {employees && <SelectionComponent label="Assign To" options={employees} name='assigned_to' Value={currentTaskData.assigned_to} onChange={onAssignedToChange}/>}
+
+            <div className='flex flex-row justify-between'>
+                <label htmlFor="due_date" className=''>Due Date:</label>
+                <input
+                className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400"
+                type="date" name="due_date" defaultValue={currentTaskData.due_date} required/>
             </div>
 
-            <div className='grid grid-rows-2'>
-                <label htmlFor="title" className='mr-4'>Due Date:</label>
-                <input type="date" name="due_date" defaultValue={currentTaskData.due_date} required/>
-            </div>
-
-            <div className='grid grid-rows-2 col-span-2'>
+            <div className='flex flex-row gap-5 justify-between'>
                 <label htmlFor="description">Task Description:</label>
-                <textarea placeholder="Enter description" name="description" defaultValue={currentTaskData.description} required/>
+                <textarea
+                className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400"
+                placeholder="Enter description" name="description" defaultValue={currentTaskData.description} required/>
             </div>
 
         </div>

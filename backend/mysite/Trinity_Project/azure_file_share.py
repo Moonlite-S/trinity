@@ -66,13 +66,14 @@ class AzureFileShareClient:
 
         if not directory_client.exists():
             print(f"Folder {folder_path_name} does not exist! Aborting...")
-            return
+            raise ResourceNotFoundError(f"Folder {folder_path_name} does not exist!")
 
         try:
             directory_client.create_subdirectory(sub_folder_name)
 
         except ResourceExistsError:
             print(f"SubFolder '{sub_folder_name}' already exists in this directory! Aborting...")
+            raise ResourceExistsError(f"SubFolder '{sub_folder_name}' already exists in this directory!")
 
         except Exception as ex:
             print(f"An error occurred while creating SubFolder '{sub_folder_name}' in Azure File Share: {ex}")

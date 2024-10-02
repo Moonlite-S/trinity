@@ -238,17 +238,17 @@ function ProjectFormBase({ currentProjectData, projectManagerListOptions, Client
         <div className="flex flex-col gap-10 p-24 mx-auto max-w-screen-lg bg-zinc-50" >
             <div className="flex flex-row justify-center gap-5">
                 <label htmlFor="project_id" className="py-2">Project ID:</label>
-                <input defaultValue={currentProjectData.project_id} className="bg-slate-200 rounded-md border-zinc-500 border" type="text" name="project_id"/>
+                <input id="project_id" defaultValue={currentProjectData.project_id} className="bg-slate-200 rounded-md border-zinc-500 border" type="text" name="project_id"/>
                 
                 <label htmlFor="project_name" className="py-2" >Project Name:</label>
-                <input className="bg-white border border-zinc-500 rounded-md focus:outline-none focus:ring focus:ring-orange-400" type="text" defaultValue={currentProjectData.project_name} name="project_name" autoFocus required/>
+                <input id="project_name" className="bg-white border border-zinc-500 rounded-md focus:outline-none focus:ring focus:ring-orange-400" type="text" defaultValue={currentProjectData.project_name} name="project_name" autoFocus required/>
             </div>
         
             <div className="flex flex-row gap-5 justify-between">
                 <div className="flex flex-col gap-5 justify-between">
                     <div className="flex flex-row justify-between gap-5">
                         <label htmlFor="status" className="py-2">Project Status:</label>
-                        <select name="status" className="bg-white rounded-md p-2 border border-zinc-500">
+                        <select id="status" defaultValue={currentProjectData.status} name="status" className="bg-white rounded-md p-2 border border-zinc-500">
                             <option value={'ACTIVE'}>Active</option>
                             <option value={'COMPLETED'}>Completed</option>
                             <option value={'CANCELLED'}>Cancelled</option>
@@ -258,48 +258,34 @@ function ProjectFormBase({ currentProjectData, projectManagerListOptions, Client
 
                     <div className="flex flex-row justify-between gap-5">
                         <label htmlFor="start_date" className="py-2">Date Created:</label>
-                        <input value={currentProjectData.start_date} onChange={onDateStartChange} className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="date" name="start_date" required/>
+                        <input id="start_date" value={currentProjectData.start_date} onChange={onDateStartChange} className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="date" name="start_date" required/>
                     </div>
 
                     <div className="flex flex-row justify-between gap-5">
                         <label htmlFor="end_date" className="py-2">Due Date:</label>
-                        <input className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="date" name="end_date" defaultValue={currentProjectData.end_date} required/>
+                        <input id="end_date" className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="date" name="end_date" defaultValue={currentProjectData.end_date} required/>
                     </div>
                 </div>
 
                 <div className="flex flex-col gap-5 justify-between">
-                    <div className="flex flex-row justify-between gap-5">
-                        <label htmlFor="manager" >Project Manager:</label>
-                        {currentProjectData.manager.name && <SelectionComponent Value={currentProjectData.manager.name} options={projectManagerListOptions} onChange={onManagerChange} name="manager"/>}
-                    </div>
-
-                    <div className="flex flex-row justify-between gap-5">
-                        <label >Client Name</label>
-                        <CreateableSelectionComponent options={Clients} name="client_name" Value={currentProjectData.client_name} onChange={onClientChange}/>
-                    </div>
-                    
-                    <div className="flex flex-row justify-between gap-5">
-                        <label >City</label>
-                        <CreateableSelectionComponent Value={currentProjectData.city} options={Cities} name="city" onChange={onCityChange}/>
-                    </div>
+                    <SelectionComponent label="Project Manager" Value={currentProjectData.manager.name} options={projectManagerListOptions} onChange={onManagerChange} name="manager"/>
+                    <CreateableSelectionComponent label="Client Name" options={Clients} name="client_name" Value={currentProjectData.client_name} onChange={onClientChange}/>
+                    <CreateableSelectionComponent label="City" Value={currentProjectData.city} options={Cities} name="city" onChange={onCityChange}/>
                 </div>
             </div> 
             
             <div className="flex flex-row gap-5 justify-between">
                 <div className="flex flex-row ">
                     <label htmlFor="folder_location" className="py-2">Folder Name:</label>
-                    <input defaultValue={currentProjectData.project_id} className="mx-2 p-2 bg-slate-200 border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="text" name="folder_location" />
+                    <input id="folder_location" defaultValue={currentProjectData.project_id} className="mx-2 p-2 bg-slate-200 border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="text" name="folder_location" />
                 </div>
 
-                <div className="flex flex-row justify-between gap-5">
-                    <label htmlFor="template" className="py-2">Template:</label>
-                    <SelectionComponent options={templates} name="template"/>
-                </div>
+                <SelectionComponent label="Template" options={templates} name="template"/>
             </div>
 
             <div className="flex flex-col gap-5">
-                <label  htmlFor="description">Project description:</label>
-                <textarea className="bg-white border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" placeholder="Enter description or other details" defaultValue={currentProjectData.description} name="description"/>
+                <label htmlFor="description">Project description:</label>
+                <textarea id="description" className="bg-white border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" placeholder="Enter description or other details" defaultValue={currentProjectData.description} name="description"/>
             </div>
         </div>
 

@@ -42,15 +42,13 @@ export function TaskCard ({task} : {task: TaskProps}) {
     // The project_id is using the __str__ representation of the object
     // So i just need to split to get the project name and company name
     const formatProjectName = task.project_id.split('|')[1]
-    const formatCompanyName = task.project_id.split('|')[2]
 
     return (
     <div className=" bg-slate-100 p-4 my-4 mx-2 rounded-md shadow-md">
-        <h3>{formatProjectName}</h3>
-        <h4 className='font-bold'>Task: {task.title}</h4> 
+        <h3 className='font-bold'>{task.title}</h3> 
+        <h4>From Project: {formatProjectName}</h4>
         <p className="py-4 break-words">{task.description}</p>
         <p className="text-red-800">Due: {task.due_date}</p>
-        <p>From Project: {formatCompanyName}</p>
     </div>
     )
 }
@@ -76,4 +74,24 @@ export function ProjectCard ({project} : {project: ProjectProps}) {
       <p className="text-red-800">Next Deadline: {project.end_date}</p>
   </div>
   )
+}
+
+/**
+ * This function handles the method of the submittal form
+ * @param method "create" will return the createSubmittal function
+ * @param method "edit" will return the updateSubmittal function
+ * 
+ * The next two arguments are the functions to be called if the method is "create" or "edit"
+ * @returns An API call function from their respective files
+ */
+
+export function MethodHandler(method: "POST" | "PUT", create_fn: Function, update_fn: Function): Function {
+  if (method === "POST"){
+      return create_fn
+  }
+  else if (method === "PUT"){
+      return update_fn
+  }
+  
+  throw new Error("Invalid method: Received " + method)
 }

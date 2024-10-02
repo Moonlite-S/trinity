@@ -3,6 +3,7 @@ import { ProjectProps } from "../interfaces/project_types"
 import { createProject, getDataForProjectCreation, updateProject } from "../api/projects"
 import { FormEvent } from "react"
 import { EmployeeProps } from "../interfaces/employee_type"
+import { MethodHandler } from "../components/misc"
 
 export const useProjectFormHandler = (
     setCurrentProjectData: React.Dispatch<React.SetStateAction<ProjectProps>>,
@@ -59,7 +60,7 @@ export const useProjectFormHandler = (
         const formDataObj = Object.fromEntries(formData.entries())
 
         try {
-            const method_handler = MethodHandler(method)
+            const method_handler = MethodHandler(method, createProject, updateProject)
 
             if (method_handler) {
                 setErrorString(undefined)
@@ -94,13 +95,4 @@ export const useProjectFormHandler = (
     }
 
     return {onDateStartChange, onManagerChange, onClientChange, onCityChange, onSubmit}
-}
-
-function MethodHandler(method: "POST" | "PUT"): ((data: ProjectProps) => Promise<Number>) | undefined {
-    if (method === "POST"){
-        return createProject
-    }
-    else if (method === "PUT"){
-        return updateProject
-    }
 }
