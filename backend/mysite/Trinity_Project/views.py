@@ -40,11 +40,11 @@ class LoginView(APIView):
         user = authenticate(email=email, password=password)
         
         if user is None:
-            return Response(status=status.HTTP_403_FORBIDDEN)
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
             # raise AuthenticationFailed('User not found!')
         
         if not user.check_password(password):
-            return Response(status=status.HTTP_403_FORBIDDEN)
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
             # raise AuthenticationFailed('Incorrect password!')
         
         payload = {
@@ -89,7 +89,7 @@ class UserView(APIView):
 
 class LogoutView(APIView):
     def post(self, request):
-        response = Response()
+        response = Response(status=status.HTTP_200_OK)
         response.delete_cookie('jwt_token')
         response.delete_cookie('csrftoken')
         response.data = {

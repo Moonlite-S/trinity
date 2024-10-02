@@ -29,7 +29,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     "localhost",
-    "127.0.0.1"
+    "127.0.0.1",
+    "localhost:3000"    
 ]
 
 # Application definition
@@ -65,6 +66,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173", # Local development
+    "http://localhost:3000", # React frontend
     "https://web.postman.co",
 ]
 
@@ -72,6 +74,7 @@ ROOT_URLCONF = "mysite.urls"
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
+    "http://localhost:3000",
     'https://web.postman.co',
 ]
 

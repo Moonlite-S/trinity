@@ -82,7 +82,8 @@ export function CreateableSelectionComponent({Value = '', multiple, options, nam
                     backgroundColor: '#cacacc',
                 },
             })
-        }}/>
+        }}
+        />
     )
 }
 
