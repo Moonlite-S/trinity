@@ -1,13 +1,14 @@
 from django.urls import  path
 from django.contrib import admin
-from . import views
-from rest_framework.authtoken.views import obtain_auth_token
+
+from Trinity_Project import views
+
+#from . import views
 urlpatterns = [
     path("", views.index, name="index"),
     path("projects/", views.project_list,name="project_list"),
     path("projects/project_creation", views.project_creation_data),
     path("projects/id/<str:project_id>", views.project_detail),
-    #path("projects/id/<str:project_id>", views.update_project),
     path("register", views.RegisterView.as_view()),
     path("login", views.LoginView.as_view()),
     path("user",views.UserView.as_view()),    
