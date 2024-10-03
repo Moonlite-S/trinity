@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useState } from "react";
-import { Header } from "./misc";
+import { useEffect, useState } from "react";
+import { GenericTable, Header } from "./misc";
 import { getProjectList, getProject, deleteProject } from "../api/projects";
 import { useNavigate, useParams } from "react-router-dom";
-import DataTable, { Direction, TableColumn } from "react-data-table-component";
+import { TableColumn } from "react-data-table-component";
 import { ProjectFilterProps, ProjectProps } from "../interfaces/project_types";
 import { ProjectFormCreation, ProjectFormUpdate } from "./ProjectForm";
 import { Route_Button } from "./Buttons";
@@ -65,11 +65,28 @@ export function UpdateProjectList() {
         fetchProjects()
     }, [])
 
+    const projectColumns: TableColumn<ProjectProps>[] = [
+        { name: "Project Name", selector: (row: ProjectProps) => row.project_name, sortable: true, cell: (row: ProjectProps) => <div className="">{row.project_name}</div> },
+        { name: "Project ID", selector: (row: ProjectProps) => row.project_id, sortable: true, cell: (row: ProjectProps) => <div className="">{row.project_id}</div> },
+        { name: "Client Name", selector: (row: ProjectProps) => row.client_name, sortable: true, cell: (row: ProjectProps) => <div className="">{row.client_name}</div> },
+        { name: "Manager", selector: (row: ProjectProps) => row.manager.name, sortable: true, cell: (row: ProjectProps) => <div className="">{row.manager.name}</div> },
+        { name: "City", selector: (row: ProjectProps) => row.city, sortable: true, cell: (row: ProjectProps) => <div className="">{row.city}</div> },
+        { name: "Next Deadline", selector: (row: ProjectProps) => row.end_date, sortable: true, cell: (row: ProjectProps) => <div className="">{row.end_date}</div> }
+    ]
+
     return(
         <>
             <Header />
-
-            <ProjectUpdateTable projectList={projectList} projectLoaded={projectLoaded} />
+            <h1 className="mx-4 text-x1 font-semibold">Projects</h1>
+            
+            <GenericTable
+                dataList={projectList}
+                isDataLoaded={projectLoaded}
+                columns={projectColumns}
+                FilterComponent={FilterComponent}
+                expandableRowComponent={ExpandableRowComponent}
+                filterField="project_name"
+            />
 
             <div className="flex flex-row justify-center gap-3 m-2">
                 <Route_Button route={"/main_menu"} text="Back"/>
@@ -230,7 +247,7 @@ const FilterComponent = ({ filterText, onFilter, onClear }: ProjectFilterProps) 
  * A Component that shows when the user clicks on a row on the table.
  * This is where the description of the project will be stored
  * 
- * @param data The props of a give row
+ * @param data The props of a given row
  * 
  */
 const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
@@ -260,7 +277,6 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
     })
 
     useEffect(() => {
-        //console.log("Data: ", data)
         const get_tasks = async () => {
             const response = await filterTasksByProject(data.project_id)
 
@@ -284,6 +300,7 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
         }
         
         if (data.submittals) {
+            console.log("Data Sub", data.submittals)
             setSubmittals(data.submittals)
             
             const calculateSubmittalCounts = () => {
@@ -335,7 +352,7 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
                     <div className="w-1/2 bg-slate-200 rounded-full h-6">
                         <div 
                             className="bg-orange-500 h-6 rounded-full" 
-                            style={{ width: `${taskCounts.completed / taskCounts.total * 100}%` }}
+                            style={{ width: `${taskCounts.completed === 0 && taskCounts.total === 0 ? 0 : (taskCounts.completed / taskCounts.total * 100)}%` }}
                         >
                             <p className="ml-2 text-nowrap">Completed Tasks: {taskCounts.completed} / {taskCounts.total}</p>
                         </div>
@@ -357,27 +374,27 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
                         
                         <div className="flex flex-col gap-2">
                             <div className="h-6 bg-slate-200 rounded-full w-1/2">
-                                <div className="bg-green-200 h-6 rounded-full" style={{ width: `${submittalCounts.MECHANICAL.completed / submittalCounts.MECHANICAL.total * 100}%` }}>
+                                <div className="bg-green-200 h-6 rounded-full" style={{ width: `${submittalCounts.MECHANICAL.completed === 0 && submittalCounts.MECHANICAL.total === 0 ? 0 : (submittalCounts.MECHANICAL.completed / submittalCounts.MECHANICAL.total * 100)}%` }}>
                                     <p className="ml-2 text-nowrap">Mechanical: {submittalCounts.MECHANICAL.completed} / {submittalCounts.MECHANICAL.total}</p>
                                 </div>
                             </div>
                             <div className="h-6 bg-slate-200 rounded-full w-1/2">
-                                <div className="bg-yellow-200 h-6 rounded-full" style={{ width: `${submittalCounts.ELECTRICAL.completed / submittalCounts.ELECTRICAL.total * 100}%` }}>
+                                <div className="bg-yellow-200 h-6 rounded-full" style={{ width: `${submittalCounts.ELECTRICAL.completed === 0 && submittalCounts.ELECTRICAL.total === 0 ? 0 : (submittalCounts.ELECTRICAL.completed / submittalCounts.ELECTRICAL.total * 100)}%` }}>
                                     <p className="ml-2 text-nowrap">Electrical: {submittalCounts.ELECTRICAL.completed} / {submittalCounts.ELECTRICAL.total}</p>
                                 </div>
                             </div>
                             <div className="h-6 bg-slate-200 rounded-full w-1/2">
-                                <div className="bg-blue-200 h-6 rounded-full" style={{ width: `${submittalCounts.PLUMBING.completed / submittalCounts.PLUMBING.total * 100}%` }}>
+                                <div className="bg-blue-200 h-6 rounded-full" style={{ width: `${submittalCounts.PLUMBING.completed === 0 && submittalCounts.PLUMBING.total === 0 ? 0 : (submittalCounts.PLUMBING.completed / submittalCounts.PLUMBING.total * 100)}%` }}>
                                     <p className="ml-2 text-nowrap">Plumbing: {submittalCounts.PLUMBING.completed} / {submittalCounts.PLUMBING.total}</p>
                                 </div>
                             </div>
                             <div className="h-6 bg-slate-200 rounded-full w-1/2">
-                                <div className="bg-red-200 h-6 rounded-full" style={{ width: `${submittalCounts.FIRE_PROTECTION.completed / submittalCounts.FIRE_PROTECTION.total * 100}%` }}>
+                                <div className="bg-red-200 h-6 rounded-full" style={{ width: `${submittalCounts.FIRE_PROTECTION.completed === 0 && submittalCounts.FIRE_PROTECTION.total === 0 ? 0 : (submittalCounts.FIRE_PROTECTION.completed / submittalCounts.FIRE_PROTECTION.total * 100)}%` }}>
                                     <p className="ml-2 text-nowrap">Fire Protection: {submittalCounts.FIRE_PROTECTION.completed} / {submittalCounts.FIRE_PROTECTION.total}</p>
                                 </div>
                             </div>
                             <div className="h-6 bg-slate-200 rounded-full w-1/2">
-                                <div className="bg-purple-200 h-6 rounded-full" style={{ width: `${submittalCounts.OTHER.completed / submittalCounts.OTHER.total * 100}%` }}>
+                                <div className="bg-purple-200 h-6 rounded-full" style={{ width: `${submittalCounts.OTHER.completed === 0 && submittalCounts.OTHER.total === 0 ? 0 : (submittalCounts.OTHER.completed / submittalCounts.OTHER.total * 100)}%` }}>
                                     <p className="ml-2 text-nowrap">Other: {submittalCounts.OTHER.completed} / {submittalCounts.OTHER.total}</p>
                                 </div>
                             </div>
@@ -407,68 +424,6 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
         </div>
 
     </div>
-    )
-}
-
-/**
- * The Table Component that lists the projects
- * 
- * Features sorting by any field, and filtering by Project Name currently.
- * 
- * @param projectList - List of projects 
- * @param projectLoaded - Boolean to check if projects have been loaded
- */
-function ProjectUpdateTable({ projectList, projectLoaded }: { projectList: ProjectProps[], projectLoaded: boolean }) {
-    const [filterText, setFilterText] = useState<string>('')
-    const [resetPaginationToggle, setResetPaginationToggle] = useState<boolean>(false)
-
-    const filteredProjects: ProjectProps[] = projectList.filter(item => item.project_name.toLowerCase().includes(filterText.toLowerCase()))
-
-    // Column Names
-    const columns: TableColumn<ProjectProps>[] = [
-        { name: "Project ID", selector: row => row.project_id, sortable: true },
-        { name: "Project Name", selector: row => row.project_name, sortable: true },
-        { name: "Project Manager", selector: row => row.manager.name, sortable: true },
-        { name: "Status", selector: row => row.status, sortable: true },
-        { name: "Customer", selector: row => row.client_name, sortable: true },
-        { name: "City", selector: row => row.city, sortable: true },
-        { name: "Date Created", selector: row => row.start_date, sortable: true },
-        { name: "Date Ended", selector: row => row.end_date, sortable: true },
-        { name: "Folder Location", selector: row => row.folder_location, sortable: true },
-    ]
-
-    // For the filter function
-    const filterSearchBox = useMemo(() => {
-        const handleClear = () => {
-            if (filterText) {
-                setResetPaginationToggle(!resetPaginationToggle);
-                setFilterText('')
-            }
-        }
-
-        return (
-            <FilterComponent onFilter={(e: any) => setFilterText(e.target.value)} onClear={handleClear} filterText={filterText} />
-
-        )
-    }, [filterText, resetPaginationToggle])
-
-    return(
-        <DataTable
-        title="Project List"
-        columns={columns}
-        data={filteredProjects}
-        direction={Direction.AUTO}
-        progressPending={!projectLoaded}
-        subHeaderComponent={filterSearchBox}
-        expandableRowsComponent={ExpandableRowComponent}
-        paginationResetDefaultPage={resetPaginationToggle}
-        persistTableHead
-        highlightOnHover
-        expandableRows
-        selectableRows
-        pagination
-        subHeader
-        />        
     )
 }
 

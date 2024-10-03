@@ -72,10 +72,6 @@ export async function updateTask(task: TaskProps): Promise<number> {
 }
 
 export async function filterTasksByProject(project_id: string): Promise<TaskProps[]> {
-
-
-
-
     try {
         const response = await AxiosInstance.get('api/task/project_id/' + project_id)
 
@@ -114,6 +110,15 @@ export async function getDataForTaskCreation(): Promise<TaskCreationProps> {
         return response.data
     } catch (error) {
         console.error(error)
+        throw error
+    }
+}
+
+export async function getTaskList(): Promise<TaskProps[]> {
+    try {
+        const response = await AxiosInstance.get('api/task/')
+        return response.data
+    } catch (error: unknown) {
         throw error
     }
 }

@@ -44,31 +44,25 @@ export const useSubmittalFormHandler = (
 
         const formData = new FormData(e.target as HTMLFormElement)
         const formDataObj = Object.fromEntries(formData.entries())
-        console.log("Form Data Object: ", formDataObj)
 
-        try {
-            const method_handler = MethodHandler(method, createSubmittal, updateSubmittal)
+        const method_handler = MethodHandler(method, createSubmittal, updateSubmittal)
 
-            if (method_handler) {
-                const response = await method_handler(formDataObj as SubmittalProps)
-                console.log("Response: ", response)
+        if (method_handler) {
+            const response = await method_handler(formDataObj as SubmittalProps)
+            console.log("Response: ", response)
 
-                if (response === 200) {
-                    alert("Submittal updated successfully")
-                    navigate('/submittal/')
-                } else if (response === 201) {
-                    alert("Submittal created successfully")
-                    navigate('/submittal/')
-                }
-                else {
-                    alert("Error with submittal")
-                }
-            } else {
+            if (response === 200) {
+                alert("Submittal updated successfully")
+                navigate('/submittal/')
+            } else if (response === 201) {
+                alert("Submittal created successfully")
+                navigate('/submittal/')
+            }
+            else {
                 alert("Error with submittal")
             }
-        }
-        catch (error) {
-            console.log(error)
+        } else {
+            alert("Error with submittal")
         }
     }
 

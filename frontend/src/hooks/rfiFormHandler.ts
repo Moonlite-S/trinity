@@ -15,10 +15,10 @@ export function useRFIFormHandler (
 ) {
     
     const handleProjectChange = (e: unknown) => {
-        console.log(e)
-
+        console.log(e)  
+        
         if (typeof e === "object" && e !== null && "value" in e && "label" in e){
-            setCurrentRFIData(prev => ({...prev, project_id: e.value as string}))
+            setCurrentRFIData(prev => ({...prev, project: e.value as string}))
         }
     }
 
@@ -26,7 +26,7 @@ export function useRFIFormHandler (
         console.log(e)
 
         if (typeof e === "object" && e !== null && "value" in e && "label" in e){
-            setCurrentRFIData(prev => ({...prev, created_by: 
+            setCurrentRFIData(prev => ({...prev, user: 
                 {
                     name: e.label as string,
                     email: e.value as string,
@@ -39,24 +39,31 @@ export function useRFIFormHandler (
         }
     }
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         console.log("Form submitted");
 
         const formData = new FormData(e.target as HTMLFormElement)
         const data = Object.fromEntries(formData.entries())
-
         const method_handler = MethodHandler(method, createRFI, updateRFI)
 
-        try {
-            method_handler(data as unknown as RFIProps)
+        const response = await method_handler(data as unknown as RFIProps)
+        
+        if (response === 200) {
+            console.log("RFI updated successfully")
+            setErrorString(undefined)
+            alert("RFI updated successfully")
+            navigate("/rfi")
+        } else if (response === 201) {
+            console.log("RFI created successfully")
+            setErrorString(undefined)
+            alert("RFI created successfully")
+            navigate("/rfi")
         }
-        catch (error: unknown){
-            console.log(error)
-            setErrorString("Error submitting RFI")
+        else {
+            console.log("Error with RFI")
+            setErrorString("Error with RFI")
         }
-
-        navigate("/rfi")
 
     }
 

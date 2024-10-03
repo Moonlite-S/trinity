@@ -6,6 +6,11 @@ import { Error_Component } from "./misc";
 import { useAuth } from "../App";
 import { useNavigate } from "react-router-dom";
 import { useProjectFormHandler } from "../hooks/projectFormHandler";
+import { GenericForm, GenericInput, GenericSelect } from "./GenericForm";
+
+const templates = [
+    'default'
+]
 
 /**
  * This component shows the user the form to create a new project.
@@ -49,10 +54,6 @@ export function ProjectFormCreation() {
     const projectManagerListOptions = ProjectManagers?.map((value: string) => {
         return { value: value[1], label: value[0] }
     })
-
-    const templates = [
-        { value: 'default', label: 'default' },
-    ]
 
     const { onSubmit, onDateStartChange, onManagerChange, onClientChange, onCityChange } = useProjectFormHandler(setCurrentProjectData, navigate, setErrorString, "POST")
 
@@ -146,10 +147,6 @@ export function ProjectFormUpdate(
         return { value: value[1], label: value[0] }
     })
 
-    const templates = [
-        { value: 'default', label: 'default' },
-    ]
-
     useEffect(() => {
         const get_project_data = async () => {
             try {
@@ -226,63 +223,20 @@ export function ProjectFormUpdate(
 
 function ProjectFormBase({ currentProjectData, projectManagerListOptions, Clients, Cities, templates, onSubmit, onDateStartChange, onManagerChange, onClientChange, onCityChange, method }: ProjectFormBaseProps) {
     return (
-        <form data-testid="project_creation" id="project_creation" onSubmit={onSubmit}  method="post">
-        <div className="flex flex-col gap-10 p-24 mx-auto max-w-screen-lg bg-zinc-50" >
-            <div className="flex flex-row justify-center gap-5">
-                <label htmlFor="project_id" className="py-2">Project ID:</label>
-                <input id="project_id" defaultValue={currentProjectData.project_id} className="bg-slate-200 rounded-md border-zinc-500 border" type="text" name="project_id"/>
-                
-                <label htmlFor="project_name" className="py-2" >Project Name:</label>
-                <input id="project_name" className="bg-white border border-zinc-500 rounded-md focus:outline-none focus:ring focus:ring-orange-400" type="text" defaultValue={currentProjectData.project_name} name="project_name" autoFocus required/>
-            </div>
-        
-            <div className="flex flex-row gap-5 justify-between">
-                <div className="flex flex-col gap-5 justify-between">
-                    <div className="flex flex-row justify-between gap-5">
-                        <label htmlFor="status" className="py-2">Project Status:</label>
-                        <select id="status" defaultValue={currentProjectData.status} name="status" className="bg-white rounded-md p-2 border border-zinc-500">
-                            <option value={'ACTIVE'}>Active</option>
-                            <option value={'COMPLETED'}>Completed</option>
-                            <option value={'CANCELLED'}>Cancelled</option>
-                            <option value={'NOT STARTED'}>Not Started</option>
-                        </select>
-                    </div>
+        <GenericForm form_id="project_creation" onSubmit={onSubmit}>
+            <GenericInput label="Project ID" value={currentProjectData.project_id} type="text" name="project_id"/>
+            <GenericInput label="Project Name" value={currentProjectData.project_name} type="text" name="project_name"/>
+            <GenericInput label="Date Created" value={currentProjectData.start_date} type="date" onChange={onDateStartChange} name="start_date"/>
+            <GenericInput label="Date Due" value={currentProjectData.end_date} type="date" name="end_date"/>
+            <SelectionComponent label="Project Manager" Value={currentProjectData.manager.name} options={projectManagerListOptions} onChange={onManagerChange} name="manager"/>
+            <CreateableSelectionComponent label="Client Name" options={Clients} name="client_name" Value={currentProjectData.client_name} onChange={onClientChange}/>
+            <CreateableSelectionComponent label="City" Value={currentProjectData.city} options={Cities} name="city" onChange={onCityChange}/>
+            <GenericSelect label="Project Status" value={currentProjectData.status} options={["ACTIVE", "COMPLETED", "CANCELLED", "NOT STARTED"]} name="status" />
+            <GenericInput label="Folder Name" value={currentProjectData.project_id} type="text" name="folder_location" />
+            <GenericSelect label="Template" value={currentProjectData.template} options={templates} name="template" />
+            <GenericInput label="Project Description" value={currentProjectData.description} type="text" name="description" />
 
-                    <div className="flex flex-row justify-between gap-5">
-                        <label htmlFor="start_date" className="py-2">Date Created:</label>
-                        <input id="start_date" value={currentProjectData.start_date} onChange={onDateStartChange} className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="date" name="start_date" required/>
-                    </div>
-
-                    <div className="flex flex-row justify-between gap-5">
-                        <label htmlFor="end_date" className="py-2">Due Date:</label>
-                        <input id="end_date" className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="date" name="end_date" defaultValue={currentProjectData.end_date} required/>
-                    </div>
-                </div>
-
-                <div className="flex flex-col gap-5 justify-between">
-                    <SelectionComponent label="Project Manager" Value={currentProjectData.manager.name} options={projectManagerListOptions} onChange={onManagerChange} name="manager"/>
-                    <CreateableSelectionComponent label="Client Name" options={Clients} name="client_name" Value={currentProjectData.client_name} onChange={onClientChange}/>
-                    <CreateableSelectionComponent label="City" Value={currentProjectData.city} options={Cities} name="city" onChange={onCityChange}/>
-                </div>
-            </div> 
-            
-            <div className="flex flex-row gap-5 justify-between">
-                <div className="flex flex-row ">
-                    <label htmlFor="folder_location" className="py-2">Folder Name:</label>
-                    <input id="folder_location" defaultValue={currentProjectData.project_id} className="mx-2 p-2 bg-slate-200 border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" type="text" name="folder_location" />
-                </div>
-
-                <SelectionComponent label="Template" options={templates} name="template"/>
-            </div>
-
-            <div className="flex flex-col gap-5">
-                <label htmlFor="description">Project description:</label>
-                <textarea id="description" className="bg-white border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400" placeholder="Enter description or other details" defaultValue={currentProjectData.description} name="description"/>
-            </div>
-        </div>
-
-        <BottomFormButton button_text={method === "POST" ? "Create Project" : "Update Project"}/>
-
-    </form>
+            <BottomFormButton button_text={method === "POST" ? "Create Project" : "Update Project"}/>
+        </GenericForm>
     )
 }

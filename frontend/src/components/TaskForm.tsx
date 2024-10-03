@@ -20,7 +20,7 @@ export function TaskForm() {
       assigned_to: "",
       project_id: "",
       due_date: "",
-      status: "active"
+      status: "ACTIVE"
     })
   
     const { onAssignedToChange, onProjectSelectionChange, onSubmit } = useTaskFormHandler(setCurrentTaskData, currentTaskData, navigate, "POST", projects)

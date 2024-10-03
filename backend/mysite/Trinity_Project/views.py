@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, JsonResponse
+from isodate import parse_date
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
@@ -9,11 +10,11 @@ from rest_framework.exceptions import PermissionDenied
 from azure.core.exceptions import ResourceExistsError, ResourceNotFoundError
 
 from .azure_file_share import AzureFileShareClient
-from .models import Announcements, PendingChange, Project, Submittal, Task,ProjectChangeLog, TaskChangeLog, User
+from .models import RFI, Announcements, PendingChange, Project, Submittal, Task,ProjectChangeLog, TaskChangeLog, User
 from .serializers import AnnouncmentsSerializer, ProjectSerializer, ProjectSerializerUserObjectVer, ProjectSerializerWithSubmittals, TaskSerializer, UserNameAndEmail, UserNameSerializer, UserSerializer, SubmittalSerializer, RFISerializer
 from rest_framework.views import APIView
 import jwt, datetime
-from datetime import datetime,timezone,timedelta
+from datetime import datetime,timezone, timedelta
 #from django.conf import setting
 from django.contrib.auth import authenticate
 from .utils import authenticate_jwt
@@ -543,7 +544,8 @@ def submittal_list(request):
                 return Response(data={"error": "Project Folder does not exist."}, status=status.HTTP_400_BAD_REQUEST)
             
             except ResourceExistsError:
-                return Response(data={"error": "Submittal Folder already exists."}, status=status.HTTP_400_BAD_REQUEST)
+                print("Submittal Folder already exists. Skipping...")
+                #return Response(data={"error": "Submittal Folder already exists."}, status=status.HTTP_400_BAD_REQUEST)
             
             except Exception as e:
                 print(f"An error occurred while creating the submittal: {e}")
@@ -597,27 +599,6 @@ def submittal_by_assigned_to(request,assigned_to):
         return Response(serializer.data)
         
 @login_required
-@api_view(['POST'])
-def schedule_call(request):
-    if request.method == 'POST':
-        start_datetime = request.POST.get('start_datetime')
-        end_datetime = request.POST.get('end_datetime')
-        
-        start_time = datetime.datetime.fromisoformat(start_datetime).isoformat() + "Z"
-        end_time = datetime.datetime.fromisoformat(end_datetime).isoformat() + "Z"
-        
-        
-        meeting_info = GraphAPI.create_online_meeting()
-        
-        if 'joinUrl' in meeting_info:
-            context = {'join_url': meeting_info.get('joinUrl')}
-            return render(request, ' schedule_call.html', context)
-        else:
-            return HttpResponse('Error scheduling meeting')
-        
-    return render(request, 'schedule_call.html', context)
-
-@login_required
 @api_view(['GET','POST'])
 def RFI_list(request):
     
@@ -627,11 +608,19 @@ def RFI_list(request):
         return Response(serializer.data)
     
     if request.method == 'POST':
+        data = request.data.copy()
+
         serializer=RFISerializer(data=request.data)
-        
+
         if serializer.is_valid():
+            print(serializer.validated_data)
+
+            project = serializer.validated_data['project']
+
+            serializer.validated_data['RFI_id'] = str(project.project_id) + "-" + datetime.now().strftime("%Y-%m-%d")
+
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -689,7 +678,7 @@ def rfi_creation_data(request):
         data_to_send['projects'] = list(projects)
 
         # Gets all active employees
-        employees = User.objects.filter(role__in=['Manager', 'Administrator', 'Team Member'], is_active=True).values_list('email', 'name')
+        employees = User.objects.filter(role__in=['Manager', 'Administrator', 'Team Member'], is_active=True).values_list('pk', 'name')
         data_to_send['employees'] = list(employees)
     except Exception as e:
         print(f"An error occurred while fetching RFI creation data: {e}")

@@ -1,6 +1,7 @@
 import { FormEvent } from "react"
 import { EmployeeProps } from "./employee_type"
 import { SubmittalProps } from "./submittal_types"
+import { RFIProps } from "./rfi_types"
 
 export type ProjectStatus = 
     "ACTIVE" |
@@ -35,7 +36,8 @@ export type ProjectProps = {
     status: ProjectStatus
     folder_location: string
     template: string,
-    submittals?: SubmittalProps[]
+    submittals?: SubmittalProps[],
+    rfis?: RFIProps[]
 }
 
 export type ProjectFilterProps = {
@@ -57,7 +59,7 @@ export type ProjectFormBaseProps = {
     projectManagerListOptions: { value: string, label: string }[]
     Clients: { value: string, label: string }[]
     Cities: { value: string, label: string }[]
-    templates: { value: string, label: string }[]
+    templates: string[]
     method: "POST" | "PUT"
     onSubmit: (e: React.FormEvent<HTMLFormElement>) => void
     onDateStartChange: (e: React.ChangeEvent<HTMLInputElement>) => void

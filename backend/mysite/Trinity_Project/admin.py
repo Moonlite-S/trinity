@@ -23,7 +23,6 @@ class TaskChangeLogAdmin(admin.ModelAdmin):
     list_filter = ('task_id','changed_by','change_time')
     search_fields = ('change_description','task_title','changed_by__name')
 
-
 @admin.register(PendingChange)
 class PendingChangeAdmin(admin.ModelAdmin):
     list_display=('task', 'field_name', 'new_value', 'requested_by', 'approved')

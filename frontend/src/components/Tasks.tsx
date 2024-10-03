@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Header, TaskCard } from './misc';
-import { filterTasksByUser, getTaskByID } from '../api/tasks';
+import { GenericTable, Header } from './misc';
+import { getTaskByID, getTaskList } from '../api/tasks';
 import { TaskProps } from '../interfaces/tasks_types';
-import { useAuth } from '../App';
-import { Back_Button } from './Buttons';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { TaskForm, UpdateTask } from './TaskForm';
-//To prevent errors; assigns properties to the tasks to maintain consistency
 
 //*TODO:
 // - Maybe filter out employees who aren't assigned to that project?
@@ -63,37 +60,61 @@ export function EditTask() {
 }
 
 export function TaskList() {
-  const { user } = useAuth();
   const [tasks, setTasks] = useState<TaskProps[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const get_tasks = await filterTasksByUser(user?.email as string);
+        const get_tasks = await getTaskList();
         setTasks(get_tasks);
       } catch (error) {
         console.error(error);
       }
     }
-
     fetchData();
-  }, [user?.email])
+  }, [])
+
+  const columns = [
+    {
+      name: "Title",
+      selector: (row: TaskProps) => row.title,
+    },
+    {
+      name: "Description",
+      selector: (row: TaskProps) => row.description,
+    },
+  ];
+  
   return (
     <>
       <Header/>
-      <h1 className="mx-4 text-x1 font-semibold">Task List</h1>
+      <h1 className="mx-4 text-x1 font-semibold">Tasks</h1>
 
-      <div className='grid grid-cols-4 mx-5'>
-        {tasks && tasks.map((task) => (
-          <Link to={'/tasks/edit_task/' + task.task_id} key={task.task_id}>
-            <TaskCard task={task} />
-          </Link>
-        ))}
-      </div>
-
-      <div className="flex justify-center">
-        <Back_Button/>
-      </div>
+      <GenericTable
+        dataList={tasks}
+        isDataLoaded={true}
+        columns={columns}
+        FilterComponent={FilterComponent}
+        expandableRowComponent={expandableRowComponent}
+        filterField="title"
+      />
     </>
   );
 }
+
+function FilterComponent({ filterText, onFilter, onClear }: { filterText: string, onFilter: (e: any) => void, onClear: () => void }) {
+    return (
+        <div className="flex flex-row gap-2">
+            <input type="text" placeholder="Filter by Submittal ID" value={filterText} onChange={onFilter} />
+            <button onClick={onClear}>Clear</button>
+        </div>
+    )
+}
+
+function expandableRowComponent({ data }: { data: TaskProps }) {
+    return (
+        <div>
+            <p>{data.title}</p>
+        </div>
+    )
+} 

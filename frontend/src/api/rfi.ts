@@ -1,15 +1,69 @@
+import { AxiosError } from "axios"
 import { AxiosInstance } from "../components/Axios"
 import { SelectionButtonProps } from "../interfaces/button_types"
 import { RFIProps, RFICreationProps } from "../interfaces/rfi_types"
 
 export async function createRFI(rfi: RFIProps): Promise<Number> {
-    const response = await AxiosInstance.post('api/rfi/create', rfi)
-    return response.status
+    try {
+        console.log(rfi)
+        const response = await AxiosInstance.post('api/rfi/', rfi)
+        console.log(response.status)
+        return response.status
+    } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+            if (error.response?.status === 400) {
+                // 400 Bad Request
+                return 400
+            } else if (error.response?.status === 403) {
+                // 403 Forbidden
+                return 403
+            }
+        }
+        console.error("Server Error: ", error)
+        return 500
+    }
 }
 
-export async function getRFIs(): Promise<RFIProps[]> {
-    const response = await AxiosInstance.get('api/rfi/get')
-    return response.data
+export async function getRFIList(): Promise<RFIProps[]> {
+    try {
+        const response = await AxiosInstance.get('api/rfi/')
+        if (response.status !== 200) {
+            throw new Error("Error fetching RFIs")
+        }
+
+        return response.data
+    } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+            if (error.response?.status === 400) {
+                // 400 Bad Request
+                throw new Error("Bad Request")
+            } else if (error.response?.status === 403) {
+                // 403 Forbidden
+                throw new Error("Forbidden")
+            }
+        }
+        console.error("Server Error: ", error)
+        throw new Error("Server Error")
+    }
+}
+
+export async function updateRFI(rfi: RFIProps): Promise<Number> {
+    try {
+        const response = await AxiosInstance.put('api/rfi/update', rfi)
+        return response.status
+    } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+            if (error.response?.status === 400) {
+                // 400 Bad Request
+                return 400
+            } else if (error.response?.status === 403) {
+                // 403 Forbidden
+                return 403
+            }
+        }
+        console.error("Server Error: ", error)
+        return 500
+    }
 }
 
 export async function getDataForRFICreation(): Promise<RFICreationProps> {
@@ -19,6 +73,7 @@ export async function getDataForRFICreation(): Promise<RFICreationProps> {
         if (!response.data) {
             throw new Error("No data returned from the server")
         }
+
         // So projects and employees are returned as a list of lists, where each sublist contains the id and name of the project/employee
         // Ex: Projects: [["ProjectID", "ProjectName"], ["ProjectID2", "ProjectName2"]]
         // Ex: Employees: [["EmployeeID", "EmployeeName"], ["EmployeeID2", "EmployeeName2"]]
@@ -46,9 +101,4 @@ export async function getDataForRFICreation(): Promise<RFICreationProps> {
     } catch (error: unknown) {
         throw new Error("Error fetching data for RFI creation")
     }
-}
-
-export async function updateRFI(rfi: RFIProps): Promise<Number> {
-    const response = await AxiosInstance.put('api/rfi/update', rfi)
-    return response.status
 }

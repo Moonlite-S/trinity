@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { getSubmittalById, getSubmittals} from "../api/submittal";
-import { OrangeButton } from "./Buttons";
-import { Header } from "./misc";
-import DataTable, { Direction, TableColumn } from "react-data-table-component";
+import { OrangeButton, Route_Button } from "./Buttons";
+import { GenericTable, Header } from "./misc";
+import { TableColumn } from "react-data-table-component";
 import { SubmittalProps } from "../interfaces/submittal_types";
 import { Link, useParams } from "react-router-dom";
 import { SubmittalFormCreation, SubmittalFormEdit } from "./SubmittalForm";
@@ -34,23 +34,6 @@ export default function CreateSubmittal() {
  * 
  */
 export function ViewSubmittals() {
-    return (
-        <>
-            <Header />
-
-            <div className="flex flex-col gap-5 p-5 ">
-                <h1>Submittals</h1>
-            </div>
-
-            <SubmittalList />
-        </>
-    )
-}
-
-/**
- * The Table Component that lists the submittals
- */
-function SubmittalList() {
     const [submittals, setSubmittals] = useState<SubmittalProps[]>([])
 
     useEffect(() => {
@@ -65,28 +48,42 @@ function SubmittalList() {
 
     const columns: TableColumn<SubmittalProps>[] = [
         { name: "Submittal ID", selector: row => row.submittal_id, sortable: true },
-        { name: "Project", selector: row => row.project_name ?? '', sortable: true },
-        { name: "Status", selector: row => row.status.toUpperCase(), sortable: true },
-        { name: "Type", selector: row => row.type === "fire_protection" ? "FIRE PROTECTION" : row.type.toUpperCase(), sortable: true },
-        { name: "Date Received", selector: row => row.received_date, sortable: true },
-        { name: "Assigned To", selector: row => row.assigned_to ?? '', sortable: true },
-        { name: "Description", selector: row => row.sub_description, sortable: true },
-        { name: "Notes", selector: row => row.notes, sortable: true },
+        { name: "Project", selector: row => row.project, sortable: true },
+        { name: "Assigned To", selector: row => row.assigned_to, sortable: true },
+        { name: "Submitted On", selector: row => row.received_date, sortable: true },
+        { name: "Status", selector: row => row.status, sortable: true },
     ]
-
+    
     return (
-        <DataTable
-            columns={columns}
-            data={submittals}
-            direction={Direction.AUTO}
-            persistTableHead
-            highlightOnHover
-            expandableRows
-            expandableRowsComponent={ExpandableRowComponent}
-            selectableRows
-            pagination
-            subHeader
-        />
+        <>
+            <Header />
+
+            <div className="flex flex-col gap-5 p-5 ">
+                <h1>Submittals</h1>
+            </div>
+
+            <GenericTable
+                dataList={submittals}
+                isDataLoaded={submittals.length > 0}
+                columns={columns}
+                expandableRowComponent={ExpandableRowComponent}
+                filterField="submittal_id"
+                FilterComponent={FilterComponent}
+            />
+
+            <div className="flex flex-row justify-center gap-3 m-2">
+                <Route_Button route={"/main_menu"} text="Back"/>
+            </div>
+        </>
+    )
+}
+
+function FilterComponent({ filterText, onFilter, onClear }: { filterText: string, onFilter: (e: any) => void, onClear: () => void }) {
+    return (
+        <div className="flex flex-row gap-2">
+            <input type="text" placeholder="Filter by Submittal ID" value={filterText} onChange={onFilter} />
+            <button onClick={onClear}>Clear</button>
+        </div>
     )
 }
 
