@@ -72,8 +72,17 @@ export function CreateableSelectionComponent({Value = '', multiple, options, nam
 
     return (
         <div className="flex flex-row justify-between gap-5">
-            <label id={`${name}-label`} htmlFor={name} className="py-2">{label}</label>
-            <CreatableSelect inputId={name} aria-labelledby={`${name}-label`} value={selectDefaultValue} options={options} name={name} placeholder="Search" isMulti={multiple} onChange={onChange} 
+            <label data-testid={name} id={`${name}-label`} htmlFor={name} className="py-2">{label}</label>
+            <CreatableSelect 
+            inputId={name} 
+            aria-labelledby={`${name}-label`} 
+            value={selectDefaultValue} 
+            options={options} 
+            name={name} 
+            placeholder="Search" 
+            isMulti={multiple} 
+            onChange={onChange} 
+            classNamePrefix="react-select"
             styles = {{
                 control: (baseStyles: any, state: any) => ({
                     ...baseStyles,
@@ -122,9 +131,17 @@ export function SelectionComponent({Value: defaultValue = '', multiple, options,
     : {value: defaultOptionValue ? defaultOptionValue : defaultValue, label: defaultValue}
 
     return (
-        <div className="flex flex-row justify-between gap-5">
+        <div data-testid={name} className="flex flex-row justify-between gap-5">
             {label && <label id={`${name}-label`} htmlFor={name} className="py-2">{label}:</label>}
-            <Select inputId={name} aria-labelledby={`${name}-label`} value={selectDefaultValue} onChange={onChange} options={options} name={name} placeholder="Search" isMulti={multiple} 
+            <Select inputId={name} 
+            aria-labelledby={`${name}-label`} 
+            value={selectDefaultValue} 
+            onChange={onChange} 
+            options={options} 
+            name={name} 
+            placeholder="Search" 
+            isMulti={multiple} 
+            classNamePrefix="react-select"
             styles = {{
                 control: (baseStyles: any, state: any) => ({
                     ...baseStyles,

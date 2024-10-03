@@ -246,17 +246,17 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
 
     // Keeps track of the submittal counts and their status all in one object
     const [submittalCounts, setSubmittalCounts] = useState<{
-        mechanical: { total: number, completed: number },
-        electrical: { total: number, completed: number },
-        plumbing: { total: number, completed: number },
-        fire_protection: { total: number, completed: number },
-        other: { total: number, completed: number }
+        MECHANICAL: { total: number, completed: number },
+        ELECTRICAL: { total: number, completed: number },
+        PLUMBING: { total: number, completed: number },
+        FIRE_PROTECTION: { total: number, completed: number },
+        OTHER: { total: number, completed: number }
     }>({
-        mechanical: { total: 0, completed: 0 },
-        electrical: { total: 0, completed: 0 },
-        plumbing: { total: 0, completed: 0 },
-        fire_protection: { total: 0, completed: 0 },
-        other: { total: 0, completed: 0 }
+        MECHANICAL: { total: 0, completed: 0 },
+        ELECTRICAL: { total: 0, completed: 0 },
+        PLUMBING: { total: 0, completed: 0 },
+        FIRE_PROTECTION: { total: 0, completed: 0 },
+        OTHER: { total: 0, completed: 0 }
     })
 
     useEffect(() => {
@@ -272,7 +272,7 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
                 
                 response.forEach(task => {
                     counts.total++;
-                    if (task.status === "completed") {
+                    if (task.status === "COMPLETED") {
                         counts.completed++;
                     }
                 });
@@ -288,16 +288,16 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
             
             const calculateSubmittalCounts = () => {
                 const counts = {
-                    mechanical: { total: 0, completed: 0 },
-                    electrical: { total: 0, completed: 0 },
-                plumbing: { total: 0, completed: 0 },
-                fire_protection: { total: 0, completed: 0 },
-                other: { total: 0, completed: 0 },
+                    MECHANICAL: { total: 0, completed: 0 },
+                    ELECTRICAL: { total: 0, completed: 0 },
+                    PLUMBING: { total: 0, completed: 0 },
+                    FIRE_PROTECTION: { total: 0, completed: 0 },
+                    OTHER: { total: 0, completed: 0 },
             };
             
             submittals.forEach(submittal => {
                 counts[submittal.type].total++;
-                if (submittal.status === "closed") {
+                if (submittal.status === "CLOSED") {
                     counts[submittal.type].completed++;
                 }
             });
@@ -357,28 +357,28 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
                         
                         <div className="flex flex-col gap-2">
                             <div className="h-6 bg-slate-200 rounded-full w-1/2">
-                                <div className="bg-green-200 h-6 rounded-full" style={{ width: `${submittalCounts.mechanical.completed / submittalCounts.mechanical.total * 100}%` }}>
-                                    <p className="ml-2 text-nowrap">Mechanical: {submittalCounts.mechanical.completed} / {submittalCounts.mechanical.total}</p>
+                                <div className="bg-green-200 h-6 rounded-full" style={{ width: `${submittalCounts.MECHANICAL.completed / submittalCounts.MECHANICAL.total * 100}%` }}>
+                                    <p className="ml-2 text-nowrap">Mechanical: {submittalCounts.MECHANICAL.completed} / {submittalCounts.MECHANICAL.total}</p>
                                 </div>
                             </div>
                             <div className="h-6 bg-slate-200 rounded-full w-1/2">
-                                <div className="bg-yellow-200 h-6 rounded-full" style={{ width: `${submittalCounts.electrical.completed / submittalCounts.electrical.total * 100}%` }}>
-                                    <p className="ml-2 text-nowrap">Electrical: {submittalCounts.electrical.completed} / {submittalCounts.electrical.total}</p>
+                                <div className="bg-yellow-200 h-6 rounded-full" style={{ width: `${submittalCounts.ELECTRICAL.completed / submittalCounts.ELECTRICAL.total * 100}%` }}>
+                                    <p className="ml-2 text-nowrap">Electrical: {submittalCounts.ELECTRICAL.completed} / {submittalCounts.ELECTRICAL.total}</p>
                                 </div>
                             </div>
                             <div className="h-6 bg-slate-200 rounded-full w-1/2">
-                                <div className="bg-blue-200 h-6 rounded-full" style={{ width: `${submittalCounts.plumbing.completed / submittalCounts.plumbing.total * 100}%` }}>
-                                    <p className="ml-2 text-nowrap">Plumbing: {submittalCounts.plumbing.completed} / {submittalCounts.plumbing.total}</p>
+                                <div className="bg-blue-200 h-6 rounded-full" style={{ width: `${submittalCounts.PLUMBING.completed / submittalCounts.PLUMBING.total * 100}%` }}>
+                                    <p className="ml-2 text-nowrap">Plumbing: {submittalCounts.PLUMBING.completed} / {submittalCounts.PLUMBING.total}</p>
                                 </div>
                             </div>
                             <div className="h-6 bg-slate-200 rounded-full w-1/2">
-                                <div className="bg-red-200 h-6 rounded-full" style={{ width: `${submittalCounts.fire_protection.completed / submittalCounts.fire_protection.total * 100}%` }}>
-                                    <p className="ml-2 text-nowrap">Fire Protection: {submittalCounts.fire_protection.completed} / {submittalCounts.fire_protection.total}</p>
+                                <div className="bg-red-200 h-6 rounded-full" style={{ width: `${submittalCounts.FIRE_PROTECTION.completed / submittalCounts.FIRE_PROTECTION.total * 100}%` }}>
+                                    <p className="ml-2 text-nowrap">Fire Protection: {submittalCounts.FIRE_PROTECTION.completed} / {submittalCounts.FIRE_PROTECTION.total}</p>
                                 </div>
                             </div>
                             <div className="h-6 bg-slate-200 rounded-full w-1/2">
-                                <div className="bg-purple-200 h-6 rounded-full" style={{ width: `${submittalCounts.other.completed / submittalCounts.other.total * 100}%` }}>
-                                    <p className="ml-2 text-nowrap">Other: {submittalCounts.other.completed} / {submittalCounts.other.total}</p>
+                                <div className="bg-purple-200 h-6 rounded-full" style={{ width: `${submittalCounts.OTHER.completed / submittalCounts.OTHER.total * 100}%` }}>
+                                    <p className="ml-2 text-nowrap">Other: {submittalCounts.OTHER.completed} / {submittalCounts.OTHER.total}</p>
                                 </div>
                             </div>
                         </div>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { ProjectProps } from "../interfaces/project_types"
+import { ProjectFormBaseProps, ProjectProps } from "../interfaces/project_types"
 import { getDataForProjectCreation } from "../api/projects";
 import { CreateableSelectionComponent, SelectionComponent, BottomFormButton } from "./Buttons";
 import { Error_Component } from "./misc";
@@ -36,12 +36,13 @@ export function ProjectFormCreation() {
         description: "",
         client_name: "",
         folder_location: "",
-        project_template: "",
+        template: "",
     })
 
     const [ProjectManagers, setProjectManagers] = useState<string[]>([])
     const [Clients, setClients] = useState<{ value: string, label: string }[] | undefined>()
     const [Cities, setCities] = useState<{ value: string, label: string }[] | undefined>()
+    const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const [errorString, setErrorString] = useState<string>()
 
@@ -58,8 +59,9 @@ export function ProjectFormCreation() {
     useEffect(() => {
         const get_project_data = async () => {
             try {
-                const DateStart = currentProjectData.start_date
+                setIsLoading(true)
 
+                const DateStart = currentProjectData.start_date
                 const response = await getDataForProjectCreation(DateStart)
 
                 if (!response) {
@@ -88,7 +90,12 @@ export function ProjectFormCreation() {
         }
 
         get_project_data()
+        setIsLoading(false)
     },[])
+
+    if (isLoading){
+        return <h1>Loading...</h1>
+    }
 
     return (
     <>
@@ -105,6 +112,7 @@ export function ProjectFormCreation() {
         onManagerChange={onManagerChange} 
         onClientChange={onClientChange} 
         onCityChange={onCityChange} 
+        method="POST"
     />
     </>
     )
@@ -210,31 +218,15 @@ export function ProjectFormUpdate(
         onManagerChange={onManagerChange} 
         onClientChange={onClientChange} 
         onCityChange={onCityChange} 
+        method="PUT"
     />
     </>
     )
 }
 
-type ProjectFormBaseProps = {
-    currentProjectData: ProjectProps
-    projectManagerListOptions: { value: string, label: string }[]
-    Clients: { value: string, label: string }[]
-    Cities: { value: string, label: string }[]
-    templates: { value: string, label: string }[]
-    onSubmit: (e: React.FormEvent<HTMLFormElement>) => void
-    onDateStartChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-    onManagerChange: (e: unknown) => void
-    onClientChange: (e: unknown) => void
-    onCityChange: (e: unknown) => void
-}
-
-function ProjectFormBase({ currentProjectData, projectManagerListOptions, Clients, Cities, templates, onSubmit, onDateStartChange, onManagerChange, onClientChange, onCityChange }: ProjectFormBaseProps) {
-
-    // This decides the button at the bottom of the form
-    const isUpdate: boolean = currentProjectData.project_id !== ""
-
+function ProjectFormBase({ currentProjectData, projectManagerListOptions, Clients, Cities, templates, onSubmit, onDateStartChange, onManagerChange, onClientChange, onCityChange, method }: ProjectFormBaseProps) {
     return (
-        <form id="project_creation" onSubmit={onSubmit}  method="post">
+        <form data-testid="project_creation" id="project_creation" onSubmit={onSubmit}  method="post">
         <div className="flex flex-col gap-10 p-24 mx-auto max-w-screen-lg bg-zinc-50" >
             <div className="flex flex-row justify-center gap-5">
                 <label htmlFor="project_id" className="py-2">Project ID:</label>
@@ -289,7 +281,7 @@ function ProjectFormBase({ currentProjectData, projectManagerListOptions, Client
             </div>
         </div>
 
-        <BottomFormButton button_text={isUpdate ? "Update Project" : "Create Project"}/>
+        <BottomFormButton button_text={method === "POST" ? "Create Project" : "Update Project"}/>
 
     </form>
     )

@@ -3,6 +3,9 @@ import { test_user_dummy, TestRouterWrapper } from './utils'
 import { CreateProject, UpdateProjectList } from '../components/Project'
 import { createProject } from '../api/projects'
 import userEvent from '@testing-library/user-event'
+import { ProjectFormProps } from '../interfaces/project_types'
+import selectEvent from 'react-select-event';
+import { act } from 'react'
 
 vi.mock('../api/auth', async(importOriginal) => {
     const original = await importOriginal<typeof import('../api/auth')>()
@@ -19,17 +22,19 @@ vi.mock('../api/projects', async(importOriginal) => {
         ...original,
         getProjectList: vi.fn().mockResolvedValue([]),
         createProject: vi.fn().mockResolvedValue(201),
-        getDataForProjectCreation: vi.fn().mockResolvedValue({
-            project_count: 0,
-            users: ['Sean'],
-            client_names: ['test'],
-            cities: ['test'],
-            current_user: ['test']
-        })
+        getDataForProjectCreation: vi.fn().mockResolvedValue(
+            Promise.resolve({
+                project_count: 0,
+                users: [['Sean', 'sean@example.com']],
+                client_names: ['test'],
+                cities: ['test'],
+                current_user: ['test']
+            })
+        )
     }
 })
 
-const project = {
+const project: ProjectFormProps = {
     project_id: '2024-02-001',
     project_name: 'Test Project',
     description: 'This is a test project',
@@ -71,26 +76,30 @@ describe('Project Creation', () => {
         
         // For React-Select components
         const managerSelect = screen.getByLabelText(/Project Manager/i)
-        userEvent.click(managerSelect)
-        userEvent.type(managerSelect, "Sean")
-        userEvent.keyboard('{enter}')
+        await act(async () => {
+            await selectEvent.openMenu(managerSelect)
+            await selectEvent.select(managerSelect, "Sean")
+        })
 
         const citySelect = screen.getByLabelText(/City/i)
-        userEvent.click(citySelect)
-        userEvent.type(citySelect, new_project.city)
-        userEvent.keyboard('{enter}')
+        await act(async () => {
+            await selectEvent.openMenu(citySelect)
+            console.log(citySelect.outerHTML)
+            await selectEvent.select(citySelect, "test")
+        })
 
         const clientSelect = screen.getByLabelText(/Client Name/i)
-        userEvent.click(clientSelect)
-        userEvent.type(clientSelect, new_project.client_name)
-        userEvent.keyboard('{enter}')
+        await act(async () => {
+            await selectEvent.openMenu(clientSelect)
+            await selectEvent.select(clientSelect, "test")
+        })
 
         const createButton = screen.getByText('Create Project')
         userEvent.click(createButton)
 
         await waitFor(() => {
             expect(createProject).toHaveBeenCalledTimes(1)
-            //expect(createProject).toHaveBeenCalledWith(new_project) // Doesn't work so far
+            expect(createProject).toHaveBeenCalledWith(new_project) // Doesn't work so far
         })
     })
 })

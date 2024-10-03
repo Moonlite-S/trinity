@@ -52,4 +52,3 @@ export async function updateRFI(rfi: RFIProps): Promise<Number> {
     const response = await AxiosInstance.put('api/rfi/update', rfi)
     return response.status
 }
-

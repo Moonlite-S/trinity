@@ -1,5 +1,5 @@
 import { NavigateFunction } from "react-router-dom"
-import { ProjectProps } from "../interfaces/project_types"
+import { ProjectFormProps, ProjectProps } from "../interfaces/project_types"
 import { createProject, getDataForProjectCreation, updateProject } from "../api/projects"
 import { FormEvent } from "react"
 import { EmployeeProps } from "../interfaces/employee_type"
@@ -64,8 +64,7 @@ export const useProjectFormHandler = (
 
             if (method_handler) {
                 setErrorString(undefined)
-                // I'm not entirely sure why I have to set it to unknown, but it works
-                const result_code = await method_handler(formDataObj as unknown as ProjectProps)
+                const result_code = await method_handler(formDataObj as ProjectFormProps)
 
                 // Error handling
                 switch (result_code) {

@@ -1,4 +1,4 @@
-import { ProjectCreationProps, ProjectProps } from "../interfaces/project_types";
+import { ProjectCreationProps, ProjectFormProps, ProjectProps } from "../interfaces/project_types";
 import AxiosInstance from "../components/Axios";
 import { AxiosError } from "axios";
 
@@ -60,9 +60,10 @@ export async function getProject(id: string): Promise<ProjectProps> {
  * - Backend needs to perform a check to make sure the project doesn't already exist
  * - Currently can't catch the error if project_id already existsq
  */
-export async function createProject(project_data: ProjectProps): Promise<Number> {
+export async function createProject(project_data: ProjectFormProps): Promise<Number> {
     try {
         const response = await AxiosInstance.post('api/projects/', project_data)
+        console.log(project_data)
         return response.status
     } catch (error: unknown) {
         if (error instanceof AxiosError) {
