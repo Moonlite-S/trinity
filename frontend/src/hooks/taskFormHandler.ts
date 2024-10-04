@@ -51,18 +51,18 @@ export function useTaskFormHandler(
 
         console.log("currentTaskData", form_data)
 
+        // This is to convert the project object string to the project id
         const convert_project_obj_str_to_id = currentTaskData.project_id.split('|')[0].slice(4).trim()
     
         // Basically send everything aside from the project title
         const data_to_send: TaskProps = {
           project: form_data.get('project') as string,
-          task_id: form_data.get('task_id') as string,
           title: form_data.get('title') as string,
           description: form_data.get('description') as string,
           assigned_to: form_data.get('assigned_to') as string,
           due_date: form_data.get('due_date') as string,
           project_id: method === "PUT" ? convert_project_obj_str_to_id : form_data.get('project') as string, // Another hacky solution that I need to fix later
-          status: 'active'
+          status: 'ACTIVE'
         }
     
         console.log(data_to_send)

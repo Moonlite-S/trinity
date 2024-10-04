@@ -4,7 +4,7 @@ import { Header } from "./misc";
 import { useEffect, useMemo, useState } from "react";
 import DataTable, { Direction, TableColumn } from "react-data-table-component";
 import { EmployeeProps, FilterProps } from "../interfaces/employee_type";
-import { Route_Button } from "./Buttons";
+import { RouteButton } from "./Buttons";
 
 /**
  *  ### [Route for ('/create_employee')]
@@ -101,7 +101,7 @@ export function CreateEmployee() {
 
                 <div className="flex flex-row justify-center gap-3 m-2">
 
-                    <Route_Button route={"/main_menu"} text="Back"/>
+                    <RouteButton route={"/main_menu"} text="Back"/>
 
                     <button type="submit" className="bg-orange-300 rounded p-4 m-2">
                         <h6 className="inline-block">Submit</h6>    
@@ -150,7 +150,7 @@ export function EmployeeList() {
             <EmployeeUpdateTable employeeList={employeeList} employeeLoaded={listLoaded}/>
 
             <div className="flex flex-row justify-center gap-3 m-2">
-                <Route_Button route={"/main_menu"} text="Back"/>
+                <RouteButton route={"/main_menu"} text="Back"/>
             </div>
         </>
     )
@@ -194,8 +194,8 @@ const FilterComponent = ({ filterText, onFilter, onClear }: FilterProps) => (
 const ExpandableRowComponent = ({ data }: { data: EmployeeProps }) => (
     <div className="flex flex-col gap-5 bg-slate-50">
         <div className="flex flex-row gap-5 m-5">
-            <Route_Button route={"/employees/update_employee/" + data.id} text="Edit"/>
-            <Route_Button route={"/employees/delete/" + data.id} text="Delete" isDelete/>
+            <RouteButton route={"/employees/update_employee/" + data.id} text="Edit"/>
+            <RouteButton route={"/employees/delete/" + data.id} text="Delete" isDelete/>
         </div>
     </div>
 )

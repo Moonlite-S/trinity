@@ -115,7 +115,6 @@ def log_task_change(sender, instance,created, **kwargs):
             changed_by=user
         )
         return
-    
 
     # Retrieve the original values before the save
     try:

@@ -85,7 +85,6 @@ function RFI_Table({ rfi_list, rfi_loaded }: { rfi_list: RFIProps[], rfi_loaded:
 
     return(
         <DataTable
-        title="Project List"
         columns={columns}
         data={rfi_list}
         direction={Direction.AUTO}

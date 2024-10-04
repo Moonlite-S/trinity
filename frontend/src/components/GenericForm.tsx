@@ -19,13 +19,14 @@ type GenericInputProps = {
     type: string
     className?: string
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+    readOnly?: boolean
 }
 
-export function GenericInput({label, value, type, className, onChange, name}: GenericInputProps) {
+export function GenericInput({label, value, type, className, onChange, name, readOnly}: GenericInputProps) {
     return (
         <div className="flex flex-col gap-2">
-            <label htmlFor={value}>{label}</label>
-            <input type={type} id={value} name={name} defaultValue={value} onChange={onChange} required className={`bg-white border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400 p-2 ${className}`} />
+            <label htmlFor={name}>{label}</label>
+            <input aria-label={label} type={type} id={name} name={name} defaultValue={value} onChange={onChange} required className={`bg-white border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400 p-2 ${className}`} readOnly={readOnly}/>
         </div>
     )
 }

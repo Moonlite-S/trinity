@@ -1,3 +1,4 @@
+import string
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, JsonResponse
@@ -8,7 +9,7 @@ from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.exceptions import PermissionDenied
 from azure.core.exceptions import ResourceExistsError, ResourceNotFoundError
-
+from django.db.models import Q
 from .azure_file_share import AzureFileShareClient
 from .models import RFI, Announcements, PendingChange, Project, Submittal, Task,ProjectChangeLog, TaskChangeLog, User
 from .serializers import AnnouncmentsSerializer, ProjectSerializer, ProjectSerializerUserObjectVer, ProjectSerializerWithSubmittals, TaskSerializer, UserNameAndEmail, UserNameSerializer, UserSerializer, SubmittalSerializer, RFISerializer
@@ -24,6 +25,7 @@ from django.middleware.csrf import get_token
 from django.contrib.auth import authenticate,login,logout,get_user_model
 from rest_framework.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
+import random
 
 # Create your views here.
 class RegisterView(APIView):
@@ -158,6 +160,28 @@ def project_list(request):
         return Response(serializer.data)
     
     if request.method == 'POST':
+        # getBranch() (This would get the first initial of the branch it was created in)
+        # So far, it will just be E for Edinburg
+
+        # Project ID generation
+        branch = "E"
+        current_date = request.data['start_date']
+        unique_id = ''.join(random.choices(string.digits, k=3))
+
+        project_id = branch + "-" + current_date + "-" + unique_id
+        
+        print("Project ID Created: ", project_id)
+
+        # If we have a collision, we will generate a new project ID
+        # Shouldn't happen too often, if at all
+        while Project.objects.filter(project_id=project_id).exists():
+            print("Collision Detected, Generating New Project ID...")
+            project_id = branch + "-" + current_date + "-" + ''.join(random.choices(string.digits, k=3))
+            print("New Project ID: ", project_id)
+
+        request.data['project_id'] = project_id
+        request.data['folder_location'] = project_id
+
         serializer = ProjectSerializer(data=request.data)
         folder = AzureFileShareClient()
 
@@ -220,7 +244,10 @@ def project_detail(request, project_id):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
-        if project.manager != payload['name'] and not payload['is_superuser']:
+        print(project.manager)
+
+        # Can only delete if you are the project manager or a superuser (Administrator)
+        if project.manager.name != payload['name'] and not payload['is_superuser']:
             raise PermissionDenied("You do not have permission to delete this project.")
         
         try:
@@ -284,6 +311,24 @@ def task_list(request):
         return Response(serializer.data)
 
     if request.method == 'POST':
+
+        branch = 'E'
+        project_id = request.data['project_id']
+        unique_id = ''.join(random.choices(string.digits, k=3))
+
+        task_id = "TK" + "-" + branch + "-" + project_id + "-" + unique_id
+
+        print(task_id)
+
+        # If we have a collision, we will generate a new task ID
+        # Shouldn't happen too often, if at all
+        while Task.objects.filter(task_id=task_id).exists():
+            print("Collision Detected, Generating New Task ID...")
+            task_id = "TK" + "-" + branch + "-" + project_id + "-" + ''.join(random.choices(string.digits, k=3))
+            print("New Task ID: ", task_id)
+
+        request.data['task_id'] = task_id
+
         # Get assigned_to from request data and check if it exists
         serializer = TaskSerializer(data=request.data)
 
@@ -297,10 +342,6 @@ def task_list(request):
             try: 
                 user = User.objects.get(email=assigned_to)
                 project = Project.objects.get(project_id=project_id)
-                print(user)
-                print(project)
-
-                print(serializer.validated_data)
 
                 task = Task.objects.create(
                     assigned_to=user,
@@ -325,6 +366,31 @@ def task_list(request):
             
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['GET'])
+def task_filter_by_all_user_projects(request, email):
+    '''
+    ### This API returns all tasks associated with all projects that a team member is assigned to
+
+    @param email: The email of the user
+    @return: A list of tasks
+    '''
+    payload = authenticate_jwt(request)
+    try:
+        # Get the user
+        user = User.objects.get(email=email)
+
+        user_projects = Project.objects.filter(tasks__assigned_to=user).distinct()
+
+        # Get all tasks associated with these projects
+        tasks = Task.objects.filter(project_id__in=user_projects)
+
+        serializer = TaskSerializer(tasks, many=True)
+        return Response(serializer.data)
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
 @api_view(['GET','PUT','DELETE'])
 def task_detail(request, task_id):
     try:
@@ -526,6 +592,23 @@ def submittal_list(request):
         return Response(serializer.data)
     
     if request.method == 'POST':
+        branch = 'E'
+        project_id = request.data['project']
+        unique_id = ''.join(random.choices(string.digits, k=3))
+
+        submittal_id = "SB" + "-" + branch + "-" + project_id + "-" + unique_id
+
+        print(submittal_id)
+
+        # If we have a collision, we will generate a new submittal ID
+        # Shouldn't happen too often, if at all
+        while Submittal.objects.filter(submittal_id=submittal_id).exists():
+            print("Collision Detected, Generating New Submittal ID...")
+            submittal_id = "S" + "-" + branch + "-" + project_id + "-" + ''.join(random.choices(string.digits, k=3))
+            print("New Submittal ID: ", submittal_id)
+
+        request.data['submittal_id'] = submittal_id
+
         serializer=SubmittalSerializer(data=request.data)
         
         if serializer.is_valid():
@@ -579,6 +662,22 @@ def submittal_detail(request,submittal_id):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     elif request.method == 'DELETE':
+        # TODO: Add auth check
+        # Only allow deletion if the user is the creator of the submittal, a manager, or an admin
+        
+        try: 
+            folder = AzureFileShareClient()
+
+            project_folder_location = submittal.project.project_id
+
+            print(f"Project Folder Location: {project_folder_location}")
+
+            folder.delete_project_folder(project_folder_location + "/Submittals/" + submittal_id)
+        except ResourceNotFoundError:
+            print("Submittal folder does not exist.")
+        except Exception as e:
+            print(f"An error occurred while deleting the submittal: {e}")
+
         submittal.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
             
@@ -610,17 +709,26 @@ def RFI_list(request):
     if request.method == 'POST':
         data = request.data.copy()
 
+        branch = 'E'
+        project_id = request.data['project']
+        unique_id = ''.join(random.choices(string.digits, k=3))
+
+        rfi_id = "RFI" + "-" + branch + "-" + project_id + "-" + unique_id
+
+        # If we have a collision, we will generate a new RFI ID
+        while RFI.objects.filter(RFI_id=rfi_id).exists():
+            print("Collision Detected, Generating New RFI ID...")
+            rfi_id = "RFI" + "-" + branch + "-" + project_id + "-" + ''.join(random.choices(string.digits, k=3))
+            print("New RFI ID: ", rfi_id)
+
+        request.data['RFI_id'] = rfi_id
+
         serializer=RFISerializer(data=request.data)
 
         if serializer.is_valid():
             print(serializer.validated_data)
-
-            project = serializer.validated_data['project']
-
-            serializer.validated_data['RFI_id'] = str(project.project_id) + "-" + datetime.now().strftime("%Y-%m-%d")
-
             serializer.save()
-            return Response(status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

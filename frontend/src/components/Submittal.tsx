@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { getSubmittalById, getSubmittals} from "../api/submittal";
-import { OrangeButton, Route_Button } from "./Buttons";
+import { deleteSubmittal, getSubmittalById, getSubmittals} from "../api/submittal";
+import { OrangeButton, RouteButton } from "./Buttons";
 import { GenericTable, Header } from "./misc";
 import { TableColumn } from "react-data-table-component";
 import { SubmittalProps } from "../interfaces/submittal_types";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { SubmittalFormCreation, SubmittalFormEdit } from "./SubmittalForm";
 
 /**
@@ -47,8 +47,8 @@ export function ViewSubmittals() {
     }, [])
 
     const columns: TableColumn<SubmittalProps>[] = [
-        { name: "Submittal ID", selector: row => row.submittal_id, sortable: true },
-        { name: "Project", selector: row => row.project, sortable: true },
+        { name: "Submittal ID", selector: row => row.submittal_id ?? "N/A", sortable: true },
+        { name: "Project", selector: row => row.project_name ?? "N/A", sortable: true },
         { name: "Assigned To", selector: row => row.assigned_to, sortable: true },
         { name: "Submitted On", selector: row => row.received_date, sortable: true },
         { name: "Status", selector: row => row.status, sortable: true },
@@ -72,7 +72,7 @@ export function ViewSubmittals() {
             />
 
             <div className="flex flex-row justify-center gap-3 m-2">
-                <Route_Button route={"/main_menu"} text="Back"/>
+                <RouteButton route={"/main_menu"} text="Back"/>
             </div>
         </>
     )
@@ -121,19 +121,30 @@ export function EditSubmittal() {
 }
 
 function ExpandableRowComponent({ data }: { data: SubmittalProps }) {
-    return (
-        <div className="flex flex-row gap-2 my-4">
-            <Link to={`/submittal/${data.submittal_id}`}>
-                <OrangeButton>
-                    Edit
-                </OrangeButton>
-            </Link>
+    const handleDelete = async () => {
+        if (confirm("Are you sure you want to delete this submittal?")) {
+            try {
+                if (!data.submittal_id) {
+                    alert("Submittal ID is undefined");
+                    return;
+                }
+                const response = await deleteSubmittal(data.submittal_id);
+                if (response === 204) {
+                    alert("Submittal deleted successfully");
+                } else {
+                    alert("Error deleting submittal: " + response);
+                }
+            } catch (error) {
+                alert("Error deleting submittal: " + error);
+            }
+        }
+    }
 
-            <Link to={`/submittal/${data.submittal_id}`}>
-                <OrangeButton>
-                    Request to Close
-                </OrangeButton>
-            </Link>
+    return (
+        <div className="flex flex-row gap-2 mx-2">
+            <RouteButton route={`/submittal/${data.submittal_id}`} text="Edit" />
+            <RouteButton route={`/submittal/${data.submittal_id}/close`} text="Request to Close" />
+            <OrangeButton onClick={handleDelete}>Delete</OrangeButton>
         </div>
     )
 }

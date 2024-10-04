@@ -2,13 +2,15 @@ import { FormEvent } from "react"
 import { TaskProps } from "./tasks_types"
 import { ProjectProps } from "./project_types"
 
+export type Roles = "Administrator" | "Manager" | "Team Member" | "Accountant"
+
 export type EmployeeProps = {
     id?: string,
     name: string,
     email: string,
     username: string,
     password: string,
-    role: string,
+    role: Roles,
     date_joined?: string,
     projects?: ProjectProps[]
     tasks?: TaskProps[] 

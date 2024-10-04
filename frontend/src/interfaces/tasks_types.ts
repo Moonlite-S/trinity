@@ -3,7 +3,7 @@ import { SelectionButtonProps } from "./button_types"
 
 export type TaskProps = {
     project: string
-    task_id: string
+    task_id?: string
     title: string
     description: string
     assigned_to: string
@@ -22,6 +22,7 @@ export type TaskFormBaseProps = {
     projects: SelectionButtonProps[]
     employees: SelectionButtonProps[]
     currentTaskData: TaskProps
+    method: "POST" | "PUT"
     onProjectSelectionChange: (e: unknown) => void
     onAssignedToChange: (e: unknown) => void
     onSubmit: (e: FormEvent<HTMLFormElement>) => void

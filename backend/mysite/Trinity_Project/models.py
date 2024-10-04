@@ -157,7 +157,7 @@ class TaskChangeLog(models.Model):
     task_title = models.CharField(max_length=50)
     description=models.TextField()
     assigned_to=models.CharField(max_length=50)
-    project_id=models.CharField(max_length=50)
+    project_id=models.CharField(max_length=100)
     due_date=models.CharField(max_length=50)
     changed_by = models.CharField(max_length=50)
     change_time = models.DateTimeField(auto_now_add=True)

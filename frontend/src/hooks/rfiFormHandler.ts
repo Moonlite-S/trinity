@@ -22,18 +22,33 @@ export function useRFIFormHandler (
         }
     }
 
-    const handleEmployeeChange = (e: unknown) => {
+    const handleSentByEmployeeChange = (e: unknown) => {
         console.log(e)
 
         if (typeof e === "object" && e !== null && "value" in e && "label" in e){
-            setCurrentRFIData(prev => ({...prev, user: 
+            setCurrentRFIData(prev => ({...prev, sent_by: 
                 {
                     name: e.label as string,
                     email: e.value as string,
                     username: "",
                     password: "",
-                    role: ""
+                    role: prev.sent_by.role
+                }
+            }))
+        }
+    }
 
+    const handleCreatedByEmployeeChange = (e: unknown) => {
+        console.log(e)
+
+        if (typeof e === "object" && e !== null && "value" in e && "label" in e){
+            setCurrentRFIData(prev => ({...prev, created_by: 
+                {
+                    name: e.label as string,
+                    email: e.value as string,
+                    username: "",
+                    password: "",
+                    role: prev.created_by.role
                 }
             }))
         }
@@ -67,5 +82,5 @@ export function useRFIFormHandler (
 
     }
 
-    return { handleProjectChange, handleEmployeeChange, handleSubmit }
+    return { handleProjectChange, handleSentByEmployeeChange, handleCreatedByEmployeeChange, handleSubmit }
 }

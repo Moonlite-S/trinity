@@ -6,9 +6,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { TableColumn } from "react-data-table-component";
 import { ProjectFilterProps, ProjectProps } from "../interfaces/project_types";
 import { ProjectFormCreation, ProjectFormUpdate } from "./ProjectForm";
-import { Route_Button } from "./Buttons";
+import { OrangeButton, RouteButton } from "./Buttons";
 import { filterTasksByProject } from "../api/tasks";
 import { SubmittalProps } from "../interfaces/submittal_types";
+import { AxiosError } from "axios";
 
 /**
  * ### [Route for ('/create_project')]
@@ -67,7 +68,7 @@ export function UpdateProjectList() {
 
     const projectColumns: TableColumn<ProjectProps>[] = [
         { name: "Project Name", selector: (row: ProjectProps) => row.project_name, sortable: true, cell: (row: ProjectProps) => <div className="">{row.project_name}</div> },
-        { name: "Project ID", selector: (row: ProjectProps) => row.project_id, sortable: true, cell: (row: ProjectProps) => <div className="">{row.project_id}</div> },
+        { name: "Project ID", selector: (row: ProjectProps) => row.project_id ?? "N/A", sortable: true, cell: (row: ProjectProps) => <div className="">{row.project_id}</div> },
         { name: "Client Name", selector: (row: ProjectProps) => row.client_name, sortable: true, cell: (row: ProjectProps) => <div className="">{row.client_name}</div> },
         { name: "Manager", selector: (row: ProjectProps) => row.manager.name, sortable: true, cell: (row: ProjectProps) => <div className="">{row.manager.name}</div> },
         { name: "City", selector: (row: ProjectProps) => row.city, sortable: true, cell: (row: ProjectProps) => <div className="">{row.city}</div> },
@@ -89,7 +90,7 @@ export function UpdateProjectList() {
             />
 
             <div className="flex flex-row justify-center gap-3 m-2">
-                <Route_Button route={"/main_menu"} text="Back"/>
+                <RouteButton route={"/main_menu"} text="Back"/>
             </div>
         </>
     )
@@ -212,7 +213,7 @@ export function ProjectStatusReport() {
             )}
 
             <div className="flex justify-center">
-                <Route_Button route="/main_menu" text="Back to Projects" />
+                <RouteButton route="/main_menu" text="Back to Projects" />
             </div>
         </>
     )
@@ -278,6 +279,11 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
 
     useEffect(() => {
         const get_tasks = async () => {
+            
+            if (!data.project_id) {
+                throw new Error("Project ID not found")
+            }
+
             const response = await filterTasksByProject(data.project_id)
 
             const calculateTaskCounts = () => {
@@ -327,6 +333,36 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
         
         get_tasks()
     }, [data, submittals])
+
+    const handleDelete = async () => {
+        if (confirm("Are you sure you want to delete this project?") && confirm("Are you really sure?")) {
+            try {
+                if (!data.project_id) {
+                    throw new Error("Project ID is undefined");
+                }
+
+                const response = await deleteProject(data.project_id);
+                if (response === 204) {
+                    alert("Project deleted successfully");
+                    window.location.href = "/projects/"
+                } else {
+                    alert("Error deleting project:" + response);
+                }
+            } catch (error: unknown) {
+                if (error instanceof AxiosError) {
+                    if (error.response?.status === 400) {
+                        // 400 Bad Request
+                        return 400
+                    } else if (error.response?.status === 403) {
+                        // 403 Forbidden
+                        return 403
+                    }
+                }
+                alert("Error deleting project: Error" + error);
+            }
+        }
+    };
+    
 
     const totalSubmittals = Object.values(submittalCounts).reduce((sum, { total }) => sum + total, 0);
     const totalCompletedSubmittals = Object.values(submittalCounts).reduce((sum, { completed }) => sum + completed, 0);
@@ -416,43 +452,13 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
         </div>
 
         <div className="flex flex-row gap-5 m-5">
-            <Route_Button route={"/projects/update_project/" + data.project_id} text="Edit"/>
-            <Route_Button route={"/projects/delete/" + data.project_id} text="Delete" isDelete/>
+            <RouteButton route={"/projects/update_project/" + data.project_id} text="Edit"/>
+            <OrangeButton onClick={handleDelete}>Delete Task</OrangeButton>
             <a href={'localexplorer:L:\\projects\\' + data.folder_location}>
                 <button className="bg-blue-300 rounded p-4 my-2 hover:bg-blue-400 transition">Open Folder</button>
             </a>
         </div>
 
     </div>
-    )
-}
-
-/**
- * Delete Confirmation Page for Projects
- * 
- * TODO: NEEDS AUTHORIZATION FROM ADMIN
- */
-export function ProjectDeleteConfimation() {
-    const { id } = useParams<string>();
-    const navigate = useNavigate();
-
-    const handleClick = async() => {
-        await deleteProject(id);
-        navigate("/projects");
-    }
-    return (
-        <>
-        <Header />
-
-        <div className="p-20 text-center">
-            <p>Are you sure you want to delete this project?</p>
-
-            <div className="flex flex-row justify-center gap-5">
-                <Route_Button route="/projects/" text="Back" />
-                <button className="bg-red-300 rounded p-4 my-2 hover:bg-red-400 transition" onClick={handleClick}>Yes</button>
-            </div>
-        </div>
-        </>
-
     )
 }

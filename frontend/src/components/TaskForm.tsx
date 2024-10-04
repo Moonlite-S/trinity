@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom"
 import { getDataForTaskCreation } from "../api/tasks"
 import { SelectionButtonProps } from "../interfaces/button_types"
 import { TaskFormBaseProps, TaskProps } from "../interfaces/tasks_types"
-import { SelectionComponent } from "./Buttons"
+import { BottomFormButton, SelectionComponent } from "./Buttons"
 import { useTaskFormHandler } from "../hooks/taskFormHandler"
+import { GenericForm, GenericInput } from "./GenericForm"
 
 export function TaskForm() {
     const navigate = useNavigate()
@@ -13,13 +14,13 @@ export function TaskForm() {
     const [employees, setEmployees] = useState<SelectionButtonProps[]>([])
   
     const [currentTaskData, setCurrentTaskData] = useState<TaskProps>({
-      project: "Select a project",
       task_id: "",
+      project: "Select a project",
       title: "",
       description: "",
       assigned_to: "",
       project_id: "",
-      due_date: "",
+      due_date: new Date().toLocaleDateString('en-CA'),
       status: "ACTIVE"
     })
   
@@ -55,7 +56,15 @@ export function TaskForm() {
       fetchData();
     }, [])
 
-    return <TaskFormBase {...{projects, employees, currentTaskData, onProjectSelectionChange, onAssignedToChange, onSubmit}}/>
+    return <TaskFormBase 
+        projects={projects}
+        employees={employees}
+        currentTaskData={currentTaskData}
+        onProjectSelectionChange={onProjectSelectionChange}
+        onAssignedToChange={onAssignedToChange}
+        onSubmit={onSubmit}
+        method="POST"
+    />
 }
 
 export function UpdateTask({task_data}: {task_data: TaskProps}) {
@@ -117,64 +126,28 @@ export function UpdateTask({task_data}: {task_data: TaskProps}) {
       }, [])
   
     return (
-      <TaskFormBase {...{projects, employees, currentTaskData, onProjectSelectionChange, onAssignedToChange, onSubmit}}/>
+      <TaskFormBase 
+        projects={projects}
+        employees={employees}
+        currentTaskData={currentTaskData}
+        onProjectSelectionChange={onProjectSelectionChange}
+        onAssignedToChange={onAssignedToChange}
+        onSubmit={onSubmit}
+        method="PUT"
+    />
     );
 }
 
-function TaskFormBase({projects, employees, currentTaskData, onProjectSelectionChange,  onAssignedToChange, onSubmit}: TaskFormBaseProps) {
-    const isUpdate: boolean = currentTaskData.task_id !== ""
-
+function TaskFormBase({projects, employees, currentTaskData, onProjectSelectionChange,  onAssignedToChange, onSubmit, method}: TaskFormBaseProps) {
     return (
-    <form className="max-w-5xl w-full mx-auto my-5 bg-slate-200 rounded-lg shadow-md p-6 " onSubmit={onSubmit}>
-        <div className="grid grid-cols-2 grid-flow-row justify-center gap-4 mb-4">
-            {projects && <SelectionComponent label="Project" options={projects} name='project' Value={currentTaskData.project} onChange={onProjectSelectionChange}/>}
+      <GenericForm form_id="task_form" onSubmit={onSubmit}>
+        <GenericInput label="Task Subject" value={currentTaskData.title} name="title" type="text"/>
+        <SelectionComponent label="Project" options={projects} name='project' Value={currentTaskData.project} onChange={onProjectSelectionChange}/>
+        <SelectionComponent label="Assign To" options={employees} name='assigned_to' Value={currentTaskData.assigned_to} onChange={onAssignedToChange}/>
+        <GenericInput label="Due Date" value={currentTaskData.due_date} name="due_date" type="date"/>
+        <GenericInput label="Task Description" value={currentTaskData.description} name="description" type="text"/>
 
-            <div className='flex flex-row gap-5 justify-between'>
-                <label htmlFor="task_id" className=''>Task ID:</label>
-                <input
-                className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400"
-                type="text"
-                placeholder="Enter subject"
-                value={currentTaskData.task_id}
-                name='task_id'
-                required
-                readOnly
-                />
-            </div>
-
-            <div className='flex flex-row gap-5 justify-between'>
-                <label htmlFor="title" className=''>Task Subject:</label>
-                <input
-                className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400"
-                type="text"
-                defaultValue={currentTaskData.title}
-                placeholder="Enter subject"
-                name='title'
-                required
-                />
-            </div>
-
-            {employees && <SelectionComponent label="Assign To" options={employees} name='assigned_to' Value={currentTaskData.assigned_to} onChange={onAssignedToChange}/>}
-
-            <div className='flex flex-row justify-between'>
-                <label htmlFor="due_date" className=''>Due Date:</label>
-                <input
-                className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400"
-                type="date" name="due_date" defaultValue={currentTaskData.due_date} required/>
-            </div>
-
-            <div className='flex flex-row gap-5 justify-between'>
-                <label htmlFor="description">Task Description:</label>
-                <textarea
-                className="bg-white border rounded-md p-2 border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400"
-                placeholder="Enter description" name="description" defaultValue={currentTaskData.description} required/>
-            </div>
-
-        </div>
-
-        <div className="mx-auto text-center justify-center">
-            <button type="submit" className="bg-orange-300 rounded p-4" >{isUpdate ? "Update Task" : "Create Task"}</button>
-        </div>
-    </form>
+        <BottomFormButton button_text={method === "POST" ? "Submit" : "Update"}/>
+      </GenericForm>
     )
 }

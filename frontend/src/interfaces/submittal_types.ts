@@ -1,7 +1,7 @@
 import { SelectionButtonProps } from "./button_types"
 
 export type SubmittalProps = {
-    submittal_id: string
+    submittal_id?: string
     project: string
     received_date: string
     project_name?: string

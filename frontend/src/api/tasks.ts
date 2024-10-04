@@ -82,6 +82,17 @@ export async function filterTasksByProject(project_id: string): Promise<TaskProp
     }
 }
 
+export async function filterTasksByAllUserProjects(email: string): Promise<TaskProps[]> {
+    try {
+        const response = await AxiosInstance.get('api/task/all_user_projects/' + email)
+
+        return response.data
+    } catch (error) {
+        console.error(error)
+        throw error
+    }
+}
+
 export async function filterTasksByUser(email: string): Promise<TaskProps[]> {
     try {
         const response = await AxiosInstance.get('api/task/assigned_to/' + email)
@@ -108,6 +119,16 @@ export async function getDataForTaskCreation(): Promise<TaskCreationProps> {
     try {
         const response = await AxiosInstance.get('api/task/creation_data')
         return response.data
+    } catch (error) {
+        console.error(error)
+        throw error
+    }
+}
+
+export async function deleteTask(id: string): Promise<number> {
+    try {
+        await AxiosInstance.delete('api/task/id/' + id)
+        return 200
     } catch (error) {
         console.error(error)
         throw error

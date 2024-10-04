@@ -127,7 +127,6 @@ export function SubmittalFormEdit({submittal}: {submittal: SubmittalProps}) {
 function SubmittalFormBase({ submittal, onSubmit, projects, employees, onProjectChange, onAssignedToChange, method }: SubmittalFormBaseProps) {
     return (
         <GenericForm form_id="submittal_creation" onSubmit={onSubmit}>
-            <GenericInput label="Submittal ID" value={submittal.submittal_id} type="text" name="submittal_id"/>
             <SelectionComponent label="Project Name" Value={submittal.project_name} options={projects} onChange={onProjectChange} name="project"/>
             <GenericInput label="Received Date" value={submittal.received_date} type="date" name="received_date"/>
             <SelectionComponent label="Assigned To" Value={submittal.assigned_to} options={employees} onChange={onAssignedToChange} name="user"/>

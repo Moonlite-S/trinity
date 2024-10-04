@@ -22,6 +22,7 @@ urlpatterns = [
     path("task/project_id/<str:project_id>",views.task_filter_by_project_id),
     path("task/assigned_to/<str:email>",views.task_filter_by_user),
     path("task/creation_data", views.task_creation_data),
+    path("task/all_user_projects/<str:email>", views.task_filter_by_all_user_projects),
     path("announcements/",views.announcement),
     path("submittal/creation_data", views.submittal_creation_data),
     path("delete_log",views.project_delete_log),

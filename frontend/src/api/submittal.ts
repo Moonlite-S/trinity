@@ -107,7 +107,7 @@ export async function getSubmittals(): Promise<SubmittalProps[]> {
 
 export async function deleteSubmittal(submittalId: string): Promise<Number> {
     try {
-        const response = await AxiosInstance.delete(`api/submittal/${submittalId}`)
+        const response = await AxiosInstance.delete(`api/submittal/id/${submittalId}`)
         return response.status
     } catch (error: unknown) {
         if (error instanceof AxiosError) {

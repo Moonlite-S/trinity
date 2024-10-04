@@ -1,21 +1,20 @@
 import CreatableSelect from "react-select/creatable";
 import Select from "react-select";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { SelectionComponentProps } from "../interfaces/button_types";
 
 /** General Orange button */
-export function Route_Button({route, text, isDelete}: {route: string, text: string, isDelete?: boolean}) {
-    const navigate = useNavigate();
+export function RouteButton({route, text, isDelete}: {route: string, text: string, isDelete?: boolean}) {
     const css = isDelete ? 'bg-red-300 rounded p-4 my-2 hover:bg-red-400 transition' : 
     'bg-orange-300 rounded p-4 my-2 hover:bg-orange-400 transition';
   
     return(
-      <button className={css} onClick={() => navigate(route)}>{text}</button>
+      <Link className={css} to={route}>{text}</Link>
     )
 }
   
 /** Goes back a page in the browser */
-export function Back_Button() {
+export function BackButton() {
     const navigate = useNavigate();
     const css = 'bg-orange-300 rounded p-4 my-2 hover:bg-orange-400 transition'
 
@@ -26,7 +25,7 @@ export function Back_Button() {
 
 export function OrangeButton({children, onClick}: {children: React.ReactNode, onClick?: () => void}){
     return (
-        <button className="bg-orange-300 rounded px-4 py-2 ml-5 transition hover:bg-orange-400" onClick={onClick}>
+        <button className="bg-orange-300 rounded p-4 my-2 hover:bg-orange-400 transition" onClick={onClick}>
             {children}
         </button>
     )
@@ -42,7 +41,7 @@ export function BottomFormButton({ button_text }: { button_text: string}) {
     return (
     <div className="mx-auto text-center justify-center pt-5">
 
-        <Back_Button/>
+        <BackButton/>
         
         <button type="submit" className="bg-orange-300 rounded p-4 ml-5">
             {button_text}
@@ -110,6 +109,7 @@ export function SelectionComponent({Value: defaultValue = '', multiple, options,
     if (!options) {
         options = [{value: '', label: ''}];
         console.error("No options found for", name)
+        return <div>No options found for {name}</div>
     }
 
     const defaultOption = options.find((option) => option.value === defaultValue)
@@ -152,12 +152,13 @@ export function SelectionComponent({Value: defaultValue = '', multiple, options,
                         borderColor: state.isFocused ? 'orange' : 'gray',
                     },
                 }),
-                option: () => ({
+                option: (state: any) => ({
                     padding: '5px 10px',
                     rounded: '5px',
                     '&:hover': {
                         backgroundColor: '#cacacc',
                     },
+                    backgroundColor: state.isFocused ? '#cacacc' : 'white',
                 })
 
             }}/>

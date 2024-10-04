@@ -40,10 +40,10 @@ export const useSubmittalFormHandler = (
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        console.log("Form Submitted", e.target)
 
         const formData = new FormData(e.target as HTMLFormElement)
         const formDataObj = Object.fromEntries(formData.entries())
+        console.log("Form Data: ", formDataObj)
 
         const method_handler = MethodHandler(method, createSubmittal, updateSubmittal)
 

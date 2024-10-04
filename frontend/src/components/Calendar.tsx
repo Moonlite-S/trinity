@@ -5,7 +5,7 @@ import { ProjectProps } from '../interfaces/project_types';
 import { getProjectByDate } from '../api/projects';
 import { Link, useNavigate } from 'react-router-dom';
 import { CalendarProps, DayButtonProps } from '../interfaces/calendar_type';
-import { Route_Button } from './Buttons';
+import { RouteButton } from './Buttons';
 
 /**
  * ### [Route for ('/monthly_calendar')]
@@ -119,7 +119,7 @@ function FullCalendar({ currentMonth, handlePrevMonth, handleNextMonth, daysInMo
         </div>
 
         <div className="flex justify-center mt-4">
-            <Route_Button route="/main_menu" text="Back to Main Menu" />
+            <RouteButton route="/main_menu" text="Back to Main Menu" />
         </div>
         </>
     )
@@ -327,7 +327,7 @@ export function WeeklyCalendar() {
         </div>
 
         <div className="flex justify-center mt-4">
-            <Route_Button route="/main_menu" text="Back to Main Menu" />
+            <RouteButton route="/main_menu" text="Back to Main Menu" />
         </div>
         </>
     )

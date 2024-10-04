@@ -40,8 +40,8 @@ export function ProjectFormCreation() {
         city: "",
         description: "",
         client_name: "",
-        folder_location: "",
         template: "",
+        folder_location: "",
     })
 
     const [ProjectManagers, setProjectManagers] = useState<string[]>([])
@@ -55,7 +55,7 @@ export function ProjectFormCreation() {
         return { value: value[1], label: value[0] }
     })
 
-    const { onSubmit, onDateStartChange, onManagerChange, onClientChange, onCityChange } = useProjectFormHandler(setCurrentProjectData, navigate, setErrorString, "POST")
+    const { onSubmit, onManagerChange, onClientChange, onCityChange } = useProjectFormHandler(setCurrentProjectData, navigate, setErrorString, "POST")
 
     useEffect(() => {
         const get_project_data = async () => {
@@ -109,7 +109,6 @@ export function ProjectFormCreation() {
         Cities={Cities ?? []} 
         templates={templates} 
         onSubmit={onSubmit} 
-        onDateStartChange={onDateStartChange} 
         onManagerChange={onManagerChange} 
         onClientChange={onClientChange} 
         onCityChange={onCityChange} 
@@ -141,7 +140,7 @@ export function ProjectFormUpdate(
     const [Cities, setCities] = useState<{ value: string, label: string }[] | undefined>()
     const [errorString, setErrorString] = useState<string>()
 
-    const { onSubmit, onDateStartChange, onManagerChange, onClientChange, onCityChange } = useProjectFormHandler(setCurrentProjectData, navigate, setErrorString, "PUT")
+    const { onSubmit, onManagerChange, onClientChange, onCityChange } = useProjectFormHandler(setCurrentProjectData, navigate, setErrorString, "PUT")
 
     const projectManagerListOptions = ProjectManagers?.map((value: string) => {
         return { value: value[1], label: value[0] }
@@ -211,7 +210,6 @@ export function ProjectFormUpdate(
         Cities={Cities ?? []} 
         templates={templates} 
         onSubmit={onSubmit} 
-        onDateStartChange={onDateStartChange} 
         onManagerChange={onManagerChange} 
         onClientChange={onClientChange} 
         onCityChange={onCityChange} 
@@ -221,12 +219,11 @@ export function ProjectFormUpdate(
     )
 }
 
-function ProjectFormBase({ currentProjectData, projectManagerListOptions, Clients, Cities, templates, onSubmit, onDateStartChange, onManagerChange, onClientChange, onCityChange, method }: ProjectFormBaseProps) {
+function ProjectFormBase({ currentProjectData, projectManagerListOptions, Clients, Cities, templates, onSubmit, onManagerChange, onClientChange, onCityChange, method }: ProjectFormBaseProps) {
     return (
         <GenericForm form_id="project_creation" onSubmit={onSubmit}>
-            <GenericInput label="Project ID" value={currentProjectData.project_id} type="text" name="project_id"/>
             <GenericInput label="Project Name" value={currentProjectData.project_name} type="text" name="project_name"/>
-            <GenericInput label="Date Created" value={currentProjectData.start_date} type="date" onChange={onDateStartChange} name="start_date"/>
+            <GenericInput label="Date Created" value={currentProjectData.start_date} type="date" name="start_date"/>
             <GenericInput label="Date Due" value={currentProjectData.end_date} type="date" name="end_date"/>
             <SelectionComponent label="Project Manager" Value={currentProjectData.manager.name} options={projectManagerListOptions} onChange={onManagerChange} name="manager"/>
             <CreateableSelectionComponent label="Client Name" options={Clients} name="client_name" Value={currentProjectData.client_name} onChange={onClientChange}/>
@@ -235,7 +232,6 @@ function ProjectFormBase({ currentProjectData, projectManagerListOptions, Client
             <GenericInput label="Folder Name" value={currentProjectData.project_id} type="text" name="folder_location" />
             <GenericSelect label="Template" value={currentProjectData.template} options={templates} name="template" />
             <GenericInput label="Project Description" value={currentProjectData.description} type="text" name="description" />
-
             <BottomFormButton button_text={method === "POST" ? "Create Project" : "Update Project"}/>
         </GenericForm>
     )

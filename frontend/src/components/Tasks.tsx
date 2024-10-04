@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 import { GenericTable, Header } from './misc';
-import { getTaskByID, getTaskList } from '../api/tasks';
+import { deleteTask, filterTasksByAllUserProjects, getTaskByID, getTaskList } from '../api/tasks';
 import { TaskProps } from '../interfaces/tasks_types';
 import { useParams } from 'react-router-dom';
 import { TaskForm, UpdateTask } from './TaskForm';
-
-//*TODO:
-// - Maybe filter out employees who aren't assigned to that project?
+import { OrangeButton, RouteButton } from './Buttons';
+import { useAuth } from '../App';
 
 export function Tasks() {
   return (
@@ -37,8 +36,6 @@ export function EditTask() {
           throw new Error("Error fetching task data")
         }
 
-        console.log("task", task)
-
         setTaskData(task)
       }
       catch (error) {
@@ -60,13 +57,24 @@ export function EditTask() {
 }
 
 export function TaskList() {
+  const { user } = useAuth()
+
+  if (!user) {
+    return <div>Loading...</div>
+  }
+  
   const [tasks, setTasks] = useState<TaskProps[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const get_tasks = await getTaskList();
-        setTasks(get_tasks);
+        if (user.role === "Administrator" || user.role === "Manager") {
+          const get_tasks = await getTaskList();
+          setTasks(get_tasks);
+        } else {
+          const get_tasks = await filterTasksByAllUserProjects(user.email);
+          setTasks(get_tasks);
+        }
       } catch (error) {
         console.error(error);
       }
@@ -75,14 +83,11 @@ export function TaskList() {
   }, [])
 
   const columns = [
-    {
-      name: "Title",
-      selector: (row: TaskProps) => row.title,
-    },
-    {
-      name: "Description",
-      selector: (row: TaskProps) => row.description,
-    },
+    { name: "Title", selector: (row: TaskProps) => row.title },
+    { name: "Assigned To", selector: (row: TaskProps) => row.assigned_to.split('|')[0] },  // Uses the __str__ representation of the employee object
+    { name: "Project", selector: (row: TaskProps) => row.project_id.split('|')[1] },  // Uses the __str__ representation of the project object (Yeah I don't lke this either)
+    { name: "Due Date", selector: (row: TaskProps) => row.due_date },
+    { name: "Status", selector: (row: TaskProps) => row.status }
   ];
   
   return (
@@ -104,17 +109,42 @@ export function TaskList() {
 
 function FilterComponent({ filterText, onFilter, onClear }: { filterText: string, onFilter: (e: any) => void, onClear: () => void }) {
     return (
-        <div className="flex flex-row gap-2">
-            <input type="text" placeholder="Filter by Submittal ID" value={filterText} onChange={onFilter} />
+        <div className="flex flex-row gap-2 ">
+            <input type="text" placeholder="Filter by Submittal ID" value={filterText} onChange={onFilter} className='bg-slate-100 rounded-md p-2' />
             <button onClick={onClear}>Clear</button>
         </div>
     )
 }
 
 function expandableRowComponent({ data }: { data: TaskProps }) {
+    const handleDelete = async () => {
+        if (confirm("Are you sure you want to delete this task?")) {
+            try {
+                if (!data.task_id) {
+                    throw new Error("Task ID is undefined");
+                }
+                const response = await deleteTask(data.task_id);
+                if (response === 200) {
+                    alert("Task deleted successfully");
+                } else {
+                    alert("Error deleting task:" + response);
+                }
+            } catch (error) {
+                alert("Error deleting task:" + error);
+            }
+        }
+    };
+
     return (
         <div>
-            <p>{data.title}</p>
+          <div className="flex flex-col gap-2 px-2">
+            <h2 className='font-semibold'>Description:</h2>
+            <p>{data.description}</p>
+          </div>
+          <div className="px-2 flex flex-row gap-2">
+            <RouteButton text="Edit Task" route={`/tasks/edit_task/${data.task_id}`}/>
+            <OrangeButton onClick={handleDelete}>Delete Task</OrangeButton>
+          </div>
         </div>
     )
 } 

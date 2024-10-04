@@ -1,4 +1,4 @@
-import { ProjectCreationProps, ProjectFormProps, ProjectProps } from "../interfaces/project_types";
+import { ProjectCreationProps, ProjectProps } from "../interfaces/project_types";
 import AxiosInstance from "../components/Axios";
 import { AxiosError } from "axios";
 
@@ -48,6 +48,7 @@ export async function getProject(id: string): Promise<ProjectProps> {
         throw error
     }
 }
+
 /**
  * Creates a Trinity Project
  * 
@@ -58,17 +59,17 @@ export async function getProject(id: string): Promise<ProjectProps> {
  * 
  * TODO: 
  * - Backend needs to perform a check to make sure the project doesn't already exist
- * - Currently can't catch the error if project_id already existsq
+ * - Currently can't catch the error if project_id already exists
  */
-export async function createProject(project_data: ProjectFormProps): Promise<Number> {
+export async function createProject(project_data: ProjectProps): Promise<Number> {
     try {
         const response = await AxiosInstance.post('api/projects/', project_data)
         console.log(project_data)
         return response.status
     } catch (error: unknown) {
         if (error instanceof AxiosError) {
-                if (error.response?.status === 400) {
-                    // 400 Bad Request
+            if (error.response?.status === 400) {
+                // 400 Bad Request
                 return 400
             } else if (error.response?.status === 403) {
                 // 403 Forbidden
@@ -104,7 +105,7 @@ export async function updateProject(project_data: ProjectProps): Promise<Number>
     }
 }
 
-export async function deleteProject(id: string | undefined): Promise<number> {
+export async function deleteProject(id: string): Promise<number> {
     try {
         const response = await AxiosInstance.delete('api/projects/id/' + id)
 

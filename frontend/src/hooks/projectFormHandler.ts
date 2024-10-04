@@ -1,6 +1,6 @@
 import { NavigateFunction } from "react-router-dom"
-import { ProjectFormProps, ProjectProps } from "../interfaces/project_types"
-import { createProject, getDataForProjectCreation, updateProject } from "../api/projects"
+import { ProjectProps } from "../interfaces/project_types"
+import { createProject, updateProject } from "../api/projects"
 import { FormEvent } from "react"
 import { EmployeeProps } from "../interfaces/employee_type"
 import { MethodHandler } from "../components/misc"
@@ -11,28 +11,6 @@ export const useProjectFormHandler = (
     setErrorString: React.Dispatch<React.SetStateAction<string | undefined>>,
     method: "POST" | "PUT",
 ) => {
-
-    const onDateStartChange = async(event: React.ChangeEvent<HTMLInputElement>) => {
-        const date = event.target.value
-        const value = event.target.value.split('-')[0] + '-' + event.target.value.split('-')[1]
-        setCurrentProjectData(prev => ({...prev, start_date: date}))
-
-        try {
-            const response = await getDataForProjectCreation(date)
-
-            if (!response) {
-                throw new Error("Error fetching project list")
-            }
-
-            const project_count = String(response.project_count + 1).padStart(3, "0")
-
-            setCurrentProjectData(prev => ({...prev, project_id: value + "-" + project_count}))
-        } catch (error) {
-            console.error("Error fetching project list:", error)
-            setErrorString("Error fetching project list: " + error)
-        }
-    }
-
     const onManagerChange = async (e: unknown) => {
         if (e && typeof e === 'object' && 'value' in e && 'label' in e) {
             setCurrentProjectData(prev => ({...prev, manager: {name: e.label, email: e.value} as EmployeeProps}))
@@ -64,7 +42,7 @@ export const useProjectFormHandler = (
 
             if (method_handler) {
                 setErrorString(undefined)
-                const result_code = await method_handler(formDataObj as ProjectFormProps)
+                const result_code = await method_handler(formDataObj as unknown as ProjectProps)
 
                 // Error handling
                 switch (result_code) {
@@ -93,5 +71,5 @@ export const useProjectFormHandler = (
         }
     }
 
-    return {onDateStartChange, onManagerChange, onClientChange, onCityChange, onSubmit}
+    return {onManagerChange, onClientChange, onCityChange, onSubmit}
 }
