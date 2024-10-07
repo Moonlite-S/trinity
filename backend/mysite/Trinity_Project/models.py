@@ -1,12 +1,14 @@
 from logging import NOTSET
+from pyexpat import model
 from telnetlib import STATUS
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
+from django.utils import timezone
 import random
 from phonenumber_field.modelfields import PhoneNumberField
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 
 #from backend.mysite.Trinity_Project import generate_id
 
@@ -32,7 +34,7 @@ class CustomUserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError(_('Superuser must have is_superuser=True.'))
         return self.create_user(email, password, **extra_fields)
-    
+
 class Project(models.Model):
     project_id=models.CharField(max_length=50,unique=True,primary_key=True,default=uuid.uuid4)
     project_name=models.CharField(max_length=50)
@@ -43,11 +45,11 @@ class Project(models.Model):
     end_date=models.DateField()
     description=models.TextField()
     status=models.CharField(max_length=50)
-    
+
     def __str__(self):
         return f"ID: {self.project_id} | {self.project_name} | {self.client_name}"
-    
-    
+
+
     def save(self, *args, **kwargs):
         if self.pk:  # Update scenario
             try:
@@ -81,9 +83,9 @@ class User(AbstractUser):
     username= None
 
     objects = CustomUserManager()
-    
+
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []    
+    REQUIRED_FIELDS = []
 
     def __str__(self):
         return f"{self.name} | {self.email}"
@@ -96,7 +98,7 @@ class Task(models.Model):
     project_id=models.CharField(max_length=50)
     due_date=models.DateField()
     is_approved = models.BooleanField(default=True)
-    
+
     def save(self, *args, **kwargs):
         if self.pk:  # Update scenario
             old_instance = Task.objects.get(pk=self.pk)
@@ -122,19 +124,36 @@ class Submittal(models.Model):
     user=models.ForeignKey(User, on_delete=models.CASCADE, related_name="submittals")
     status=models.CharField(max_length=50)
     notes=models.TextField()
-    
+
+class Announcements(models.Model):
+    title=models.CharField(max_length=255)
+    content=models.TextField(max_length=255)
+    author=models.ForeignKey(User, on_delete=models.CASCADE, related_name="announcements")
+    date=models.DateField(auto_now_add=True)
+    exp_date=models.DateField()
+
+    # def is_expired(self):
+
+    #     expiration_days = 7
+    #     return timezone.now() > self.date + timedelta(days=expiration_days)
+
+    # def set_expiration(self, duration_days):
+    #     self.exp_date= timezone.now() + timedelta(days=duration_days)
+
+    def __str__(self):
+        return self.title
 
 class VerificationCode(models.Model):
     number = models.CharField(max_length=5, blank=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    
+
     def __str__(self):
         return str(self.number)
-    
+
     def save(self, *args, **kwargs):
         number_list = [x for x in range(10)]
         code_items = []
-        
+
         for i in range(5):
             num = random.choice(number_list)
             code_items.append(num)
@@ -157,9 +176,9 @@ class ProjectChangeLog(models.Model):
     change_description = models.TextField()
 
     def __str__(self):
-        return f"Change to {self.project_name} by {self.changed_by} at {self.change_time}"        
+        return f"Change to {self.project_name} by {self.changed_by} at {self.change_time}"
 
-    
+
 class TaskChangeLog(models.Model):
     task_id = models.CharField(max_length=50)
     task_title = models.CharField(max_length=50)
@@ -171,10 +190,10 @@ class TaskChangeLog(models.Model):
     change_time = models.DateTimeField(auto_now_add=True)
     change_description = models.TextField()
     is_approved = models.BooleanField(default=True)
-    
+
     def __str__(self):
-        return f"Change to {self.task_title} by {self.changed_by} at {self.change_time}"      
-    
+        return f"Change to {self.task_title} by {self.changed_by} at {self.change_time}"
+
 class PendingChange(models.Model):
     task = models.ForeignKey(Task, to_field="task_id", on_delete=models.CASCADE)
     field_name=models.CharField(max_length=50)
@@ -184,7 +203,7 @@ class PendingChange(models.Model):
     approved = models.BooleanField(default=False)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
-    
+
 class RFI(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="rfi")
     date_received =models.DateField()
@@ -195,9 +214,9 @@ class RFI(models.Model):
     notes=models.TextField()
     notes_closed=models.TextField()
     description= models.TextField()
-    
+
     def days_old(self):
         if self.date_received:
             current_date = datetime.now().date()
-            return (current_date - self.date_received).days 
+            return (current_date - self.date_received).days
         return None

@@ -1,6 +1,6 @@
 from dataclasses import fields
 from rest_framework import serializers
-from .models import Project, Submittal, Task, RFI
+from .models import Project, Submittal, Task, RFI, Announcements
 from .models import User
 
 #these classes convert the models in a more readable format like json when request through api calls
@@ -64,3 +64,16 @@ class RFISerializer(serializers.ModelSerializer):
         if duration is not None:
             return duration
         return None
+    
+class AnnouncmentsSerializer(serializers.ModelSerializer):
+    author = serializers.EmailField()
+    duration_days= serializers.IntegerField(write_only=True,min_value=0)
+    class Meta:
+        model = Announcements
+        fields = ['title', 'content', 'author', 'date','duration_days']
+        
+    def create(self, validated_data):
+        duration_days=validated_data.pop('duration_days')
+        instance= Announcements(**validated_data)
+        instance.set_expiration(duration_days)
+        return instance

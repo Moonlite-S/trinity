@@ -1,8 +1,8 @@
 #from datetime import timezone
 from django.utils import timezone
-from .models import User, ProjectChangeLog, Project, Task,TaskChangeLog
+from .models import User, ProjectChangeLog, Project, Task,TaskChangeLog,Announcements
 from .models import VerificationCode
-from django.db.models.signals import post_save, pre_save, pre_delete,post_delete
+from django.db.models.signals import post_save,post_delete,post_init
 from django.dispatch import receiver
 import logging
 from .middleware import CurrentUserMiddleware
@@ -175,3 +175,9 @@ def log_task_delete(sender, instance, **kwargs):
         changed_by=f'{user}',
         change_description="task was deleted"
     )
+
+# @receiver(post_init, sender=Announcements)
+# def check_and_delete_expired_object(sender, instance, **kwargs):
+#     if instance.is_expired():
+#         print(f"Deleting expired object: {instance.name}")
+#         instance.delete()

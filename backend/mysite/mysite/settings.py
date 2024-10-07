@@ -224,3 +224,4 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True 
 CSRF_COOKIE_AGE=   timedelta(hours=8) 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+#CELERY_BROKER_URL = 'redis://localhost:6379/0'

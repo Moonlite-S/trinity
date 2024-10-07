@@ -39,5 +39,6 @@ urlpatterns = [
     path("submittal/id/<str:submittal_id>",submittal_detail),
     path("submittal/name/<str:assigned_to>",submittal_by_assigned_to),
     path("rfi/",RFI_list),
-    path("rfi/id/<str:rfi_id>",RFI_detail)
+    path("rfi/id/<str:rfi_id>",RFI_detail),
+    path("announcement/",announcement)
 ]
