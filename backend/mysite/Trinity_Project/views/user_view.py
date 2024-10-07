@@ -2,8 +2,10 @@ from os import name
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+
+from ..utils import authenticate_jwt
 from ..models import User
-from ..serializers import UserNameSerializer, UserSerializer
+from ..serializers import UserNameAndEmail, UserNameSerializer, UserSerializer
 from django.contrib.auth.decorators import login_required
 from rest_framework.exceptions import PermissionDenied
 
@@ -61,3 +63,12 @@ def user_edit(request,user_email):
             user_2.delete()
         else:
             raise PermissionDenied("You do not have permission to delete this user.")
+        
+@api_view(['GET'])
+def return_all_users_name_and_email(request):
+    payload = authenticate_jwt(request)
+
+    users = User.objects.all()
+    serializer = UserNameAndEmail(users, many=True)
+    return Response(serializer.data)
+

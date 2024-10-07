@@ -83,6 +83,7 @@ export async function createProject(project_data: ProjectProps): Promise<Number>
 }
 
 export async function updateProject(project_data: ProjectProps): Promise<Number> {
+    console.log(project_data)
     try {
         const response = await AxiosInstance.put('api/projects/id/' + project_data.project_id, project_data)
 

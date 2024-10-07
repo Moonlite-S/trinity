@@ -12,6 +12,7 @@ import { MethodHandler } from "../components/misc"
  */
 export const useSubmittalFormHandler = (
     setCurrentSubmittalData: React.Dispatch<React.SetStateAction<SubmittalProps>>,
+    currentSubmittalData: SubmittalProps,
     navigate: NavigateFunction,
     method: "POST" | "PUT"
 ) => {
@@ -47,8 +48,13 @@ export const useSubmittalFormHandler = (
 
         const method_handler = MethodHandler(method, createSubmittal, updateSubmittal)
 
+        const data = {
+            ...formDataObj,
+            submittal_id: currentSubmittalData.submittal_id
+        }
+
         if (method_handler) {
-            const response = await method_handler(formDataObj as SubmittalProps)
+            const response = await method_handler(data as SubmittalProps)
             console.log("Response: ", response)
 
             if (response === 200) {

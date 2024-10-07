@@ -56,6 +56,7 @@ export function useTaskFormHandler(
     
         // Basically send everything aside from the project title
         const data_to_send: TaskProps = {
+          task_id: currentTaskData.task_id,
           project: form_data.get('project') as string,
           title: form_data.get('title') as string,
           description: form_data.get('description') as string,

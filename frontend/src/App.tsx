@@ -13,9 +13,9 @@ import { MonthlyCalendar, WeeklyCalendar } from './components/Calendar';
 import { Header } from './components/misc'
 import { EmployeeProps } from './interfaces/employee_type'
 import { SetAnnouncement } from './components/Announcement'
-import CreateSubmittal, { EditSubmittal, ViewSubmittals } from './components/Submittal'
+import CreateSubmittal, { EditSubmittal, SubmittalList } from './components/Submittal'
 import { EditTask } from './components/Tasks'
-import ViewRFI, { CreateRFI } from './components/RFI'
+import ViewRFI, { CloseRFI, CreateRFI, EditRFI } from './components/RFI'
 // Main Router for the application
 export default function App() {
   return (
@@ -40,7 +40,7 @@ export default function App() {
               <Route path='/tasks/' element={<TaskList />} />
 
               <Route path='/submittal/create_submittal' element={<CreateSubmittal />} />
-              <Route path='/submittal/' element={<ViewSubmittals />} />
+              <Route path='/submittal/' element={<SubmittalList />} />
               <Route path='/submittal/:id' element={<EditSubmittal />} />
 
               <Route path='/employees/' element={<EmployeeList />} />
@@ -51,6 +51,8 @@ export default function App() {
 
               <Route path='/rfi/' element={<ViewRFI />} />
               <Route path='/rfi/create_rfi' element={<CreateRFI />} />
+              <Route path='/rfi/update_rfi/:id' element={<EditRFI />} />
+              <Route path='/rfi/close_rfi/:id' element={<CloseRFI />} />
               <Route path='/announcements/create_anncouncement' element={<SetAnnouncement />} />
 
             </Route>
@@ -61,7 +63,7 @@ export default function App() {
 
     </Router>
   )
-}
+} 
 
 export interface AuthContextType {
   auth: boolean;

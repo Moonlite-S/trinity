@@ -3,7 +3,7 @@ import { test_user_dummy, TestRouterWrapper } from './utils'
 import { CreateProject, UpdateProjectList } from '../components/Project'
 import { createProject } from '../api/projects'
 import userEvent from '@testing-library/user-event'
-import { ProjectFormProps } from '../interfaces/project_types'
+import { ProjectProps } from '../interfaces/project_types'
 import selectEvent from 'react-select-event';
 import { act } from 'react'
 import { ProjectFormCreation } from '../components/ProjectForm'
@@ -35,14 +35,20 @@ vi.mock('../api/projects', async(importOriginal) => {
     }
 })
 
-const project: ProjectFormProps = {
+const project: ProjectProps = {
     project_id: '2024-02-001',
     project_name: 'Test Project',
     description: 'This is a test project',
     start_date: '2024-02-20',
     end_date: '2024-02-20',
     status: 'ACTIVE',
-    manager: "Sean",
+    manager: {
+        name: 'Sean',
+        email: 'sean@example.com',
+        username: 'sean',
+        password: 'password',
+        role: 'Manager'
+    },
     city: 'test',
     client_name: 'test',
     folder_location: '2024-02-01',
@@ -87,13 +93,16 @@ describe('Project Creation', () => {
             expect(screen.getByText('test city')).toBeInTheDocument()
         })
         fireEvent.click(screen.getByText('test city'))
-        console.log(screen.debug())
-        expect(citySelect).toHaveValue('test city')
 
         const clientSelect = screen.getByLabelText(/Client Name/i)
         await act(async () => {
-            await selectEvent.openMenu(clientSelect)
+            selectEvent.openMenu(clientSelect)
         })
+        fireEvent.keyDown(clientSelect, { key: 'ArrowDown' })
+        await waitFor(() => {
+            expect(screen.getByText('test client')).toBeInTheDocument()
+        })
+        fireEvent.click(screen.getByText('test client'))
 
         const createButton = screen.getByText('Create Project')
         userEvent.click(createButton)

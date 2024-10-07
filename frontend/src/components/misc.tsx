@@ -79,22 +79,24 @@ export function ProjectCard ({project} : {project: ProjectProps}) {
 }
 
 /**
- * This function handles the method of the submittal form
- * @param method "create" will return the createSubmittal function
- * @param method "edit" will return the updateSubmittal function
+ * This function handles the api method at the end of the form
+ * @param create_fn corresponds to the POST method
+ * @param edit_fn corresponds to the PUT method
+ * @param close_fn corresponds to the CLOSE method
  * 
- * The next two arguments are the functions to be called if the method is "create" or "edit"
  * @returns An API call function from their respective files
  */
 
-export function MethodHandler(method: "POST" | "PUT", create_fn: Function, update_fn: Function): Function {
+export function MethodHandler(method: "POST" | "PUT" | "CLOSE" , create_fn: Function, update_fn: Function, close_fn: Function): Function {
   if (method === "POST"){
       return create_fn
   }
   else if (method === "PUT"){
       return update_fn
+  } 
+  else if (method === "CLOSE"){
+    return close_fn
   }
-  
   throw new Error("Invalid method: Received " + method)
 }
 

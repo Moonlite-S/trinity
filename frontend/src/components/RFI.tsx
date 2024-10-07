@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
-import DataTable, { TableColumn, Direction } from "react-data-table-component";
-import { Header } from "./misc";
-import RFIFormCreation from "./RFIForm";
+import { TableColumn } from "react-data-table-component";
+import { GenericTable, Header } from "./misc";
+import RFIFormCreation, { RFIFormUpdate } from "./RFIForm";
 import { RFIProps } from "../interfaces/rfi_types";
-import { getRFIList } from "../api/rfi";
+import { getRFI, getRFIList } from "../api/rfi";
+import { useNavigate, useParams } from "react-router-dom";
+import { RouteButton } from "./Buttons";
 
 export function CreateRFI() {
     return (
@@ -19,7 +21,32 @@ export function CreateRFI() {
     )
 }
 
-export function UpdateRFI() {
+export function EditRFI() {
+    const { id } = useParams<string>()
+    if (!id) return <div>Loading...</div>
+
+    const [currentRFIData, setCurrentRFIData] = useState<RFIProps>()
+    const [loading, setLoading] = useState<boolean>(true)
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        const fetchRFI = async () => {
+            try {
+                const response = await getRFI(id)
+
+                setCurrentRFIData({...response, RFI_id: id})
+                setLoading(false)
+            } catch (error) {
+                console.error("Error fetching RFI:", error);
+                navigate("/*")
+            }
+        }
+
+        fetchRFI()
+    }, [id, navigate])
+
+    if (loading) return <div>Loading...</div>
+
     return (
         <>
             <Header />
@@ -27,6 +54,46 @@ export function UpdateRFI() {
             <div className="justify-center mx-auto p-5">
                 <h1>Update RFI</h1>
             </div>
+
+            {currentRFIData && <RFIFormUpdate RFIProps={currentRFIData} method="PUT" />}
+        </>
+    )
+}
+
+export function CloseRFI() {
+    const { id } = useParams<string>()
+    if (!id) return <div>Loading...</div>
+    
+    const [currentRFIData, setCurrentRFIData] = useState<RFIProps>()
+    const [loading, setLoading] = useState<boolean>(true)
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        const fetchRFI = async () => {
+            try {
+                const response = await getRFI(id)
+                setCurrentRFIData(response)
+                setLoading(false)
+            } catch (error) {
+                console.error("Error fetching RFI:", error);
+                navigate("/*")
+            }
+        }
+
+        fetchRFI()
+    }, [id, navigate])
+
+    if (loading) return <div>Loading...</div>
+
+    return (
+        <>
+            <Header />
+
+            <div className="justify-center mx-auto p-5">
+                <h1>Close RFI</h1>
+            </div>
+
+            {currentRFIData && <RFIFormUpdate RFIProps={currentRFIData} method="CLOSE" />}
         </>
     )
 }
@@ -38,15 +105,28 @@ export default function ViewRFI() {
 
     useEffect(() => {
         const fetchRFIs = async () => {
-            const data: RFIProps[] = await getRFIList()
-            console.log(data)
-            console.log(typeof data[0].date_received)
-            setRfiList(data)
-            setRfiLoaded(true)
+            try {
+                const data: RFIProps[] = await getRFIList()
+                setRfiList(data)
+                setRfiLoaded(true)
+            } catch (error) {
+                console.error("Error fetching RFIs:", error);
+            }
         }
 
         fetchRFIs()
     }, [])
+
+    const columns: TableColumn<RFIProps>[] = [
+        { name: "Days Old", selector: row => row.days_old !== undefined ? row.days_old.toString() : "N/A", sortable: true },
+        { name: "RFI ID", selector: row => row.RFI_id ? row.RFI_id : "N/A", sortable: true },
+        { name: "Assigned To", selector: row => row.assigned_to ? row.assigned_to.name : "N/A", sortable: true },
+        { name: "Created By", selector: row => row.created_by ? row.created_by.name : "N/A", sortable: true },
+        { name: "Type", selector: row => row.type, sortable: true },
+        { name: "Project", selector: row => row.project_name || "N/A", sortable: true },
+        { name: "Date Sent", selector: row => row.sent_out_date, sortable: true },
+        { name: "Date Received", selector: row => row.date_received, sortable: true },
+    ]
 
 
     return (
@@ -57,44 +137,25 @@ export default function ViewRFI() {
                 <h1>RFI</h1>
             </div>
 
-            <RFI_Table rfi_list={rfiList} rfi_loaded={rfiLoaded} />
+            <GenericTable dataList={rfiList} isDataLoaded={rfiLoaded} columns={columns} FilterComponent={FilterComponent} expandableRowComponent={ExpandableRowComponent} filterField={""} />
         </>
     )
 }
 
-/**
- * The Table Component that lists the projects
- * 
- * Features sorting by any field, and filtering by Project Name currently.
- * 
- * @param projectList - List of projects 
- * @param projectLoaded - Boolean to check if projects have been loaded
- */
-function RFI_Table({ rfi_list, rfi_loaded }: { rfi_list: RFIProps[], rfi_loaded: boolean }) {
-    // Column Names
-    const columns: TableColumn<RFIProps>[] = [
-        { name: "Days Old", selector: row => row.days_old ? row.days_old : "N/A", sortable: true },
-        { name: "RFI ID", selector: row => row.RFI_id ? row.RFI_id : "N/A", sortable: true },
-        { name: "Description", selector: row => row.description, sortable: true },
-        { name: "Type", selector: row => row.type, sortable: true },
-        { name: "Project", selector: row => row.project, sortable: true },
-        { name: "Date Sent", selector: row => row.sent_out_date, sortable: true },
-        { name: "Date Received", selector: row => row.date_received, sortable: true },
-        { name: "Notes", selector: row => row.notes, sortable: true },
-    ]
+function ExpandableRowComponent({ data }: { data: RFIProps }) {
+    return (
+        <div className="ml-2 flex gap-2">
+            <RouteButton route={"/rfi/update_rfi/" + data.RFI_id} text="Update" />
+            <RouteButton route={"/rfi/close_rfi/" + data.RFI_id} text="Close RFI" /> 
+        </div>
+    )
+}
 
-    return(
-        <DataTable
-        columns={columns}
-        data={rfi_list}
-        direction={Direction.AUTO}
-        progressPending={!rfi_loaded}
-        persistTableHead
-        highlightOnHover
-        expandableRows
-        selectableRows
-        pagination
-        subHeader
-        />        
+function FilterComponent({ filterText, onFilter, onClear }: { filterText: string, onFilter: (e: any) => void, onClear: () => void }) {
+    return (
+        <div>
+            <input type="text" value={filterText} onChange={onFilter} />
+            <button onClick={onClear}>Clear</button>
+        </div>
     )
 }

@@ -93,19 +93,21 @@ class AnnouncmentsSerializer(serializers.ModelSerializer):
     author = serializers.EmailField()
     class Meta:
         model = Announcements
-        fields = ['title', 'content', 'author', 'date']
+        fields = ['title', 'content', 'author', 'date', 'duration', 'is_active']
         
 class RFISerializer(serializers.ModelSerializer):
     project = serializers.PrimaryKeyRelatedField(queryset=Project.objects.all(),write_only=True)  # Allow project_id to be written
     project_id=serializers.CharField(source='project.project_id',read_only=True)
     project_name=serializers.CharField(source='project.project_name',read_only=True)
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(),write_only=True)
-    sent_by=serializers.CharField(source='user.name',read_only=True)
+    assigned_to_pk = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(),write_only=True, source='assigned_to')
+    assigned_to=BasicUserSerializer(read_only=True)
+    created_by_pk = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(),write_only=True, source='created_by')
+    created_by=BasicUserSerializer(read_only=True)
     days_old=serializers.SerializerMethodField()
     
     class Meta:
         model=RFI
-        fields = ['project','project_id', 'project_name', 'date_received','days_old','project','RFI_id','sent_out_date','type','user','sent_by','notes','notes_closed','description']
+        fields = ['project','project_id', 'project_name', 'date_received','days_old','assigned_to','assigned_to_pk','created_by','created_by_pk','RFI_id','sent_out_date','type','notes','notes_closed','description']
     
     def get_days_old(self, obj):
         duration = obj.days_old()

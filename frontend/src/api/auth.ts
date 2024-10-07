@@ -14,6 +14,7 @@ export async function checkUser(): Promise<EmployeeProps> {
     try {
       const response = await AxiosInstance.get('api/user')
       const data = response.data
+      console.log(data)
       return data
 
     } catch (error) {
@@ -110,12 +111,7 @@ export async function logout(): Promise<number> {
     try {
       const response = await AxiosInstance.post('api/logout')
 
-      const data = response.data
-
-      console.log(data)
-
-
-      if (data.message == 'success') {
+      if (response.status == 200) {
         console.log("Logged out")
         return 200
       } else {

@@ -7,11 +7,17 @@ export type RFIProps = {
     notes_closed?: string;
     sent_out_date: string;
     date_received: string;
-    created_by: EmployeeProps;
-    sent_by: EmployeeProps;
+
+    created_by_pk: string;
+    created_by?: EmployeeProps;
+    assigned_to_pk: string;
+    assigned_to?: EmployeeProps;
     description: string;
     type: "MECHANICAL" | "ELECTRICAL" | "PLUMBING" | "FIRE_PROTECTION" | "OTHER";
+
     project: string;
+    project_id?: string;
+    project_name?: string;
     days_old?: number;
     status: "ACTIVE" | "COMPLETED"
 }
@@ -26,7 +32,7 @@ export type RFIFormBaseProps = {
     currentRFIData: RFIProps
     projects: SelectionButtonProps[]
     employees: SelectionButtonProps[]
-    method: "POST" | "PUT"
+    method: "POST" | "PUT" | "CLOSE"
     handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void
     handleProjectChange: (e: unknown) => void
     handleCreatedByEmployeeChange: (e: unknown) => void

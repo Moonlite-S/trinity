@@ -55,7 +55,7 @@ export function ProjectFormCreation() {
         return { value: value[1], label: value[0] }
     })
 
-    const { onSubmit, onManagerChange, onClientChange, onCityChange } = useProjectFormHandler(setCurrentProjectData, navigate, setErrorString, "POST")
+    const { onSubmit, onManagerChange, onClientChange, onCityChange } = useProjectFormHandler(setCurrentProjectData, currentProjectData, navigate, setErrorString, "POST")
 
     useEffect(() => {
         const get_project_data = async () => {
@@ -140,7 +140,7 @@ export function ProjectFormUpdate(
     const [Cities, setCities] = useState<{ value: string, label: string }[] | undefined>()
     const [errorString, setErrorString] = useState<string>()
 
-    const { onSubmit, onManagerChange, onClientChange, onCityChange } = useProjectFormHandler(setCurrentProjectData, navigate, setErrorString, "PUT")
+    const { onSubmit, onManagerChange, onClientChange, onCityChange } = useProjectFormHandler(setCurrentProjectData, currentProjectData, navigate, setErrorString, "PUT")
 
     const projectManagerListOptions = ProjectManagers?.map((value: string) => {
         return { value: value[1], label: value[0] }

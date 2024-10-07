@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 # Create your models here.
 class CustomUserManager(BaseUserManager):
@@ -131,6 +131,12 @@ class Announcements(models.Model):
     content=models.TextField(max_length=255)
     author=models.ForeignKey(User, on_delete=models.CASCADE, related_name="announcements")
     date=models.DateField(auto_now_add=True)
+    created_at = models.DateField(auto_now_add=True)
+    duration = models.DurationField(default=timedelta(seconds=7))
+    
+    @property
+    def is_active(self):
+        return timezone.now() < self.created_at + self.duration
 
     def __str__(self):
         return self.title
@@ -183,10 +189,12 @@ class RFI(models.Model):
     RFI_id = models.CharField(max_length=50,primary_key=True)
     sent_out_date = models.DateField()
     type = models.CharField(max_length=50)
-    user=models.ForeignKey(User, on_delete=models.CASCADE)
+    assigned_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name="rfi_sent")
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="rfi_created")
     notes=models.TextField()
     notes_closed=models.TextField()
     description= models.TextField()
+    is_closed = models.BooleanField(default=False)
     
     def days_old(self):
         if self.date_received:

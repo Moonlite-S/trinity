@@ -1,17 +1,18 @@
 import { RFIProps } from "../interfaces/rfi_types"
 import { MethodHandler } from "../components/misc"
 import { NavigateFunction } from "react-router-dom"
-import { createRFI, updateRFI } from "../api/rfi"
+import { closeRFI, createRFI, updateRFI } from "../api/rfi"
 
 type RFIFormHandlerProps = {
     setCurrentRFIData: React.Dispatch<React.SetStateAction<RFIProps>>
+    currentRFIData: RFIProps
     navigate: NavigateFunction
     setErrorString: React.Dispatch<React.SetStateAction<string | undefined>>
-    method: "POST" | "PUT"
+    method: "POST" | "PUT" | "CLOSE"
 }
 
 export function useRFIFormHandler (
-    { setCurrentRFIData, navigate, setErrorString, method }: RFIFormHandlerProps
+    { setCurrentRFIData, currentRFIData, navigate, setErrorString, method }: RFIFormHandlerProps
 ) {
     
     const handleProjectChange = (e: unknown) => {
@@ -26,15 +27,7 @@ export function useRFIFormHandler (
         console.log(e)
 
         if (typeof e === "object" && e !== null && "value" in e && "label" in e){
-            setCurrentRFIData(prev => ({...prev, sent_by: 
-                {
-                    name: e.label as string,
-                    email: e.value as string,
-                    username: "",
-                    password: "",
-                    role: prev.sent_by.role
-                }
-            }))
+            setCurrentRFIData(prev => ({...prev, assigned_to_pk: e.value as string}))
         }
     }
 
@@ -42,15 +35,7 @@ export function useRFIFormHandler (
         console.log(e)
 
         if (typeof e === "object" && e !== null && "value" in e && "label" in e){
-            setCurrentRFIData(prev => ({...prev, created_by: 
-                {
-                    name: e.label as string,
-                    email: e.value as string,
-                    username: "",
-                    password: "",
-                    role: prev.created_by.role
-                }
-            }))
+            setCurrentRFIData(prev => ({...prev, created_by_pk: e.value as string}))
         }
     }
 
@@ -59,16 +44,27 @@ export function useRFIFormHandler (
         console.log("Form submitted");
 
         const formData = new FormData(e.target as HTMLFormElement)
-        const data = Object.fromEntries(formData.entries())
-        const method_handler = MethodHandler(method, createRFI, updateRFI)
+        const formDataObj = Object.fromEntries(formData.entries())
+        const method_handler = MethodHandler(method, createRFI, updateRFI, closeRFI)
 
-        const response = await method_handler(data as unknown as RFIProps)
-        
+        const data = {
+            ...formDataObj,
+            RFI_id: currentRFIData.RFI_id
+        }
+        const response = await method_handler(data as RFIProps)
+        console.log(method)
         if (response === 200) {
-            console.log("RFI updated successfully")
-            setErrorString(undefined)
-            alert("RFI updated successfully")
-            navigate("/rfi")
+            if (method === "CLOSE"){
+                console.log("RFI closed successfully")
+                setErrorString(undefined)
+                alert("RFI closed successfully")
+                navigate("/rfi")
+            } else {
+                console.log("RFI updated successfully")
+                setErrorString(undefined)
+                alert("RFI updated successfully")
+                navigate("/rfi")
+            }
         } else if (response === 201) {
             console.log("RFI created successfully")
             setErrorString(undefined)

@@ -36,7 +36,7 @@ export function EditTask() {
           throw new Error("Error fetching task data")
         }
 
-        setTaskData(task)
+        setTaskData({...task, task_id: id})
       }
       catch (error) {
         console.error(error);
@@ -64,6 +64,7 @@ export function TaskList() {
   }
   
   const [tasks, setTasks] = useState<TaskProps[]>([]);
+  const [tasksLoaded, setTasksLoaded] = useState<boolean>(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,6 +72,7 @@ export function TaskList() {
         if (user.role === "Administrator" || user.role === "Manager") {
           const get_tasks = await getTaskList();
           setTasks(get_tasks);
+          setTasksLoaded(true)
         } else {
           const get_tasks = await filterTasksByAllUserProjects(user.email);
           setTasks(get_tasks);
@@ -95,14 +97,14 @@ export function TaskList() {
       <Header/>
       <h1 className="mx-4 text-x1 font-semibold">Tasks</h1>
 
-      <GenericTable
+      {tasksLoaded && <GenericTable
         dataList={tasks}
-        isDataLoaded={true}
+        isDataLoaded={tasksLoaded}
         columns={columns}
         FilterComponent={FilterComponent}
         expandableRowComponent={expandableRowComponent}
         filterField="title"
-      />
+      />}
     </>
   );
 }
@@ -126,6 +128,7 @@ function expandableRowComponent({ data }: { data: TaskProps }) {
                 const response = await deleteTask(data.task_id);
                 if (response === 200) {
                     alert("Task deleted successfully");
+                    window.location.reload();
                 } else {
                     alert("Error deleting task:" + response);
                 }

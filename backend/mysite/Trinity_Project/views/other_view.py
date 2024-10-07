@@ -4,38 +4,14 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from ..models import ProjectChangeLog,User,VerificationCode
+from ..serializers import AnnouncmentsSerializer
+from ..utils import authenticate_jwt
+from ..models import Announcements, ProjectChangeLog, User
 import jwt, datetime
-from datetime import datetime
+from datetime import datetime, timezone
 from django.contrib.auth.decorators import login_required
-from ..forms import VerificationCodeForm
 from ..graphapi import GraphAPI
-
-@api_view(['POST'])
-def verify_view(request):
-    form = VerificationCodeForm(request.POST or None)
-    pk = request.session.get('pk')
-    if pk:
-        user = User.objects.get(pk=pk)
-        verification_code = VerificationCode.objects.get(user=user)
-
-        if not request.POST:
-            print(f"Verification code for {user.name}: {verification_code.number}")#should display in the terminal
-            #send sms using utils code would go here
-
-        if form.is_valid():
-            num = form.cleaned_data('number')
-
-            if str(verification_code.number) == num:
-                verification_code.delete()
-                return JsonResponse({
-                    '' : f"Verification succeed"
-                })
-            else:
-                return JsonResponse({
-                    '' : f"Verification failed"
-                })
-                
+from django.db.models import F
 @api_view(['DELETE'])
 def project_delete_log(request):
     if request.method == 'DELETE':
@@ -62,3 +38,31 @@ def schedule_call(request):
             return HttpResponse('Error scheduling meeting')
         
     return render(request, 'schedule_call.html', context)
+
+@api_view(['GET', 'POST'])
+def announcement(request):
+    payload = authenticate_jwt(request)
+    
+    if request.method == 'GET':
+        announcements = Announcements.objects.filter(created_at__gt=timezone.now() - F('duration'))
+        serializer = AnnouncmentsSerializer(announcements, many=True)
+        return Response(serializer.data)
+
+    if request.method == 'POST':
+        serializer = AnnouncmentsSerializer(data=request.data)
+        if serializer.is_valid():
+            author = serializer.validated_data.pop('author')
+            try:
+                user = User.objects.get(email=author)
+
+                if user.role == 'Manager' or user.role == 'Administrator':
+                    announcement = Announcements.objects.create(author=user, **serializer.validated_data)
+
+                    return Response(AnnouncmentsSerializer(announcement).data, status=status.HTTP_201_CREATED)
+                else:
+                    return Response(data={"Permission Error": "You do not have permission to create an announcement."}, status=status.HTTP_403_FORBIDDEN)
+
+            except User.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

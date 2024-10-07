@@ -73,7 +73,7 @@ class AzureFileShareClient:
 
         except ResourceExistsError:
             print(f"SubFolder '{sub_folder_name}' already exists in this directory! Aborting...")
-            raise ResourceExistsError(f"SubFolder '{sub_folder_name}' already exists in this directory!")
+            # raise ResourceExistsError(f"SubFolder '{sub_folder_name}' already exists in this directory!")
 
         except Exception as ex:
             print(f"An error occurred while creating SubFolder '{sub_folder_name}' in Azure File Share: {ex}")

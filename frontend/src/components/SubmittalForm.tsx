@@ -30,7 +30,7 @@ export function SubmittalFormCreation() {
         notes: "",
     })
 
-    const { onProjectChange, onAssignedToChange, onSubmit } = useSubmittalFormHandler(setCurrentSubmittalData, navigate, "POST")
+    const { onProjectChange, onAssignedToChange, onSubmit } = useSubmittalFormHandler(setCurrentSubmittalData, currentSubmittalData, navigate, "POST")
 
     useEffect(() => {
         const get_submittals_data = async () => {
@@ -83,7 +83,7 @@ export function SubmittalFormEdit({submittal}: {submittal: SubmittalProps}) {
     const [currentSubmittalData, setCurrentSubmittalData] = useState<SubmittalProps>(submittal)
     const navigate = useNavigate()
 
-    const { onProjectChange, onAssignedToChange, onSubmit } = useSubmittalFormHandler(setCurrentSubmittalData, navigate, "PUT")
+    const { onProjectChange, onAssignedToChange, onSubmit } = useSubmittalFormHandler(setCurrentSubmittalData, currentSubmittalData, navigate, "PUT")
 
     useEffect(() => {
         const get_submittals_data = async () => {

@@ -5,9 +5,8 @@ import { RFIProps, RFICreationProps } from "../interfaces/rfi_types"
 
 export async function createRFI(rfi: RFIProps): Promise<Number> {
     try {
-        console.log(rfi)
+        console.log("Submitting RFI: ", rfi)
         const response = await AxiosInstance.post('api/rfi/', rfi)
-        console.log(response.status)
         return response.status
     } catch (error: unknown) {
         if (error instanceof AxiosError) {
@@ -27,6 +26,7 @@ export async function createRFI(rfi: RFIProps): Promise<Number> {
 export async function getRFIList(): Promise<RFIProps[]> {
     try {
         const response = await AxiosInstance.get('api/rfi/')
+        console.log("Response: ", response.data)
         if (response.status !== 200) {
             throw new Error("Error fetching RFIs")
         }
@@ -49,7 +49,7 @@ export async function getRFIList(): Promise<RFIProps[]> {
 
 export async function updateRFI(rfi: RFIProps): Promise<Number> {
     try {
-        const response = await AxiosInstance.put('api/rfi/update', rfi)
+        const response = await AxiosInstance.put('api/rfi/id/' + rfi.RFI_id, rfi)
         return response.status
     } catch (error: unknown) {
         if (error instanceof AxiosError) {
@@ -102,3 +102,28 @@ export async function getDataForRFICreation(): Promise<RFICreationProps> {
         throw new Error("Error fetching data for RFI creation")
     }
 }
+
+export async function getRFI(id: string): Promise<RFIProps> {
+    try {
+        const response = await AxiosInstance.get('api/rfi/id/' + id)
+        console.log("Response: ", response.data)
+
+        if (response.data) {
+            return response.data
+        } else {
+            throw new Error("Error fetching RFI")
+        }
+    } catch (error: unknown) {
+        throw new Error("Error fetching RFI")
+    }
+}
+
+export async function closeRFI(rfi: RFIProps): Promise<Number> {
+    try {
+        const response = await AxiosInstance.put('api/rfi/id/close/' + rfi.RFI_id, rfi) // Still needs to be tested
+        return response.status 
+    } catch (error: unknown) {
+        throw new Error("Error closing RFI")
+    }
+}
+

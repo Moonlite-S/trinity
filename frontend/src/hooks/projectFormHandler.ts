@@ -7,6 +7,7 @@ import { MethodHandler } from "../components/misc"
 
 export const useProjectFormHandler = (
     setCurrentProjectData: React.Dispatch<React.SetStateAction<ProjectProps>>,
+    currentProjectData: ProjectProps,
     navigate: NavigateFunction,
     setErrorString: React.Dispatch<React.SetStateAction<string | undefined>>,
     method: "POST" | "PUT",
@@ -42,7 +43,15 @@ export const useProjectFormHandler = (
 
             if (method_handler) {
                 setErrorString(undefined)
-                const result_code = await method_handler(formDataObj as unknown as ProjectProps)
+
+                const data = {
+                    ...formDataObj,
+                    project_id: currentProjectData.project_id
+                }
+
+                console.log("Data: ", data)
+
+                const result_code = await method_handler(data as ProjectProps)
 
                 // Error handling
                 switch (result_code) {

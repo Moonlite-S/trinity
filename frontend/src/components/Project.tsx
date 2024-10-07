@@ -110,13 +110,11 @@ export function UpdateProject() {
     const navigate = useNavigate()
 
     useEffect(() => {
-        // We need to fetch a list of projects
-        const project = async () => {
-
+        const fetchProject = async () => {
             try {
                 const data = await getProject(id)
 
-                setCurrentProject(data)
+                setCurrentProject({...data, project_id: id})
 
                 setLoading(false)
             } catch (error) {
@@ -125,7 +123,7 @@ export function UpdateProject() {
             }
         }
 
-        project()
+        fetchProject()
     }, [id, navigate])
 
     return (
@@ -453,7 +451,7 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
 
         <div className="flex flex-row gap-5 m-5">
             <RouteButton route={"/projects/update_project/" + data.project_id} text="Edit"/>
-            <OrangeButton onClick={handleDelete}>Delete Task</OrangeButton>
+            <OrangeButton onClick={handleDelete}>Delete Project</OrangeButton>
             <a href={'localexplorer:L:\\projects\\' + data.folder_location}>
                 <button className="bg-blue-300 rounded p-4 my-2 hover:bg-blue-400 transition">Open Folder</button>
             </a>

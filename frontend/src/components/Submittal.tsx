@@ -33,14 +33,19 @@ export default function CreateSubmittal() {
  * Shows the list of active submittals
  * 
  */
-export function ViewSubmittals() {
+export function SubmittalList() {
     const [submittals, setSubmittals] = useState<SubmittalProps[]>([])
-
+    const [submittalsLoaded, setSubmittalsLoaded] = useState<boolean>(false)
     useEffect(() => {
         const get_submittals = async () => {
-            const response = await getSubmittals()
-            setSubmittals(response)
-            console.log("Submittals: ", response)
+            try {
+                const response = await getSubmittals()
+                setSubmittals(response)
+                console.log("Submittals: ", response)
+                setSubmittalsLoaded(true)
+            } catch (error) {
+                console.error("Error fetching submittals: ", error)
+            }
         }
 
         get_submittals()
@@ -62,14 +67,14 @@ export function ViewSubmittals() {
                 <h1>Submittals</h1>
             </div>
 
-            <GenericTable
+            {submittalsLoaded && <GenericTable
                 dataList={submittals}
-                isDataLoaded={submittals.length > 0}
+                isDataLoaded={submittalsLoaded}
                 columns={columns}
                 expandableRowComponent={ExpandableRowComponent}
                 filterField="submittal_id"
                 FilterComponent={FilterComponent}
-            />
+            />}
 
             <div className="flex flex-row justify-center gap-3 m-2">
                 <RouteButton route={"/main_menu"} text="Back"/>
@@ -99,7 +104,7 @@ export function EditSubmittal() {
         const get_submittal = async () => {
             const response = await getSubmittalById(id)
             
-            setSubmittal(response)
+            setSubmittal({...response, submittal_id: id})
         }
 
         get_submittal()
