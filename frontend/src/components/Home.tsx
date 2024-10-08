@@ -106,15 +106,11 @@ export function Login(){
         navigate("/main_menu")
 
       } else {
-        if (response === 401) {
+        if (response === 403) {
           setErrorCode("Incorrect email or password")
-        }
-        else if (response === 403) {
-          setErrorCode("Account is not active")
         }
         else {
           setErrorCode("Server Error")
-
         }
 
         setLoading(false)

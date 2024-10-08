@@ -10,6 +10,8 @@ import { OrangeButton, RouteButton } from "./Buttons";
 import { filterTasksByProject } from "../api/tasks";
 import { SubmittalProps } from "../interfaces/submittal_types";
 import { AxiosError } from "axios";
+import { EmployeeProps } from "../interfaces/employee_type";
+import { useAuth } from "../App";
 
 /**
  * ### [Route for ('/create_project')]
@@ -45,6 +47,12 @@ export function CreateProject() {
  * 
  */
 export function UpdateProjectList() {
+    const { user } = useAuth()
+
+    if (!user) {
+        return <div>Loading...</div>
+    }
+
     const [projectList, setProjectList] = useState<ProjectProps[]>([])
     const [projectLoaded, setProjectLoaded] = useState<boolean>(false)
 
@@ -85,7 +93,7 @@ export function UpdateProjectList() {
                 isDataLoaded={projectLoaded}
                 columns={projectColumns}
                 FilterComponent={FilterComponent}
-                expandableRowComponent={ExpandableRowComponent}
+                expandableRowComponent={({data}) => <ExpandableRowComponent data={data} user={user} />}
                 filterField="project_name"
             />
 
@@ -129,6 +137,8 @@ export function UpdateProject() {
     return (
         <>
             <Header />
+
+            <h1 className="mx-4 text-x1 font-semibold">Update Project</h1>
 
             {loading ? <div>Loading...</div> 
             : 
@@ -249,7 +259,7 @@ const FilterComponent = ({ filterText, onFilter, onClear }: ProjectFilterProps) 
  * @param data The props of a given row
  * 
  */
-const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
+const ExpandableRowComponent = ({ data, user }: { data: ProjectProps, user: EmployeeProps }) => {
     const [submittals, setSubmittals] = useState<SubmittalProps[]>([])
 
     const [taskCounts, setTaskCounts] = useState<{
@@ -283,8 +293,7 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
             }
 
             const response = await filterTasksByProject(data.project_id)
-
-            const calculateTaskCounts = () => {
+            const calculateTaskCounts = async () => {
                 const counts = {
                     total: 0,
                     completed: 0
@@ -317,14 +326,14 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
             };
             
             submittals.forEach(submittal => {
-                counts[submittal.type].total++;
-                if (submittal.status === "CLOSED") {
+                counts[submittal.type].total++
+                if (submittal.status === "COMPLETED") {
                     counts[submittal.type].completed++;
                 }
-            });
+            })
             
             setSubmittalCounts(counts);
-        };
+        }
 
         calculateSubmittalCounts();
         }
@@ -451,7 +460,7 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
 
         <div className="flex flex-row gap-5 m-5">
             <RouteButton route={"/projects/update_project/" + data.project_id} text="Edit"/>
-            <OrangeButton onClick={handleDelete}>Delete Project</OrangeButton>
+            {user.role === "Manager" || user.role === "Administrator" && <OrangeButton onClick={handleDelete}>Delete Project</OrangeButton>}
             <a href={'localexplorer:L:\\projects\\' + data.folder_location}>
                 <button className="bg-blue-300 rounded p-4 my-2 hover:bg-blue-400 transition">Open Folder</button>
             </a>

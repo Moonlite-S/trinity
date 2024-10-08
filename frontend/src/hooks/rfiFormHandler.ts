@@ -1,14 +1,14 @@
 import { RFIProps } from "../interfaces/rfi_types"
 import { MethodHandler } from "../components/misc"
 import { NavigateFunction } from "react-router-dom"
-import { closeRFI, createRFI, updateRFI } from "../api/rfi"
+import { createRFI, updateRFI } from "../api/rfi"
 
 type RFIFormHandlerProps = {
     setCurrentRFIData: React.Dispatch<React.SetStateAction<RFIProps>>
     currentRFIData: RFIProps
     navigate: NavigateFunction
     setErrorString: React.Dispatch<React.SetStateAction<string | undefined>>
-    method: "POST" | "PUT" | "CLOSE"
+    method: "POST" | "PUT"
 }
 
 export function useRFIFormHandler (
@@ -45,7 +45,7 @@ export function useRFIFormHandler (
 
         const formData = new FormData(e.target as HTMLFormElement)
         const formDataObj = Object.fromEntries(formData.entries())
-        const method_handler = MethodHandler(method, createRFI, updateRFI, closeRFI)
+        const method_handler = MethodHandler(method, createRFI, updateRFI)
 
         const data = {
             ...formDataObj,
@@ -54,17 +54,10 @@ export function useRFIFormHandler (
         const response = await method_handler(data as RFIProps)
         console.log(method)
         if (response === 200) {
-            if (method === "CLOSE"){
-                console.log("RFI closed successfully")
-                setErrorString(undefined)
-                alert("RFI closed successfully")
-                navigate("/rfi")
-            } else {
-                console.log("RFI updated successfully")
-                setErrorString(undefined)
-                alert("RFI updated successfully")
-                navigate("/rfi")
-            }
+            console.log("RFI updated successfully")
+            setErrorString(undefined)
+            alert("RFI updated successfully")
+            navigate("/rfi")
         } else if (response === 201) {
             console.log("RFI created successfully")
             setErrorString(undefined)

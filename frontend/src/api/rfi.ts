@@ -118,12 +118,11 @@ export async function getRFI(id: string): Promise<RFIProps> {
     }
 }
 
-export async function closeRFI(rfi: RFIProps): Promise<Number> {
+export async function deleteRFI(rfi: RFIProps): Promise<Number> {
     try {
-        const response = await AxiosInstance.put('api/rfi/id/close/' + rfi.RFI_id, rfi) // Still needs to be tested
+        const response = await AxiosInstance.delete('api/rfi/id/' + rfi.RFI_id)
         return response.status 
     } catch (error: unknown) {
-        throw new Error("Error closing RFI")
+        throw new Error("Error deleting RFI")
     }
 }
-

@@ -12,6 +12,7 @@ import { MethodHandler } from "../components/misc"
  */
 export const useSubmittalFormHandler = (
     setCurrentSubmittalData: React.Dispatch<React.SetStateAction<SubmittalProps>>,
+    setErrorString: React.Dispatch<React.SetStateAction<string>>,
     currentSubmittalData: SubmittalProps,
     navigate: NavigateFunction,
     method: "POST" | "PUT"
@@ -41,6 +42,7 @@ export const useSubmittalFormHandler = (
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
+        setErrorString("")
 
         const formData = new FormData(e.target as HTMLFormElement)
         const formDataObj = Object.fromEntries(formData.entries())
@@ -59,16 +61,16 @@ export const useSubmittalFormHandler = (
 
             if (response === 200) {
                 alert("Submittal updated successfully")
-                navigate('/submittal/')
+                navigate('/submittals/')
             } else if (response === 201) {
                 alert("Submittal created successfully")
-                navigate('/submittal/')
+                navigate('/submittals/')
             }
             else {
-                alert("Error with submittal")
+                setErrorString("Error sending submittal info. Please double check all fields.")
             }
         } else {
-            alert("Error with submittal")
+            setErrorString("Error sending submittal info. Error: " + method_handler)
         }
     }
 

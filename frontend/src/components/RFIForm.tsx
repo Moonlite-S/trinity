@@ -74,7 +74,7 @@ export default function RFIFormCreation() {
     )
 }
 
-export function RFIFormUpdate({RFIProps, method}: {RFIProps: RFIProps, method: "PUT" | "CLOSE"}) {
+export function RFIFormUpdate({RFIProps}: {RFIProps: RFIProps}) {
     const { id } = useParams<string>()
     if (!id) return <div>Loading...</div>
 
@@ -115,7 +115,7 @@ export function RFIFormUpdate({RFIProps, method}: {RFIProps: RFIProps, method: "
         handleSentByEmployeeChange={handleSentByEmployeeChange}
         projects={projects} 
         employees={employees}
-        method={method}/>
+        method="PUT"/>
     )
 }
 

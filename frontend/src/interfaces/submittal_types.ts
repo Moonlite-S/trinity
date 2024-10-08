@@ -8,7 +8,7 @@ export type SubmittalProps = {
     type: "MECHANICAL" | "ELECTRICAL" | "PLUMBING" | "FIRE_PROTECTION" | "OTHER"
     sub_description: string
     assigned_to: string
-    status: "OPEN" | "CLOSED"
+    status: "OPEN" | "CLOSING" | "COMPLETED"
     notes: string
 }
 

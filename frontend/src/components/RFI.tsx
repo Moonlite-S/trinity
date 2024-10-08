@@ -3,9 +3,9 @@ import { TableColumn } from "react-data-table-component";
 import { GenericTable, Header } from "./misc";
 import RFIFormCreation, { RFIFormUpdate } from "./RFIForm";
 import { RFIProps } from "../interfaces/rfi_types";
-import { getRFI, getRFIList } from "../api/rfi";
+import { deleteRFI, getRFI, getRFIList } from "../api/rfi";
 import { useNavigate, useParams } from "react-router-dom";
-import { RouteButton } from "./Buttons";
+import { OrangeButton, RouteButton } from "./Buttons";
 
 export function CreateRFI() {
     return (
@@ -55,45 +55,7 @@ export function EditRFI() {
                 <h1>Update RFI</h1>
             </div>
 
-            {currentRFIData && <RFIFormUpdate RFIProps={currentRFIData} method="PUT" />}
-        </>
-    )
-}
-
-export function CloseRFI() {
-    const { id } = useParams<string>()
-    if (!id) return <div>Loading...</div>
-    
-    const [currentRFIData, setCurrentRFIData] = useState<RFIProps>()
-    const [loading, setLoading] = useState<boolean>(true)
-    const navigate = useNavigate()
-
-    useEffect(() => {
-        const fetchRFI = async () => {
-            try {
-                const response = await getRFI(id)
-                setCurrentRFIData(response)
-                setLoading(false)
-            } catch (error) {
-                console.error("Error fetching RFI:", error);
-                navigate("/*")
-            }
-        }
-
-        fetchRFI()
-    }, [id, navigate])
-
-    if (loading) return <div>Loading...</div>
-
-    return (
-        <>
-            <Header />
-
-            <div className="justify-center mx-auto p-5">
-                <h1>Close RFI</h1>
-            </div>
-
-            {currentRFIData && <RFIFormUpdate RFIProps={currentRFIData} method="CLOSE" />}
+            {currentRFIData && <RFIFormUpdate RFIProps={currentRFIData}/>}
         </>
     )
 }
@@ -143,10 +105,27 @@ export default function ViewRFI() {
 }
 
 function ExpandableRowComponent({ data }: { data: RFIProps }) {
+    const navigate = useNavigate()
+
+    const handleDelete = async () => {
+        if (confirm("Are you sure you want to delete this RFI?") && confirm("Are you really sure?")) {
+            try {
+                if (!data.RFI_id) {
+                    throw new Error("RFI ID is undefined")
+                }
+
+                await deleteRFI(data)
+                navigate("/rfi")
+            } catch (error) {
+                console.error("Error deleting RFI:", error);
+            }
+        }
+    }
+
     return (
         <div className="ml-2 flex gap-2">
             <RouteButton route={"/rfi/update_rfi/" + data.RFI_id} text="Update" />
-            <RouteButton route={"/rfi/close_rfi/" + data.RFI_id} text="Close RFI" /> 
+            <OrangeButton onClick={handleDelete}>Delete</OrangeButton>
         </div>
     )
 }

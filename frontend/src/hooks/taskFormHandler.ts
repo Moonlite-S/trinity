@@ -9,6 +9,7 @@ export function useTaskFormHandler(
     setCurrentTaskData: React.Dispatch<React.SetStateAction<TaskProps>>,
     currentTaskData: TaskProps,
     navigate: NavigateFunction,
+    setErrorString: React.Dispatch<React.SetStateAction<string>>,
     method: "POST" | "PUT",
     projects: SelectionButtonProps[]
 ) {
@@ -43,10 +44,19 @@ export function useTaskFormHandler(
           console.error("Invalid event object")
         }
       }
+
+      const onSliderChange = (e: unknown) => {
+        if (e && typeof e === 'number' ) {
+          setCurrentTaskData(prev => ({...prev, completion_percentage: e}))
+        } else {
+          console.error("Invalid event object")
+        }
+      }
     
       const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-    
+        setErrorString("")
+        
         const form_data = new FormData(e.currentTarget);
 
         console.log("currentTaskData", form_data)
@@ -63,7 +73,8 @@ export function useTaskFormHandler(
           assigned_to: form_data.get('assigned_to') as string,
           due_date: form_data.get('due_date') as string,
           project_id: method === "PUT" ? convert_project_obj_str_to_id : form_data.get('project') as string, // Another hacky solution that I need to fix later
-          status: 'ACTIVE'
+          status: 'ACTIVE',
+          completion_percentage: form_data.get('completion_percentage') as unknown as number
         }
     
         console.log(data_to_send)
@@ -75,23 +86,24 @@ export function useTaskFormHandler(
                 const result_code = await method_handler(data_to_send as TaskProps);
 
                 switch (result_code) {
-                    case 201:
-                        alert("Task created successfully!");
-                        navigate("/main_menu")
+                  case 201:
+                      alert("Task created successfully!");
+                      navigate("/main_menu")
+                      break
+                  case 200:
+                      alert("Task updated successfully!");
+                      navigate("/main_menu")
+                      break
+                  case 400:
+                    setErrorString("Bad Request: Invalid data. Please make sure all fields are filled out. Error: " + result_code)
                     break
-                    case 200:
-                        alert("Task updated successfully!");
-                        navigate("/main_menu")
+                  case 403:
+                    setErrorString("Forbidden: You are not authorized to create tasks. Error: " + result_code)
                     break
-                    case 400:
-                    alert("Bad Request: Invalid data. Please make sure all fields are filled out. Error: " + result_code)
-                    break
-                    case 403:
-                    alert("Forbidden: You are not authorized to create tasks. Error: " + result_code)
-                    break
-                    default:
+                  default:
+                    setErrorString("Error creating task: " + result_code)
                     throw new Error("Error creating task: " + result_code)
-                }
+              }
             }
         } catch (error: unknown) {
           console.error("Something went wrong: ", error)
@@ -101,6 +113,7 @@ export function useTaskFormHandler(
     return {
         onAssignedToChange,
         onProjectSelectionChange,
+        onSliderChange,
         onSubmit
     }
 }

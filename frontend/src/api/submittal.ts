@@ -63,6 +63,17 @@ export async function updateSubmittal(submittalData: SubmittalProps): Promise<Nu
     }
 }   
 
+export async function closeSubmittal(submittalId: string): Promise<Number> {
+    try {
+        const response = await AxiosInstance.put('api/submittal/id/' + submittalId, {
+            is_active: false
+        })
+        return response.status
+    } catch (error: unknown) {
+        return 500
+    }
+}
+
 export async function getSubmittalById(submittalId: string): Promise<SubmittalProps> {
     try {
         const response = await AxiosInstance.get(`api/submittal/id/${submittalId}`)

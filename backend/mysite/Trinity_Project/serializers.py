@@ -19,16 +19,10 @@ class TaskSerializer(serializers.ModelSerializer):
     project_id = serializers.CharField()
     class Meta:
         model=Task
-        fields = ['task_id','title','description','assigned_to','project_id','due_date','status']
+        fields = ['task_id','title','description','assigned_to','project_id','due_date','status','completion_percentage']
 
     def __str__(self):
         return f"ID: {self.task_id} | {self.title} | {self.assigned_to}"
-    
-
-# class TaskSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model=Task
-#         fields = ['task_id','title','description','assigned_to','project_id','due_date']
     
 class UserNameSerializer(serializers.ModelSerializer):
     class Meta:
@@ -107,7 +101,7 @@ class RFISerializer(serializers.ModelSerializer):
     
     class Meta:
         model=RFI
-        fields = ['project','project_id', 'project_name', 'date_received','days_old','assigned_to','assigned_to_pk','created_by','created_by_pk','RFI_id','sent_out_date','type','notes','notes_closed','description']
+        fields = ['project','project_id', 'project_name', 'date_received','days_old','assigned_to','assigned_to_pk','created_by','created_by_pk','RFI_id','sent_out_date','type','notes','notes_closed','description', 'status']
     
     def get_days_old(self, obj):
         duration = obj.days_old()

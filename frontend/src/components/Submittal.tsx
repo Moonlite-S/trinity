@@ -5,7 +5,9 @@ import { GenericTable, Header } from "./misc";
 import { TableColumn } from "react-data-table-component";
 import { SubmittalProps } from "../interfaces/submittal_types";
 import { useParams } from "react-router-dom";
-import { SubmittalFormCreation, SubmittalFormEdit } from "./SubmittalForm";
+import { SubmittalForm } from "./SubmittalForm";
+import { useAuth } from "../App";
+import { EmployeeProps } from "../interfaces/employee_type";
 
 /**
  * ### Route for ('/submittals/create_submittal')   
@@ -22,7 +24,40 @@ export default function CreateSubmittal() {
                 <h1>Create Submittal</h1>
             </div>
 
-            <SubmittalFormCreation />
+            <SubmittalForm method="POST" />
+        </>
+    )
+}
+
+export function EditSubmittal() {
+    const { id } = useParams<string>()
+    const [submittal, setSubmittal] = useState<SubmittalProps>()
+
+    if (!id) {
+        return <div>Submittal ID not found</div>
+    }
+
+    useEffect(() => {
+        const get_submittal = async () => {
+            const response = await getSubmittalById(id)
+            
+            setSubmittal({...response, submittal_id: id})
+        }
+
+        get_submittal()
+    }, [id])
+
+    console.log("Submittal: ", submittal)
+    
+    return (
+        <>
+            <Header />
+
+            <div className="justify-center mx-auto p-5">
+                <h1>Edit Submittal: {id}</h1>
+            </div>
+
+            {submittal && <SubmittalForm submittal={submittal} method="PUT" />}
         </>
     )
 }
@@ -34,6 +69,12 @@ export default function CreateSubmittal() {
  * 
  */
 export function SubmittalList() {
+    const { user } = useAuth()
+
+    if (!user) {
+        return <div>Loading...</div>
+    }
+
     const [submittals, setSubmittals] = useState<SubmittalProps[]>([])
     const [submittalsLoaded, setSubmittalsLoaded] = useState<boolean>(false)
     useEffect(() => {
@@ -71,7 +112,7 @@ export function SubmittalList() {
                 dataList={submittals}
                 isDataLoaded={submittalsLoaded}
                 columns={columns}
-                expandableRowComponent={ExpandableRowComponent}
+                expandableRowComponent={({data}) => ExpandableRowComponent({data: data, user: user})}
                 filterField="submittal_id"
                 FilterComponent={FilterComponent}
             />}
@@ -92,40 +133,9 @@ function FilterComponent({ filterText, onFilter, onClear }: { filterText: string
     )
 }
 
-export function EditSubmittal() {
-    const { id } = useParams<string>()
-    const [submittal, setSubmittal] = useState<SubmittalProps>()
 
-    if (!id) {
-        return <div>Submittal ID not found</div>
-    }
 
-    useEffect(() => {
-        const get_submittal = async () => {
-            const response = await getSubmittalById(id)
-            
-            setSubmittal({...response, submittal_id: id})
-        }
-
-        get_submittal()
-    }, [id])
-
-    console.log("Submittal: ", submittal)
-    
-    return (
-        <>
-            <Header />
-
-            <div className="justify-center mx-auto p-5">
-                <h1>Edit Submittal: {id}</h1>
-            </div>
-
-            {submittal && <SubmittalFormEdit submittal={submittal} />}
-        </>
-    )
-}
-
-function ExpandableRowComponent({ data }: { data: SubmittalProps }) {
+function ExpandableRowComponent({ data, user }: { data: SubmittalProps, user: EmployeeProps }) {
     const handleDelete = async () => {
         if (confirm("Are you sure you want to delete this submittal?")) {
             try {
@@ -147,9 +157,8 @@ function ExpandableRowComponent({ data }: { data: SubmittalProps }) {
 
     return (
         <div className="flex flex-row gap-2 mx-2">
-            <RouteButton route={`/submittal/${data.submittal_id}`} text="Edit" />
-            <RouteButton route={`/submittal/${data.submittal_id}/close`} text="Request to Close" />
-            <OrangeButton onClick={handleDelete}>Delete</OrangeButton>
+            <RouteButton route={`/submittals/update_submittal/${data.submittal_id}`} text="Edit" />
+            {user.role === "Manager" || user.role === "Administrator" && <OrangeButton onClick={handleDelete}>Delete</OrangeButton>}
         </div>
     )
 }

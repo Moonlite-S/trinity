@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
 from datetime import datetime, timedelta, timezone
-
+from django.core.validators import MinValueValidator, MaxValueValidator
 # Create your models here.
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password, **extra_fields):
@@ -87,8 +87,15 @@ class Task(models.Model):
     assigned_to=models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks")
     project_id=models.ForeignKey(Project, on_delete=models.CASCADE, related_name="tasks")
     due_date=models.DateField()
-    status=models.CharField(max_length=50, default="active")
+    status=models.CharField(max_length=50, default="ACTIVE")
     is_approved = models.BooleanField(default=True)
+    completion_percentage = models.IntegerField(
+        default=0,
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(100)
+        ]
+    )
     
     def save(self, *args, **kwargs):
         if self.pk:  # Update scenario
@@ -122,7 +129,7 @@ class Submittal(models.Model):
     user=models.ForeignKey(User, on_delete=models.CASCADE, related_name="submittals")
     status=models.CharField(max_length=50)
     notes=models.TextField()
-
+    
     def __str__(self):
         return f"Submittal ID: {self.submittal_id} | Project: {self.project.project_name} | Status: {self.status}"
     
@@ -194,7 +201,7 @@ class RFI(models.Model):
     notes=models.TextField()
     notes_closed=models.TextField()
     description= models.TextField()
-    is_closed = models.BooleanField(default=False)
+    status=models.CharField(max_length=50, default="ACTIVE")
     
     def days_old(self):
         if self.date_received:

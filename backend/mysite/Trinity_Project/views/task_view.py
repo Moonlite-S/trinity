@@ -85,7 +85,9 @@ def task_detail(request, task_id):
     except Task.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     
-    if not task.is_approved:
+    user = request.user
+    
+    if not task.is_approved and (not user.role == 'Manager' or not user.role == 'Administrator'):
         return HttpResponse("This task is pending approval and cannot be viewed.")
     
     #get project manager name from project_id
@@ -95,7 +97,6 @@ def task_detail(request, task_id):
     except Project.DoesNotExist:
         return Response({"error": "Associated project not found"}, status=status.HTTP_404_NOT_FOUND)
 
-    user = request.user
 
     if request.method == 'GET':
         serializer = TaskSerializer(task)
@@ -183,10 +184,7 @@ def task_filter_by_project_id(request, project_id):
     except Task.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     if request.method == 'GET':
-        if tasks.count() ==1:
-            serializer = TaskSerializer(tasks.first())
-        else:
-            serializer = TaskSerializer(tasks,many=True)
+        serializer = TaskSerializer(tasks,many=True)
         return Response(serializer.data)
     
 @api_view(['GET'])

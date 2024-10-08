@@ -105,7 +105,7 @@ export function CreateableSelectionComponent({Value = '', multiple, options, nam
     )
 }
 
-export function SelectionComponent({Value: defaultValue = '', multiple, options, name, onChange, label}: SelectionComponentProps){
+export function SelectionComponent({Value: defaultValue = '', multiple, options, name, onChange, label, readonly}: SelectionComponentProps){
     if (!options) {
         options = [{value: '', label: ''}];
         console.error("No options found for", name)
@@ -141,6 +141,7 @@ export function SelectionComponent({Value: defaultValue = '', multiple, options,
             name={name} 
             placeholder="Search" 
             isMulti={multiple} 
+            isDisabled={readonly}
             classNamePrefix="react-select"
             styles = {{
                 control: (baseStyles: any, state: any) => ({

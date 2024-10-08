@@ -19,7 +19,7 @@ export type RFIProps = {
     project_id?: string;
     project_name?: string;
     days_old?: number;
-    status: "ACTIVE" | "COMPLETED"
+    status: "ACTIVE" | "CLOSING" | "COMPLETED"
 }
 
 export type RFICreationProps = {

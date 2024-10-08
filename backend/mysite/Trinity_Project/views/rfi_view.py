@@ -71,23 +71,6 @@ def RFI_detail(request,rfi_id):
     elif request.method == 'DELETE':
         rfi.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
-@login_required
-@api_view(['PUT'])
-def close_rfi(request, rfi_id):
-    try:
-        rfi = RFI.objects.get(pk=rfi_id)
-    except RFI.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    
-    if request.method == 'PUT':
-        try:    
-            rfi.is_closed = True
-            rfi.save()
-            return Response(status=status.HTTP_200_OK)
-        except Exception as e:
-            print(f"An error occurred while closing RFI: {e}")
-            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET'])
 def rfi_creation_data(request):

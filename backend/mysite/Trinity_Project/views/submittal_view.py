@@ -85,7 +85,13 @@ def submittal_detail(request,submittal_id):
         return Response(serializer.data)
     
     elif request.method == 'PUT':
-        serializer = SubmittalSerializer(submittal, data=request.data)
+        if len(request.data) == 1 and 'is_active' in request.data:
+            submittal.is_active = request.data['is_active']
+            submittal.save()
+            serializer = SubmittalSerializer(submittal)
+            return Response(data="Submittal closed successfully", status=status.HTTP_200_OK)
+        else:
+            serializer = SubmittalSerializer(submittal, data=request.data)
 
         if serializer.is_valid():
             serializer.save()

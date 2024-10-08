@@ -20,6 +20,16 @@ import { MainMenuDashboard } from "./Dashboard";
 export function MainMenu() {
     // Check what roles the user has
     // and show / hide buttons accordingly
+    const [errorString, setErrorString] = useState<string>('')
+    const [announcements, setAnnouncements] = useState<AnnouncementProps[]>([])
+
+    // Get User's name
+    const { user } = useAuth()
+
+    if (!user) {
+        setErrorString("User not authenticated")
+        return <MainMenuError error={"User not authenticated"} />
+    }
 
     useEffect(() => {
         const get_announcements = async () => {
@@ -35,17 +45,6 @@ export function MainMenu() {
 
         get_announcements()
     }, [])
-
-    const [errorString, setErrorString] = useState<string>('')
-    const [announcements, setAnnouncements] = useState<AnnouncementProps[]>([])
-
-    // Get User's name
-    const { user } = useAuth();
-
-    if (!user) {
-        setErrorString("User not authenticated")
-        return <MainMenuError error={"User not authenticated"} />
-    }
 
     return (
         <>

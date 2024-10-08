@@ -71,6 +71,19 @@ export async function updateTask(task: TaskProps): Promise<number> {
     }
 }
 
+export async function closeTask(task_id: string): Promise<number> {
+    try {
+        await AxiosInstance.put('api/task/id/' + task_id, {
+            is_active: false
+        })
+
+        return 200
+    } catch (error) {
+        console.error(error)
+        throw error
+    }
+}
+
 export async function filterTasksByProject(project_id: string): Promise<TaskProps[]> {
     try {
         const response = await AxiosInstance.get('api/task/project_id/' + project_id)
@@ -82,6 +95,12 @@ export async function filterTasksByProject(project_id: string): Promise<TaskProp
     }
 }
 
+/**
+ * This gets all the tasks for the projects that the user is a part of
+ * 
+ * @param email the user's email
+ * @returns An array of tasks
+ */
 export async function filterTasksByAllUserProjects(email: string): Promise<TaskProps[]> {
     try {
         const response = await AxiosInstance.get('api/task/all_user_projects/' + email)

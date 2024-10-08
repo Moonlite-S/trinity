@@ -6,21 +6,18 @@ import { SelectionComponent, BottomFormButton } from "./Buttons"
 import { useSubmittalFormHandler } from "../hooks/submittalFormHandler"
 import { useAuth } from "../App"
 import { SelectionButtonProps } from "../interfaces/button_types"
-import { GenericForm, GenericInput, GenericSelect } from "./GenericForm"
-/**
- * The Form Component that creates a new submittal
- */
-export function SubmittalFormCreation() {
+import { GenericForm, GenericInput, GenericSelect, GenericTextArea } from "./GenericForm"
+import { Error_Component } from "./misc"
 
+export function SubmittalForm({submittal, method}: {submittal?: SubmittalProps, method: "POST" | "PUT"}) {
     const { user } = useAuth()
     const [projects, setProjects] = useState<SelectionButtonProps[]>([])
     const [employees, setEmployees] = useState<SelectionButtonProps[]>([])
-
-    const navigate = useNavigate()
-
-    const [currentSubmittalData, setCurrentSubmittalData] = useState<SubmittalProps>({
+    const [errorString, setErrorString] = useState<string>("")
+    
+    const [currentSubmittalData, setCurrentSubmittalData] = useState<SubmittalProps>(submittal ?? {
         submittal_id: "",
-        project: "",
+        project: "Select a project",
         received_date: new Date().toLocaleDateString('en-CA'),
         project_name: "(Search Project)",
         type: "MECHANICAL",
@@ -29,61 +26,8 @@ export function SubmittalFormCreation() {
         status: "OPEN",
         notes: "",
     })
-
-    const { onProjectChange, onAssignedToChange, onSubmit } = useSubmittalFormHandler(setCurrentSubmittalData, currentSubmittalData, navigate, "POST")
-
-    useEffect(() => {
-        const get_submittals_data = async () => {
-            const response = await getDataForSubmittalCreation()
-
-            if (!response) {
-                throw new Error("Error fetching submittal data")
-            }
-
-            const obj_projects = response.projects.map((value: string[]) => {
-                return { value: value[0], label: value[1] }
-            })
-            setProjects(obj_projects)
-            
-            const obj_employees = response.users.map((value: string[]) => {
-                return { value: value[0], label: value[1] }
-            })
-            setEmployees(obj_employees)
-
-        }
-        
-        get_submittals_data()
-    }, [])
-
-    return (
-        <SubmittalFormBase 
-        submittal={currentSubmittalData}
-        projects={projects} 
-        employees={employees} 
-        onSubmit={onSubmit} 
-        onProjectChange={onProjectChange} 
-        onAssignedToChange={onAssignedToChange}
-        method="POST"/>
-    )
-}
-
-/**
- * The Form Component that edits a submittal
- * 
- * I separated this into a different function because it was a headache to combine this with the creation form.
- * Maybe I'll find another way later.
- * 
- * @param submittal 
- * 
- */
-export function SubmittalFormEdit({submittal}: {submittal: SubmittalProps}) {
-    const [projects, setProjects] = useState<SelectionButtonProps[]>([])
-    const [employees, setEmployees] = useState<SelectionButtonProps[]>([])
-    
-    const [currentSubmittalData, setCurrentSubmittalData] = useState<SubmittalProps>(submittal)
     const navigate = useNavigate()
-
-    const { onProjectChange, onAssignedToChange, onSubmit } = useSubmittalFormHandler(setCurrentSubmittalData, currentSubmittalData, navigate, "PUT")
+    const { onProjectChange, onAssignedToChange, onSubmit } = useSubmittalFormHandler(setCurrentSubmittalData, setErrorString, currentSubmittalData, navigate, method)
 
     useEffect(() => {
         const get_submittals_data = async () => {
@@ -102,40 +46,43 @@ export function SubmittalFormEdit({submittal}: {submittal: SubmittalProps}) {
                 return { value: value[0], label: value[1] }
             })
             setEmployees(obj_employees)
-
-            // const obj_clients = response.client_names.map((value: string) => {
-            //     return { value: value, label: value }
-            // })
-            // setClients(obj_clients)
         }
         
         get_submittals_data()
     }, [])
 
     return (
-        <SubmittalFormBase 
-        submittal={currentSubmittalData} 
-        projects={projects} 
-        employees={employees} 
-        onSubmit={onSubmit} 
-        onProjectChange={onProjectChange} 
-        onAssignedToChange={onAssignedToChange}
-        method="PUT"/>
+        <>
+            {errorString && <Error_Component errorString={errorString}/>}
+            <SubmittalFormBase 
+                submittal={currentSubmittalData} 
+                projects={projects} 
+                employees={employees} 
+                onSubmit={onSubmit} 
+                onProjectChange={onProjectChange} 
+                onAssignedToChange={onAssignedToChange}
+                method={method}/>
+        </>
     )
 }
 
 function SubmittalFormBase({ submittal, onSubmit, projects, employees, onProjectChange, onAssignedToChange, method }: SubmittalFormBaseProps) {
+    const method_string = {
+        POST: "Create Submittal",
+        PUT: "Update Submittal",
+    }
+
     return (
         <GenericForm form_id="submittal_creation" onSubmit={onSubmit}>
             <SelectionComponent label="Project Name" Value={submittal.project_name} options={projects} onChange={onProjectChange} name="project"/>
             <GenericInput label="Received Date" value={submittal.received_date} type="date" name="received_date"/>
             <SelectionComponent label="Assigned To" Value={submittal.assigned_to} options={employees} onChange={onAssignedToChange} name="user"/>
-            <GenericInput label="Submittal Type" value={submittal.type} type="text" name="type"/>
-            <GenericInput label="Submittal Description" value={submittal.sub_description} type="text" name="sub_description"/>
-            <GenericInput label="Notes" value={submittal.notes} type="text" name="notes"/>
-            <GenericSelect label="Status" value={submittal.status} options={["OPEN", "CLOSED"]} name="status"/>
+            <GenericSelect label="Submittal Type" value={submittal.type} options={["MECHANICAL", "ELECTRICAL", "PLUMBING", "FIRE_PROTECTION", "OTHER"]} name="type"/>
+            <GenericTextArea label="Submittal Description" value={submittal.sub_description} name="sub_description"/>
+            <GenericTextArea label="Notes" value={submittal.notes} name="notes"/>
+            <GenericSelect label="Status" value={submittal.status} options={["OPEN","CLOSING", "COMPLETED"]} name="status"/>
 
-            <BottomFormButton button_text={method === "POST" ? "Create Submittal" : "Update Submittal"}/>
+            <BottomFormButton button_text={method_string[method]}/>
         </GenericForm>
     )
 }

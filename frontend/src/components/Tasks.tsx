@@ -3,21 +3,31 @@ import { GenericTable, Header } from './misc';
 import { deleteTask, filterTasksByAllUserProjects, getTaskByID, getTaskList } from '../api/tasks';
 import { TaskProps } from '../interfaces/tasks_types';
 import { useParams } from 'react-router-dom';
-import { TaskForm, UpdateTask } from './TaskForm';
+import { TaskForm } from './TaskForm';
 import { OrangeButton, RouteButton } from './Buttons';
 import { useAuth } from '../App';
+import { EmployeeProps } from '../interfaces/employee_type';
 
-export function Tasks() {
+/**
+ *  ### Route for ('/tasks/create_task')
+ * 
+ */
+export function CreateTask() {
   return (
     <>
       <Header />
       <h1 className="mx-4 text-x1 font-semibold">Assign Task</h1>
 
-      <TaskForm />
+      <TaskForm method="POST" />
     </>
   )
 }
 
+/**
+ *  ### Route for ('/tasks/update_task/:id')
+ * 
+ * 
+ */
 export function EditTask() {
   const { id } = useParams<string>()
 
@@ -51,11 +61,16 @@ export function EditTask() {
       <Header />
       <h1 className="mx-4 text-x1 font-semibold">Edit Task</h1>
 
-      {task_data && <UpdateTask task_data={task_data}/>}
+      {task_data && <TaskForm task_data={task_data} method="PUT"/>}
     </>
   )
 }
 
+/**
+ *  ### Route for ('/tasks/')
+ * 
+ * 
+ */
 export function TaskList() {
   const { user } = useAuth()
 
@@ -76,6 +91,7 @@ export function TaskList() {
         } else {
           const get_tasks = await filterTasksByAllUserProjects(user.email);
           setTasks(get_tasks);
+          setTasksLoaded(true)
         }
       } catch (error) {
         console.error(error);
@@ -102,7 +118,7 @@ export function TaskList() {
         isDataLoaded={tasksLoaded}
         columns={columns}
         FilterComponent={FilterComponent}
-        expandableRowComponent={expandableRowComponent}
+        expandableRowComponent={({data}) => expandableRowComponent({data: data, user: user})}
         filterField="title"
       />}
     </>
@@ -118,36 +134,36 @@ function FilterComponent({ filterText, onFilter, onClear }: { filterText: string
     )
 }
 
-function expandableRowComponent({ data }: { data: TaskProps }) {
-    const handleDelete = async () => {
-        if (confirm("Are you sure you want to delete this task?")) {
-            try {
-                if (!data.task_id) {
-                    throw new Error("Task ID is undefined");
-                }
-                const response = await deleteTask(data.task_id);
-                if (response === 200) {
-                    alert("Task deleted successfully");
-                    window.location.reload();
-                } else {
-                    alert("Error deleting task:" + response);
-                }
-            } catch (error) {
-                alert("Error deleting task:" + error);
-            }
-        }
-    };
+function expandableRowComponent({ data, user }: { data: TaskProps, user: EmployeeProps }) {
+  const handleDelete = async () => {
+      if (confirm("Are you sure you want to delete this task?")) {
+          try {
+              if (!data.task_id) {
+                  throw new Error("Task ID is undefined");
+              }
+              const response = await deleteTask(data.task_id);
+              if (response === 200) {
+                  alert("Task deleted successfully");
+                  window.location.reload();
+              } else {
+                  alert("Error deleting task:" + response);
+              }
+          } catch (error) {
+              alert("Error deleting task:" + error);
+          }
+      }
+  };
 
-    return (
-        <div>
-          <div className="flex flex-col gap-2 px-2">
-            <h2 className='font-semibold'>Description:</h2>
-            <p>{data.description}</p>
-          </div>
-          <div className="px-2 flex flex-row gap-2">
-            <RouteButton text="Edit Task" route={`/tasks/edit_task/${data.task_id}`}/>
-            <OrangeButton onClick={handleDelete}>Delete Task</OrangeButton>
-          </div>
+  return (
+      <div>
+        <div className="flex flex-col gap-2 px-2">
+          <h2 className='font-semibold'>Description:</h2>
+          <p>{data.description}</p>
         </div>
-    )
+        <div className="px-2 flex flex-row gap-2">
+          <RouteButton text="Edit Task" route={`/tasks/update_task/${data.task_id}`}/>
+          {user.role === "Manager" || user.role === "Administrator" && <OrangeButton onClick={handleDelete}>Delete Task</OrangeButton>}
+        </div>
+      </div>
+  )
 } 

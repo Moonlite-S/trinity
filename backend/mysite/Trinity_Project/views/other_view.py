@@ -44,7 +44,7 @@ def announcement(request):
     payload = authenticate_jwt(request)
     
     if request.method == 'GET':
-        announcements = Announcements.objects.filter(created_at__gt=timezone.now() - F('duration'))
+        announcements = Announcements.objects.all()
         serializer = AnnouncmentsSerializer(announcements, many=True)
         return Response(serializer.data)
 

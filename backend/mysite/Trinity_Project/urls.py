@@ -40,5 +40,4 @@ urlpatterns = [
     path("rfi/creation_data", rfi_creation_data),
     path("rfi/",RFI_list),
     path("rfi/id/<str:rfi_id>",RFI_detail),
-    path("rfi/id/close/<str:rfi_id>", close_rfi)
 ]
