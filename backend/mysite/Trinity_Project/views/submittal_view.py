@@ -134,7 +134,8 @@ def submittal_by_assigned_to(request,assigned_to):
         else:
             serializer = SubmittalSerializer(submittals,many=True)
         return Response(serializer.data)
-    
+
+@login_required
 @api_view(['GET'])
 def submittal_creation_data(request):
     payload = authenticate_jwt(request)

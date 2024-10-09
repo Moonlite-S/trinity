@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 import jwt
 from django.contrib.auth import authenticate,login,logout
 from django.middleware.csrf import get_token
-
+from django.contrib.auth.decorators import login_required
 class RegisterView(APIView):
     def post(self,request):
         serializer = UserSerializer(data=request.data)
@@ -32,7 +32,7 @@ class UserView(APIView):
         except Exception as e:
             print(f"An error occurred while getting the user: {e}")
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            
+
 @api_view(['POST'])
 def login_view(request):
     email = request.data['email']
@@ -40,9 +40,8 @@ def login_view(request):
 
     user = authenticate(request, email=email, password = password)
 
-    # Removed as we are using own auth method
-    # if user is not None:
-    #     login(request, user)
+    if user is not None:
+        login(request, user)
 
     if user is None:
         raise AuthenticationFailed('Invalid credentials!')
@@ -53,6 +52,7 @@ def login_view(request):
         'id': user.id,
         'name': user.name,
         'email': user.email,
+        'role': user.role,
         'is_superuser':user.is_superuser,
         'exp': datetime.now(timezone.utc) + timedelta(minutes=60),
         'iat': datetime.now(timezone.utc)
@@ -66,6 +66,7 @@ def login_view(request):
     response.data = {"message": "Successfully logged in."}
     return response
 
+@login_required
 @api_view(['POST'])
 def logout_view(request):
     # # Log the user out

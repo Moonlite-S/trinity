@@ -72,6 +72,7 @@ def RFI_detail(request,rfi_id):
         rfi.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+@login_required
 @api_view(['GET'])
 def rfi_creation_data(request):
     authenticate_jwt(request)
@@ -92,6 +93,7 @@ def rfi_creation_data(request):
 
     return Response(data_to_send, status=status.HTTP_200_OK)
 
+@login_required
 @api_view(['GET'])
 def rfi_creation_data(request):
     authenticate_jwt(request)
@@ -112,6 +114,7 @@ def rfi_creation_data(request):
 
     return Response(data_to_send, status=status.HTTP_200_OK)
 
+@login_required
 @api_view(['GET'])
 def rfi_by_user(request, email):
     user_obj = User.objects.get(email=email)

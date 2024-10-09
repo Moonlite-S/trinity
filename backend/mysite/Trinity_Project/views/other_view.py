@@ -12,6 +12,8 @@ from datetime import datetime, timezone
 from django.contrib.auth.decorators import login_required
 from ..graphapi import GraphAPI
 from django.db.models import F
+
+@login_required
 @api_view(['DELETE'])
 def project_delete_log(request):
     if request.method == 'DELETE':
@@ -39,6 +41,7 @@ def schedule_call(request):
         
     return render(request, 'schedule_call.html', context)
 
+@login_required
 @api_view(['GET', 'POST'])
 def announcement(request):
     payload = authenticate_jwt(request)
