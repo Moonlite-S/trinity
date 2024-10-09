@@ -251,4 +251,4 @@ class Invoice(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
         
     def __str__(self):
-        return f"Invoice {self.invoice_number} - {self.bill_to_name}"
+        return f"Invoice {self.invoice_id} - {self.bill_to_name}"
