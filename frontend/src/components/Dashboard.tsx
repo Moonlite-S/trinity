@@ -7,8 +7,8 @@ import { ProjectProps } from "../interfaces/project_types"
 import { TaskProps } from "../interfaces/tasks_types"
 import { TaskCard, AnnouncementCard, ProjectCard, RFICard, SubmittalCard } from "./Card"
 import { useEffect, useState } from "react"
-import { getSubmittals } from "../api/submittal"
-import { getRFIList } from "../api/rfi"
+import { getSubmittalByUser } from "../api/submittal"
+import { getRFIByUser } from "../api/rfi"
 import { RFIProps } from "../interfaces/rfi_types"
 import { SubmittalProps } from "../interfaces/submittal_types"
 
@@ -36,7 +36,7 @@ export function MainMenuDashboard(
     useEffect(() => {
         const get_submittals = async () => {
             try {
-                const response = await getSubmittals()
+                const response = await getSubmittalByUser(user.email)
                 setSubmittals(response)
             } catch (error) {
                 console.log(error)
@@ -45,7 +45,7 @@ export function MainMenuDashboard(
 
         const get_rfis = async () => {
             try {
-                const response = await getRFIList()
+                const response = await getRFIByUser(user.email)
                 setRFIs(response)
             } catch (error) {
                 console.log(error)
@@ -71,8 +71,17 @@ export function MainMenuDashboard(
     const sorted_projects = sort_projects(user.projects ?? [])
 
     const sort_submittals = (submittals: SubmittalProps[]) => {
-        return submittals.sort((a, b) => a.received_date.localeCompare(b.received_date))
+        return submittals.sort((a, b) => {
+            // First, sort by status
+            if (a.status !== b.status) {
+                const statusOrder = ['CLOSING', 'OPEN', 'CLOSED'];
+                return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
+            }
+            // If statuses are the same, sort by received date
+            return a.received_date.localeCompare(b.received_date);
+        });
     }
+    
 
     const sorted_submittals = sort_submittals(submittals)
 

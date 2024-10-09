@@ -9,7 +9,7 @@ from Trinity_Project.utils import authenticate_jwt
 from ..models import RFI, Project, User
 from ..serializers import RFISerializer
 from django.contrib.auth.decorators import login_required
-
+from django.db.models import Q
 @login_required
 @api_view(['GET', 'POST'])
 def RFI_list(request):
@@ -19,7 +19,7 @@ def RFI_list(request):
         return Response(status=status.HTTP_404_NOT_FOUND)
     
     if request.method == 'GET':
-        rfis=RFI.objects.all()
+        rfis = sorted(rfis, key=lambda rfi: rfi.days_old(), reverse=True) # Sort by days old (oldest to newest)
         serializer =RFISerializer(rfis, many=True)
         return Response(serializer.data)
     
@@ -111,3 +111,16 @@ def rfi_creation_data(request):
         return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     return Response(data_to_send, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def rfi_by_user(request, email):
+    user_obj = User.objects.get(email=email)
+    try:
+        rfis = RFI.objects.filter(Q(assigned_to=user_obj) | Q(created_by=user_obj))
+    except RFI.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+        
+    if request.method == 'GET':
+        serializer = RFISerializer(rfis, many=True)
+        return Response(serializer.data)
+    

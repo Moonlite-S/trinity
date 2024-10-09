@@ -28,6 +28,7 @@ export type RFICreationProps = {
 }
 
 export type RFIFormBaseProps = {
+    user: EmployeeProps
     errorString: string | undefined
     currentRFIData: RFIProps
     projects: SelectionButtonProps[]

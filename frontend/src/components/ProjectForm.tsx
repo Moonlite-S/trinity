@@ -6,7 +6,7 @@ import { Error_Component } from "./misc";
 import { useAuth } from "../App";
 import { useNavigate } from "react-router-dom";
 import { useProjectFormHandler } from "../hooks/projectFormHandler";
-import { GenericForm, GenericInput, GenericSelect } from "./GenericForm";
+import { GenericForm, GenericInput, GenericSelect, GenericTextArea } from "./GenericForm";
 
 const templates = [
     'default'
@@ -223,15 +223,20 @@ function ProjectFormBase({ currentProjectData, projectManagerListOptions, Client
     return (
         <GenericForm form_id="project_creation" onSubmit={onSubmit}>
             <GenericInput label="Project Name" value={currentProjectData.project_name} type="text" name="project_name"/>
-            <GenericInput label="Date Created" value={currentProjectData.start_date} type="date" name="start_date"/>
-            <GenericInput label="Date Due" value={currentProjectData.end_date} type="date" name="end_date"/>
-            <SelectionComponent label="Project Manager" Value={currentProjectData.manager.name} options={projectManagerListOptions} onChange={onManagerChange} name="manager"/>
-            <CreateableSelectionComponent label="Client Name" options={Clients} name="client_name" Value={currentProjectData.client_name} onChange={onClientChange}/>
-            <CreateableSelectionComponent label="City" Value={currentProjectData.city} options={Cities} name="city" onChange={onCityChange}/>
-            <GenericSelect label="Project Status" value={currentProjectData.status} options={["ACTIVE", "COMPLETED", "CANCELLED", "NOT STARTED"]} name="status" />
-            <GenericInput label="Folder Name" value={currentProjectData.project_id} type="text" name="folder_location" />
-            <GenericSelect label="Template" value={currentProjectData.template} options={templates} name="template" />
-            <GenericInput label="Project Description" value={currentProjectData.description} type="text" name="description" />
+            <div className="grid grid-cols-2 gap-4">
+                <GenericInput label="Date Created" value={currentProjectData.start_date} type="date" name="start_date"/>
+                <GenericInput label="Date Due" value={currentProjectData.end_date} type="date" name="end_date"/>
+            </div> 
+            <div className="grid grid-cols-3 gap-4">
+                <SelectionComponent label="Project Manager" Value={currentProjectData.manager.name} options={projectManagerListOptions} onChange={onManagerChange} name="manager"/>
+                <CreateableSelectionComponent label="Client Name" options={Clients} name="client_name" Value={currentProjectData.client_name} onChange={onClientChange}/>
+                <CreateableSelectionComponent label="City" Value={currentProjectData.city} options={Cities} name="city" onChange={onCityChange}/>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+                <GenericSelect label="Project Status" value={currentProjectData.status} options={["ACTIVE", "COMPLETED", "CANCELLED", "NOT STARTED"]} name="status" />
+                <GenericSelect label="Template" value={currentProjectData.template} options={templates} name="template" />
+            </div>
+            <GenericTextArea label="Project Description" value={currentProjectData.description} name="description" />
             <BottomFormButton button_text={method === "POST" ? "Create Project" : "Update Project"}/>
         </GenericForm>
     )

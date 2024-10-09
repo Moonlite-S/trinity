@@ -10,7 +10,7 @@ type GenericFormProps = {
 
 export function GenericForm({children, form_id, onSubmit} : GenericFormProps) {
     return (
-        <form id={form_id} onSubmit={onSubmit} className="bg-slate-200 p-5 rounded-md border border-zinc-500 m-5 w-3/4 mx-auto">
+        <form id={form_id} onSubmit={onSubmit} className="bg-slate-200 p-4 mt-4 rounded-md border border-zinc-500 w-3/4 mx-auto">
             {children}
         </form>
     )

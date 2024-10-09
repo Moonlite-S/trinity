@@ -116,6 +116,20 @@ export async function getSubmittals(): Promise<SubmittalProps[]> {
     }
 }
 
+export async function getSubmittalByUser(email: string): Promise<SubmittalProps[]> {
+    try {
+        const response = await AxiosInstance.get(`api/submittal/name/${email}`)
+        return response.data as SubmittalProps[]
+    } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+            throw error.response?.data
+        } else if (error instanceof Error) {
+            throw error.message
+        }
+        throw new Error("Unknown error")
+    }
+}
+
 export async function deleteSubmittal(submittalId: string): Promise<Number> {
     try {
         const response = await AxiosInstance.delete(`api/submittal/id/${submittalId}`)

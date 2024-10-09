@@ -23,10 +23,11 @@ export function TaskCard ({task} : {task: TaskProps}) {
     <Link to={`/tasks/update_task/${task.task_id}`}>
         <div className=" bg-slate-100 p-4 my-4 mx-2 rounded-md shadow-md">
             <h3 className='font-bold'>{task.title}</h3> 
-        <h4>Status: <span className={ColorStatus(task.status)}>{task.status}</span></h4>
-        <h4>From Project: {formatProjectName}</h4>
-        <p className="py-4 break-words">{task.description}</p>
+            <h4>Status: <span className={ColorStatus(task.status)}>{task.status}</span></h4>
+            {task.status === "CLOSING" && <h4 className="text-red-500">(AWAITING REVIEW)</h4>}
+            <h4>From Project: {formatProjectName}</h4>
             <p className="text-red-800">Due: {task.due_date}</p>
+            <p>Progress: {task.completion_percentage}% Completed</p>
         </div>
     </Link>
     )
@@ -62,9 +63,10 @@ export function SubmittalCard ({submittal} : {submittal: SubmittalProps}) {
     <Link to={`/submittals/update_submittal/${submittal.submittal_id}`}>
         <div className="bg-slate-100 p-2 my-4 mx-2 rounded-md shadow-md">
             <h3>{submittal.project_name}</h3>
-        <h4>Status: <span className={ColorStatus(submittal.status)}>{submittal.status}</span></h4>
-        <p>Received: {submittal.received_date}</p>
-        <p>Type: {submittal.type}</p>
+            <h4>Status: <span className={ColorStatus(submittal.status)}>{submittal.status}</span></h4>
+            <p>Received: {submittal.received_date}</p>
+            <p>Type: {submittal.type} </p>
+            <p>Notes: {submittal.notes ? submittal.notes : '(No Notes Written)'}</p>
         </div>
     </Link>
     )
@@ -74,11 +76,12 @@ export function RFICard ({rfi} : {rfi: RFIProps}) {
     return (
     <Link to={`/rfi/update_rfi/${rfi.RFI_id}`}>
         <div className="bg-slate-100 p-2 my-4 mx-2 rounded-md shadow-md">
-            <h3>{rfi.project_name}</h3>
+            <h3>{rfi.notes ? rfi.notes : '(No Notes Written)'}</h3>
+            <p>{rfi.project_name}</p>
             <h4>Status: <span className={ColorStatus(rfi.status)}>{rfi.status}</span></h4>
+            {rfi.status === "CLOSING" && <h4 className="text-red-500">(REQUESTING CLOSURE)</h4>}
             <h4>Days Old: <span className={DaysOldColor(rfi.days_old ?? 0)}>{rfi.days_old}</span></h4>
             <p>Type: {rfi.type}</p>
-            <p>Notes: {rfi.notes ? rfi.notes : '(No Notes Written)'}</p>
         </div>
     </Link>
     )

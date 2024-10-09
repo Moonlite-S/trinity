@@ -38,14 +38,7 @@ export async function postTask(task: TaskProps): Promise<number> {
 
 export async function updateTask(task: TaskProps): Promise<number> {
     try {
-        await AxiosInstance.put('api/task/id/' + task.task_id, {
-            task_id: task.task_id,
-            title: task.title,
-            description: task.description,
-            assigned_to: task.assigned_to,
-            project_id: task.project_id,
-            due_date: task.due_date
-        })
+        await AxiosInstance.put('api/task/id/' + task.task_id, task)
 
         return 200
     } catch (error: unknown) {

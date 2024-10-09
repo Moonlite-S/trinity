@@ -70,7 +70,7 @@ export function CreateableSelectionComponent({Value = '', multiple, options, nam
     }
 
     return (
-        <div className="flex flex-row justify-between gap-5">
+        <div className="flex flex-col justify-between">
             <label data-testid={name} id={`${name}-label`} htmlFor={name} className="py-2">{label}</label>
             <CreatableSelect 
             inputId={name} 
@@ -131,7 +131,7 @@ export function SelectionComponent({Value: defaultValue = '', multiple, options,
     : {value: defaultOptionValue ? defaultOptionValue : defaultValue, label: defaultValue}
 
     return (
-        <div data-testid={name} className="flex flex-row justify-between gap-5">
+        <div data-testid={name} className="flex flex-col justify-between ">
             {label && <label id={`${name}-label`} htmlFor={name} className="py-2">{label}:</label>}
             <Select inputId={name} 
             aria-labelledby={`${name}-label`} 

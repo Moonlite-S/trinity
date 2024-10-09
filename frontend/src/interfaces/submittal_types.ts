@@ -9,7 +9,10 @@ export type SubmittalProps = {
     sub_description: string
     assigned_to: string
     status: "OPEN" | "CLOSING" | "COMPLETED"
-    notes: string
+    notes?: string
+    closing_notes?: string
+    sent_item?: string
+    send_email?: string
 }
 
 export type SubmittalFormBaseProps = {

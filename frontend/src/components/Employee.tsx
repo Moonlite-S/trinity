@@ -93,6 +93,7 @@ export function CreateEmployee() {
                         <select name="role" className="bg-slate-100 border border-zinc-300" required>
                             <option value="Manager">Manager</option>
                             <option value="Employee">Team Member</option>
+                            <option value="Accountant">Accountant</option>
                         </select>
 
                     </div>

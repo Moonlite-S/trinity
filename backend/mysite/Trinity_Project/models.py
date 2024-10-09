@@ -129,6 +129,9 @@ class Submittal(models.Model):
     user=models.ForeignKey(User, on_delete=models.CASCADE, related_name="submittals")
     status=models.CharField(max_length=50)
     notes=models.TextField()
+    closing_notes=models.TextField(default="", blank=True)
+    sent_item=models.TextField(default="", blank=True)
+    send_email=models.TextField(default="", blank=True)
     
     def __str__(self):
         return f"Submittal ID: {self.submittal_id} | Project: {self.project.project_name} | Status: {self.status}"
@@ -198,9 +201,9 @@ class RFI(models.Model):
     type = models.CharField(max_length=50)
     assigned_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name="rfi_sent")
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="rfi_created")
-    notes=models.TextField()
-    notes_closed=models.TextField()
-    description= models.TextField()
+    notes=models.TextField(default="", blank=True)
+    notes_closed=models.TextField(default="", blank=True)
+    description= models.TextField(default="", blank=True)
     status=models.CharField(max_length=50, default="ACTIVE")
     
     def days_old(self):

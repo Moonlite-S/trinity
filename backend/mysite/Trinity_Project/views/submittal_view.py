@@ -122,9 +122,9 @@ def submittal_detail(request,submittal_id):
 @login_required
 @api_view(['GET'])
 def submittal_by_assigned_to(request,assigned_to):
-    
+    user_obj = User.objects.get(email=assigned_to)
     try:
-        submittals=Submittal.objects.filter(user__name=assigned_to)
+        submittals=Submittal.objects.filter(user=user_obj)
     except Submittal.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     

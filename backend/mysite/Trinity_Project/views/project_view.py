@@ -97,7 +97,11 @@ def project_detail(request, project_id):
     elif request.method == 'PUT':
         # if project.manager != user.name and not user.is_superuser:
         #     raise PermissionDenied("You do not have permission to edit this project.")
-        
+
+        # I don't send the folder location in the request data because it is not allowed to be changed
+        folder_location = Project.objects.get(project_id=project_id).folder_location
+        request.data['folder_location'] = folder_location
+
         serializer = ProjectSerializer(project, data=request.data)
         if serializer.is_valid():
             manager_obj = serializer.validated_data.pop('manager')

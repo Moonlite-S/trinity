@@ -16,6 +16,7 @@ import { SetAnnouncement } from './components/Announcement'
 import CreateSubmittal, { EditSubmittal, SubmittalList } from './components/Submittal'
 import { EditTask } from './components/Tasks'
 import ViewRFI, { CreateRFI, EditRFI } from './components/RFI'
+import ProposalList from './components/Proposal'
 // Main Router for the application
 export default function App() {
   return (
@@ -53,6 +54,8 @@ export default function App() {
               <Route path='/rfi/create_rfi' element={<CreateRFI />} />
               <Route path='/rfi/update_rfi/:id' element={<EditRFI />} />
               <Route path='/announcements/create_anncouncement' element={<SetAnnouncement />} />
+
+              <Route path='/proposal/' element={<ProposalList />} />
 
             </Route>
 

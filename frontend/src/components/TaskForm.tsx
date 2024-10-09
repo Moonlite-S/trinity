@@ -110,11 +110,15 @@ function TaskFormBase({user, projects, employees, currentTaskData, onProjectSele
   return (
       <GenericForm form_id="task_form" onSubmit={onSubmit}>
         <GenericInput label="Task Subject" value={currentTaskData.title} name="title" type="text"/>
-        <SelectionComponent label="Project" options={projects} name='project' Value={currentTaskData.project} onChange={onProjectSelectionChange} readonly={user.role === "Team Member"}/>
-        <SelectionComponent label="Assign To" options={employees} name='assigned_to' Value={currentTaskData.assigned_to} onChange={onAssignedToChange} readonly={user.role === "Team Member"}/>
-        <GenericInput label="Due Date" value={currentTaskData.due_date} name="due_date" type="date"/>
+        <div className="grid grid-cols-2 gap-4">
+          <SelectionComponent label="Project" options={projects} name='project' Value={currentTaskData.project} onChange={onProjectSelectionChange} readonly={user.role === "Team Member"}/>
+          <SelectionComponent label="Assign To" options={employees} name='assigned_to' Value={currentTaskData.assigned_to} onChange={onAssignedToChange} readonly={user.role === "Team Member"}/>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <GenericSelect label="Status" options={status_options} name='status' value={currentTaskData.status}/>
+          <GenericInput label="Due Date" value={currentTaskData.due_date} name="due_date" type="date"/>
+        </div>
         <GenericTextArea label="Task Description" value={currentTaskData.description} name="description"/>
-        <GenericSelect label="Status" options={status_options} name='status' value={currentTaskData.status}/>
         <GenericSlider label="Completion Percentage" value={currentTaskData.completion_percentage} name="completion_percentage" onChange={onSliderChange}/>
 
         <BottomFormButton button_text={method_string[method]}/>

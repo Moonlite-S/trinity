@@ -74,14 +74,27 @@ function SubmittalFormBase({ submittal, onSubmit, projects, employees, onProject
 
     return (
         <GenericForm form_id="submittal_creation" onSubmit={onSubmit}>
-            <SelectionComponent label="Project Name" Value={submittal.project_name} options={projects} onChange={onProjectChange} name="project"/>
-            <GenericInput label="Received Date" value={submittal.received_date} type="date" name="received_date"/>
-            <SelectionComponent label="Assigned To" Value={submittal.assigned_to} options={employees} onChange={onAssignedToChange} name="user"/>
-            <GenericSelect label="Submittal Type" value={submittal.type} options={["MECHANICAL", "ELECTRICAL", "PLUMBING", "FIRE_PROTECTION", "OTHER"]} name="type"/>
+            <div className="grid grid-cols-2 gap-4">
+                <SelectionComponent label="Project Name" Value={submittal.project_name} options={projects} onChange={onProjectChange} name="project"/>
+                <SelectionComponent label="Assigned To" Value={submittal.assigned_to} options={employees} onChange={onAssignedToChange} name="user"/>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+                <GenericInput label="Received Date" value={submittal.received_date} type="date" name="received_date"/>
+                <GenericSelect label="Submittal Type" value={submittal.type} options={["MECHANICAL", "ELECTRICAL", "PLUMBING", "FIRE_PROTECTION", "OTHER"]} name="type"/>
+            </div>
+            
             <GenericTextArea label="Submittal Description" value={submittal.sub_description} name="sub_description"/>
             <GenericTextArea label="Notes" value={submittal.notes} name="notes"/>
+            <GenericTextArea label="Sent Item" value={submittal.sent_item} name="sent_item"/>
+            <GenericTextArea label="Send Email" value={submittal.send_email} name="send_email"/>
             <GenericSelect label="Status" value={submittal.status} options={["OPEN","CLOSING", "COMPLETED"]} name="status"/>
-
+            
+            {method === "PUT" && (
+                <>
+                    <GenericTextArea label="Closing Notes" value={submittal.closing_notes} name="closing_notes"/>
+                </>
+            )}
             <BottomFormButton button_text={method_string[method]}/>
         </GenericForm>
     )

@@ -118,6 +118,15 @@ export async function getRFI(id: string): Promise<RFIProps> {
     }
 }
 
+export async function getRFIByUser(email: string): Promise<RFIProps[]> {
+    try {
+        const response = await AxiosInstance.get('api/rfi/user/' + email)
+        return response.data
+    } catch (error: unknown) {
+        throw new Error("Error fetching RFI by user")
+    }
+}
+
 export async function deleteRFI(rfi: RFIProps): Promise<Number> {
     try {
         const response = await AxiosInstance.delete('api/rfi/id/' + rfi.RFI_id)

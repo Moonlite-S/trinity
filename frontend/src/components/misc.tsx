@@ -58,10 +58,14 @@ type GenericTableProps<T> = {
 /**
  * The Univseral Table Component
  * 
- * (You still need to create the FilterComponent and expandableRowComponent your)
+ * (You still need to create the FilterComponent and expandableRowComponents)
  * 
- * @param projectList - List of projects 
- * @param projectLoaded - Boolean to check if projects have been loaded
+ * @param dataList - List of data to be displayed
+ * @param isDataLoaded - Boolean to check if data has been loaded
+ * @param columns - The columns to be displayed
+ * @param FilterComponent - The component to be used for the filter
+ * @param expandableRowComponent - The component to be used for the expandable row
+ * @param filterField - The field to be used for the filter
  */
 export function GenericTable<T>({ dataList, isDataLoaded, columns, FilterComponent, expandableRowComponent, filterField }: GenericTableProps<T>) {
   const [filterText, setFilterText] = useState<string>('')
@@ -71,7 +75,7 @@ export function GenericTable<T>({ dataList, isDataLoaded, columns, FilterCompone
   const filteredData: T[] = dataList.filter((item: T) => {
     const fieldValue = item[filterField as keyof T];
     return typeof fieldValue === 'string' ? fieldValue.toLowerCase().includes(filterText.toLowerCase()) : true;
-  });
+  })
 
   // For the filter function
   const filterSearchBox = useMemo(() => {

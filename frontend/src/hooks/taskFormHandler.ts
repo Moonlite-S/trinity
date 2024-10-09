@@ -46,7 +46,7 @@ export function useTaskFormHandler(
       }
 
       const onSliderChange = (e: unknown) => {
-        if (e && typeof e === 'number' ) {
+        if (e && typeof e === 'number' && e >= 0 && e <= 100) {
           setCurrentTaskData(prev => ({...prev, completion_percentage: e}))
         } else {
           console.error("Invalid event object")
@@ -59,7 +59,7 @@ export function useTaskFormHandler(
         
         const form_data = new FormData(e.currentTarget);
 
-        console.log("currentTaskData", form_data)
+        console.log("form_data: ", form_data)
 
         // This is to convert the project object string to the project id
         const convert_project_obj_str_to_id = currentTaskData.project_id.split('|')[0].slice(4).trim()
@@ -73,11 +73,11 @@ export function useTaskFormHandler(
           assigned_to: form_data.get('assigned_to') as string,
           due_date: form_data.get('due_date') as string,
           project_id: method === "PUT" ? convert_project_obj_str_to_id : form_data.get('project') as string, // Another hacky solution that I need to fix later
-          status: 'ACTIVE',
-          completion_percentage: form_data.get('completion_percentage') as unknown as number
+          status: form_data.get('status') as "ACTIVE" | "CLOSING" | "COMPLETED",
+          completion_percentage: currentTaskData.completion_percentage
         }
     
-        console.log(data_to_send)
+        console.log("Task data to send: ", data_to_send)
     
         try {
             const method_handler = MethodHandler(method, postTask, updateTask);

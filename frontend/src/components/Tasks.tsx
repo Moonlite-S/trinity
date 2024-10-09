@@ -49,11 +49,11 @@ export function EditTask() {
         setTaskData({...task, task_id: id})
       }
       catch (error) {
-        console.error(error);
+        console.error(error)
       }
     }
 
-    fetchData();
+    fetchData()
   }, [id])
   
   return (

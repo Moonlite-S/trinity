@@ -6,16 +6,14 @@ import { getDataForRFICreation } from "../api/rfi";
 import { RFIFormBaseProps, RFIProps } from "../interfaces/rfi_types";
 import { useRFIFormHandler } from "../hooks/rfiFormHandler";
 import { Error_Component } from "./misc";
-import { GenericForm, GenericInput, GenericSelect } from "./GenericForm";
+import { GenericForm, GenericInput, GenericSelect, GenericTextArea } from "./GenericForm";
 import { useAuth } from "../App";
 
 export default function RFIFormCreation() {
     const { user } = useAuth()
+    if (!user) return <div>Loading...</div>
+
     const navigate = useNavigate()
-    
-    if (!user) {
-        navigate("/login")
-    }
 
     const [projects, setProjects] = useState<SelectionButtonProps[]>([])
     const [employees, setEmployees] = useState<SelectionButtonProps[]>([])
@@ -62,6 +60,7 @@ export default function RFIFormCreation() {
 
     return (
         <RFIFormBase 
+        user={user}
         errorString={errorString} 
         currentRFIData={currentRFIData} 
         handleSubmit={handleSubmit} 
@@ -75,6 +74,9 @@ export default function RFIFormCreation() {
 }
 
 export function RFIFormUpdate({RFIProps}: {RFIProps: RFIProps}) {
+    const { user } = useAuth()
+    if (!user) return <div>Loading...</div>
+
     const { id } = useParams<string>()
     if (!id) return <div>Loading...</div>
 
@@ -107,6 +109,7 @@ export function RFIFormUpdate({RFIProps}: {RFIProps: RFIProps}) {
 
     return (
         <RFIFormBase
+        user={user}
         errorString={errorString} 
         currentRFIData={currentRFIData} 
         handleSubmit={handleSubmit} 
@@ -119,25 +122,36 @@ export function RFIFormUpdate({RFIProps}: {RFIProps: RFIProps}) {
     )
 }
 
-function RFIFormBase({errorString, currentRFIData, handleSubmit, handleProjectChange, handleCreatedByEmployeeChange, handleSentByEmployeeChange, projects, employees, method }: RFIFormBaseProps){
+function RFIFormBase({user, errorString, currentRFIData, handleSubmit, handleProjectChange, handleCreatedByEmployeeChange, handleSentByEmployeeChange, projects, employees, method }: RFIFormBaseProps){
     const method_string = {
         POST: "Create RFI",
         PUT: "Update RFI",
         CLOSE: "Close RFI"
     }
+
+    const status_options = user.role === "Team Member" ? ["ACTIVE", "CLOSING"] : ["ACTIVE", "CLOSING", "COMPLETED"]
     return (
     <>
     {errorString && <Error_Component errorString={errorString} />}
     <GenericForm form_id="rfi_form" onSubmit={handleSubmit}>
-        <GenericInput label="Sent Out Date" name="sent_out_date" type="date" value={currentRFIData.sent_out_date} />
-        <GenericInput label="Date Received" name="date_received" type="date" value={currentRFIData.date_received} />
-        <GenericSelect label="Type" name="type" options={["MECHANICAL", "ELECTRICAL", "PLUMBING", "OTHER"]} value={currentRFIData.type} />
         <SelectionComponent label="Project" name="project" Value={currentRFIData.project} options={projects} onChange={handleProjectChange}/>
-        <SelectionComponent label="Assigned To" name="assigned_to_pk" Value={currentRFIData.assigned_to_pk} options={employees} onChange={handleSentByEmployeeChange}/>
-        <SelectionComponent label="Created By" name="created_by_pk" Value={currentRFIData.created_by_pk} options={employees} onChange={handleCreatedByEmployeeChange}/>
-        <GenericInput label="Description" name="description" type="text" value={currentRFIData.description} />
-        <GenericInput label="Notes" name="notes" type="text" value={currentRFIData.notes} />
-        {method === "CLOSE" && <GenericInput label="Closing Notes" name="notes_closed" type="text" value={currentRFIData.notes_closed} />}
+        
+        <div className="grid grid-cols-2 gap-4">
+            <GenericInput label="Sent Out Date" name="sent_out_date" type="date" value={currentRFIData.sent_out_date} />
+            <GenericInput label="Date Received" name="date_received" type="date" value={currentRFIData.date_received} />
+        </div>
+
+        <GenericSelect label="Type" name="type" options={["MECHANICAL", "ELECTRICAL", "PLUMBING", "OTHER"]} value={currentRFIData.type} />
+        
+        <div className="grid grid-cols-2 gap-4">
+            <SelectionComponent label="Assigned To" name="assigned_to_pk" Value={currentRFIData.assigned_to_pk} options={employees} onChange={handleSentByEmployeeChange}/>
+            <SelectionComponent label="Created By" name="created_by_pk" Value={currentRFIData.created_by_pk} options={employees} onChange={handleCreatedByEmployeeChange}/>
+        </div>
+
+        <GenericTextArea label="Description" name="description" value={currentRFIData.description} />
+        <GenericTextArea label="Notes" name="notes" value={currentRFIData.notes} />
+        <GenericSelect label="Status" name="status" options={status_options} value={currentRFIData.status} />
+        {method === "CLOSE" && <GenericTextArea label="Closing Notes" name="notes_closed" value={currentRFIData.notes_closed} />}
         
         <BottomFormButton button_text={method_string[method]}/>
     </GenericForm>
