@@ -1,7 +1,7 @@
 from dataclasses import fields
 from rest_framework import serializers
-from .models import Project, Submittal, Task, RFI, Announcements
-from .models import User
+#from .models import Project, Submittal, Task, RFI, Announcements, User, Invoice
+from .models import *
 
 #these classes convert the models in a more readable format like json when request through api calls
 class ProjectSerializer(serializers.ModelSerializer):
@@ -77,3 +77,7 @@ class AnnouncmentsSerializer(serializers.ModelSerializer):
         instance= Announcements(**validated_data)
         instance.set_expiration(duration_days)
         return instance
+    
+class InvoiceSerializer(serializers.ModelSerializer):
+    model=Invoice
+    fields = []

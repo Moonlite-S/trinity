@@ -1,12 +1,5 @@
-from argparse import Action
-from click import argument
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from datetime import timedelta
-
-from networkx import triangular_lattice_graph
-
-from backend.mysite.Trinity_Project.management.commands import expire_annoucements
 from ...models import Announcements
 
 class Command(BaseCommand):

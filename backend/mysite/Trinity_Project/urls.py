@@ -9,6 +9,7 @@ from Trinity_Project.views.submittal_view import *
 from Trinity_Project.views.rfi_view import *
 from Trinity_Project.views.user_view import *
 from Trinity_Project.views.other_view import *
+from Trinity_Project.views.Invoice_view import *
 from rest_framework.authtoken.views import obtain_auth_token
 from two_factor.views import LoginView
 
@@ -40,5 +41,7 @@ urlpatterns = [
     path("submittal/name/<str:assigned_to>",submittal_by_assigned_to),
     path("rfi/",RFI_list),
     path("rfi/id/<str:rfi_id>",RFI_detail),
-    path("announcement/",announcement)
+    path("announcement/",announcement),
+    path("invoice/",invoice_list),
+    path("invoice/id/<str:invoice_id>",invoice_detail)
 ]
