@@ -11,6 +11,7 @@ ALLOWED_HOSTS = [os.environ["WEBSITE_HOSTNAME"]]
 CSRF_TRUSTED_ORIGINS = ['https://'+ os.environ["WEBSITE_HOSTNAME"]]
 DEBUG = False
 SECRET_KEY = os.environ['SECRET_KEY']
+LOGIN_URL = 'login'
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
