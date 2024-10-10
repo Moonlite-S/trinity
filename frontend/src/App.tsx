@@ -6,7 +6,7 @@ import './App.css'
 import { CreateProject, UpdateProject, UpdateProjectList, ProjectStatusReport } from './components/Project'
 import { checkUser } from './api/auth'
 import { CreateTask, TaskList } from './components/Tasks';
-import { CreateEmployee, EmployeeList } from './components/Employee'
+import { CreateEmployee, EmployeeList, UpdateEmployee } from './components/Employee'
 import { TemplateList } from './components/Template'
 import { ErrorPage } from './components/Error'
 import { MonthlyCalendar, WeeklyCalendar } from './components/Calendar';
@@ -21,9 +21,7 @@ import ProposalList from './components/Proposal'
 export default function App() {
   return (
     <Router>
-
         <Routes>
-
             <Route path='/' element={<Home />} />
 
             {/* All routes here are checked for authentication. */}
@@ -46,6 +44,7 @@ export default function App() {
 
               <Route path='/employees/' element={<EmployeeList />} />
               <Route path='/employees/create_employee' element={<CreateEmployee />} />
+              <Route path='/employees/update_employee/:id' element={<UpdateEmployee />} />
               <Route path='/template_list/' element={<TemplateList />} />
               <Route path='/monthly_calendar' element={<MonthlyCalendar />} />
               <Route path='/weekly_calendar' element={<WeeklyCalendar />} />
@@ -60,9 +59,7 @@ export default function App() {
             </Route>
 
             <Route path='*' element={<ErrorPage />} />
-
         </Routes>
-
     </Router>
   )
 } 

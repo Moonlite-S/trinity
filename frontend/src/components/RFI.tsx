@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { TableColumn } from "react-data-table-component";
 import { GenericTable, Header } from "./misc";
-import RFIFormCreation, { RFIFormUpdate } from "./RFIForm";
+import { RFIForm } from "./RFIForm";
 import { RFIProps } from "../interfaces/rfi_types";
 import { deleteRFI, getRFI, getRFIList } from "../api/rfi";
 import { useNavigate, useParams } from "react-router-dom";
@@ -16,7 +16,7 @@ export function CreateRFI() {
                 <h1>Create RFI</h1>
             </div>
 
-            <RFIFormCreation />
+            <RFIForm method="POST"/>
         </>
     )
 }
@@ -55,7 +55,7 @@ export function EditRFI() {
                 <h1>Update RFI</h1>
             </div>
 
-            {currentRFIData && <RFIFormUpdate RFIProps={currentRFIData}/>}
+            {currentRFIData && <RFIForm RFIProps={currentRFIData} method="PUT"/>}
         </>
     )
 }

@@ -5,7 +5,7 @@ import { getProjectList, getProject, deleteProject } from "../api/projects";
 import { useNavigate, useParams } from "react-router-dom";
 import { TableColumn } from "react-data-table-component";
 import { ProjectFilterProps, ProjectProps } from "../interfaces/project_types";
-import { ProjectFormCreation, ProjectFormUpdate } from "./ProjectForm";
+import { ProjectForm } from "./ProjectForm";
 import { OrangeButton, RouteButton } from "./Buttons";
 import { filterTasksByProject } from "../api/tasks";
 import { SubmittalProps } from "../interfaces/submittal_types";
@@ -34,7 +34,7 @@ export function CreateProject() {
 
             </div>
 
-            <ProjectFormCreation/>
+            <ProjectForm method="POST"/>
 
         </>
     )
@@ -142,7 +142,7 @@ export function UpdateProject() {
 
             {loading ? <div>Loading...</div> 
             : 
-            currentProject && <ProjectFormUpdate formProps={currentProject} />}
+            currentProject && <ProjectForm formProps={currentProject} method="PUT" />}
             
         </>
     )

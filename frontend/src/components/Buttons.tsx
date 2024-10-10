@@ -4,9 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { SelectionComponentProps } from "../interfaces/button_types";
 
 /** General Orange button */
-export function RouteButton({route, text, isDelete}: {route: string, text: string, isDelete?: boolean}) {
-    const css = isDelete ? 'bg-red-300 rounded p-4 my-2 hover:bg-red-400 transition' : 
-    'bg-orange-300 rounded p-4 my-2 hover:bg-orange-400 transition';
+export function RouteButton({route, text}: {route: string, text: string}) {
+    const css = 'bg-orange-300 rounded p-4 my-2 hover:bg-orange-400 transition';
   
     return(
       <Link className={css} to={route}>{text}</Link>
@@ -43,7 +42,7 @@ export function BottomFormButton({ button_text }: { button_text: string}) {
 
         <BackButton/>
         
-        <button type="submit" className="bg-orange-300 rounded p-4 ml-5">
+        <button type="submit" className="bg-orange-300 rounded p-4 my-2 hover:bg-orange-400 transition ml-5">
             {button_text}
         </button>
 

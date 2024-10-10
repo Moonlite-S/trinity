@@ -23,7 +23,7 @@ export function useRFIFormHandler (
         }
     }
 
-    const handleSentByEmployeeChange = (e: unknown) => {
+    const handleAssignedToEmployeeChange = (e: unknown) => {
         console.log(e)
 
         if (typeof e === "object" && e !== null && "value" in e && "label" in e){
@@ -71,5 +71,5 @@ export function useRFIFormHandler (
 
     }
 
-    return { handleProjectChange, handleSentByEmployeeChange, handleCreatedByEmployeeChange, handleSubmit }
+    return { handleProjectChange, handleAssignedToEmployeeChange, handleCreatedByEmployeeChange, handleSubmit }
 }
