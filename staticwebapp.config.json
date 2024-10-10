@@ -1,0 +1,10 @@
+{
+  "routes": [
+    {
+      "route": "/main_menu",
+      "methods": [
+        "get"
+      ]
+    }
+  ]
+}
