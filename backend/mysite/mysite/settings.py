@@ -6,6 +6,7 @@ DO NOT ADD ANYTHING USED IN PROD
 development.py IS USED FOR PROD
 """
 
+from datetime import timedelta
 from pathlib import Path
 import os
 from dotenv import load_dotenv
@@ -234,6 +235,12 @@ DEFAULT_FROM_EMAIL = "7ddbd4001@smtp-brevo.com"    # email ending with @sendinbl
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+
+AUTO_LOGOUT = {
+    'IDLE_TIME': timedelta(minutes=15), 
+    'REDIRECT_TO_LOGIN_IMMEDIATELY': True,
+    'MESSAGE': 'The session has expired. Please login again to continue.',
+    } 
 
 # <EMAIL_CONFIRM_REDIRECT_BASE_URL>/<key>
 EMAIL_CONFIRM_REDIRECT_BASE_URL = \

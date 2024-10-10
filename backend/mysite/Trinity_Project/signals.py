@@ -1,7 +1,8 @@
 #from datetime import timezone
+from attrs import field
 from django.utils import timezone
-from .models import User, ProjectChangeLog, Project, Task,TaskChangeLog
-from django.db.models.signals import post_save, pre_save, pre_delete,post_delete
+from .models import RFI, RFIChangeLog, User, ProjectChangeLog, Project, Task,TaskChangeLog,Announcements
+from django.db.models.signals import post_save, pre_save, pre_delete,post_delete, post_init
 from django.dispatch import receiver
 import logging
 from .middleware import CurrentUserMiddleware
@@ -167,3 +168,82 @@ def log_task_delete(sender, instance, **kwargs):
         changed_by=f'{user}',
         change_description="task was deleted"
     )
+
+# @receiver(post_init, sender=Announcements)
+# def check_and_delete_expired_object(sender, instance, **kwargs):
+#     if instance.is_expired():
+#         print(f"Deleting expired object: {instance.name}")
+#         instance.delete()
+
+
+@receiver(post_save, sender=RFI)
+def log_RFI_change(sender, instance,created, **kwargs):
+    if created:
+        user = CurrentUserMiddleware.get_current_user()
+        if not user:
+            return
+        RFIChangeLog.objects.create(
+            project=f'{instance.project}',
+            date_received=f'{instance.date_received}',
+            RFI_id=f'{instance.RFI_id}',
+            sent_out_date=f'{instance.sent_out_date}',
+            type=f'{instance.type}',
+            user=f'{instance.user}',
+            notes=f'{instance.notes}',
+            description=f'{instance.description}',
+            changed_by=f'{user}',
+            change_description=f'RFI was created'
+        )
+        return
+    
+    try:
+        original= RFI.objects.get(pk=instance.pk)
+    except RFI.DoesNotExist:
+        return
+    
+    user =CurrentUserMiddleware.get_current_user()
+    
+    if not user:
+        return
+
+    old_values = instance.get_old_values()
+    
+    fields_to_log=['project','date_received','RFI_id','sent_out_date','type','user','notes','notes_closed','description']
+    for field in fields_to_log:
+        old_value=old_values.get(field)
+        new_value=getattr(instance, field)
+        
+        if old_value != new_value:
+            RFIChangeLog.objects.create(
+                project=f'{instance.project}',
+                date_received=f'{instance.date_received}',
+                RFI_id=f'{instance.RFI_id}',
+                sent_out_date=f'{instance.sent_out_date}',
+                type=f'{instance.type}',
+                user=f'{instance.user}',
+                notes=f'{instance.notes}',
+                description=f'{instance.description}',
+                changed_by=f'{user}',
+                change_description=f'{field} changed from {old_value} to {new_value}'
+        )
+            
+@receiver(post_delete, sender=RFI)
+def log_rfi_delete(sender, instance, **kwargs):
+    
+    user = CurrentUserMiddleware.get_current_user()
+    
+    if not user:
+        print("no user found")
+        return
+    RFIChangeLog.objects.create(
+            project=f'{instance.project}',
+            date_received=f'{instance.date_received}',
+            RFI_id=f'{instance.RFI_id}',
+            sent_out_date=f'{instance.sent_out_date}',
+            type=f'{instance.type}',
+            user=f'{instance.user}',
+            notes=f'{instance.notes}',
+            description=f'{instance.description}',
+            changed_by=f'{user}',
+            change_description=f'RFI was deleted'
+        )
