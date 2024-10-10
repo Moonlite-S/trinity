@@ -5,12 +5,14 @@ import { AccountantDashboardProps, MainDashboardProps, ManagerDashboardProps, } 
 import { EmployeeProps } from "../interfaces/employee_type"
 import { ProjectProps } from "../interfaces/project_types"
 import { TaskProps } from "../interfaces/tasks_types"
-import { TaskCard, AnnouncementCard, ProjectCard, RFICard, SubmittalCard } from "./Card"
+import { TaskCard, AnnouncementCard, ProjectCard, RFICard, SubmittalCard, InvoiceCard } from "./Card"
 import { useEffect, useState } from "react"
 import { getSubmittalByUser } from "../api/submittal"
 import { getRFIByUser } from "../api/rfi"
 import { RFIProps } from "../interfaces/rfi_types"
 import { SubmittalProps } from "../interfaces/submittal_types"
+import { InvoiceProps } from "../interfaces/invoices_types"
+import { getInvoices } from "../api/invoices"
 
 type MainMenuDashboardProps = {
     user: EmployeeProps, 
@@ -157,7 +159,6 @@ function ManagerDashboard(
                     <h3>No Projects assigned to you</h3>
                     }
                 </div>
-
             </div>
 
             <div className="p-5 mx-auto border w-full overflow-hidden">
@@ -195,7 +196,7 @@ function TeamMemberDashboard(
     {user, announcements, sorted_tasks, sorted_projects}: MainDashboardProps
 ) {
     return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col w-screen pr-2 h-screen">
 
         <div className="p-5 mx-auto border flex flex-col mb-2 w-full">
             <h3>Hello, {user.name}</h3>
@@ -254,18 +255,30 @@ function TeamMemberDashboard(
 function AccountantDashboard(
     {user, announcements}: AccountantDashboardProps
 ) {
+    const [invoices, setInvoices] = useState<InvoiceProps[]>([])
+
+    useEffect(() => {
+        const get_invoices = async () => {
+            try {
+                const response = await getInvoices()
+                setInvoices(response)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        get_invoices()
+    }, [])
     return (
-    <div className="grid grid-cols-2 grid-flow-row gap-3 justify-center w-screen p-5 h-screen">
+        <div className="flex flex-col w-screen pr-2 h-screen">
 
-        <div className="p-5 mx-auto border row-span-1 w-full">
-
+        <div className="p-5 mx-auto border flex flex-col mb-2 w-full">
             <h3>Hello, {user.name}</h3>
 
             <h3>Role: {user.role}</h3>
-
         </div>
-
-        <div className="p-5 mx-auto border row-span-1 w-full overflow-hidden">
+        
+        <div className="p-5 mx-auto border w-full mb-2">
 
             <h3>Announcements:</h3>
 
@@ -279,17 +292,21 @@ function AccountantDashboard(
             </div>
 
         </div>
-        <div className="flex flex-row justify-center row-span-5 w-full">
+        
+        <div className="grid grid-cols-1 gap-3 justify-center pb-5 h-full mb-4">
+
             <div className="p-5 mx-auto border w-full overflow-hidden">
                 <h3>Invoices:</h3>
+
+                {invoices.length > 0 ? invoices.map((invoice) => (
+                    <InvoiceCard key={invoice.invoice_id} invoice={invoice} />
+                ))
+                :
+                <h3>No Invoices at the moment</h3>}
+
             </div>
-        </div>
-        <div className="p-5 mx-auto border row-span-2 w-full overflow-hidden">
-
-            <h3 className="py-2">Billings:</h3>
 
         </div>
-
     </div>
     )
 }
@@ -300,6 +317,8 @@ export function MainNavBar(
     return (
     <div className='p-2 flex flex-col justify-items-center'>
         {(role === "Manager" || role === "Administrator") && <Button_Card text="Create Announcement" route="/announcements/create_anncouncement" />}  
+        {(role === "Accountant" || role === "Administrator") && <Button_Card text="Create Invoice" route="/invoice/create_invoice" />}
+        {(role === "Accountant" || role === "Administrator") && <Button_Card text="View Invoices" route="/invoice/" />}
         {(role === "Manager" || role === "Administrator" )&& <Button_Card text="Create Project" route="/projects/create_project" />}
         {(role === "Manager" || role === "Administrator") && <Button_Card text="Update Project" route="/projects/" />}
         <Button_Card text="Project Status Report" route="/projects/project_status_report" popup_window />

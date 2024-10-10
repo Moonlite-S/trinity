@@ -4,6 +4,7 @@ import { ProjectProps } from "../interfaces/project_types"
 import { RFIProps } from "../interfaces/rfi_types"
 import { SubmittalProps } from "../interfaces/submittal_types"
 import { TaskProps } from "../interfaces/tasks_types"
+import { InvoiceProps } from "../interfaces/invoices_types"
 
 /**
  * TaskCard Component
@@ -87,6 +88,17 @@ export function RFICard ({rfi} : {rfi: RFIProps}) {
     )
 }
 
+export function InvoiceCard ({invoice} : {invoice: InvoiceProps}) {
+    return (
+    <Link to={`/invoices/update_invoice/${invoice.invoice_id}`}>
+        <div className="bg-slate-100 p-2 my-4 mx-2 rounded-md shadow-md">
+            <h3>{invoice.invoice_id}</h3>
+            <p>{invoice.invoice_date}</p>
+            <p>{invoice.due_date}</p>
+        </div>
+    </Link>
+    )
+}
 // Color Coded Functions to help visually see the status of important fields
 
 function ColorStatus(status : string) {

@@ -213,6 +213,11 @@ class RFI(models.Model):
         return None
     
 class Invoice(models.Model):
+    payment_status_choices = [
+        ('Pending', 'Pending'), 
+        ('Paid', 'Paid'), 
+        ('Overdue', 'Overdue')
+    ]
     invoice_id = models.CharField(max_length=20, unique=True, primary_key=True)
     invoice_date = models.DateField()
     due_date = models.DateField()
@@ -233,13 +238,13 @@ class Invoice(models.Model):
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
 
     # Payment Information
-    payment_status = models.CharField(max_length=50, choices=[('Pending', 'Pending'), ('Paid', 'Paid'), ('Overdue', 'Overdue')])
+    payment_status = models.CharField(max_length=50, choices=payment_status_choices)
     payment_method = models.CharField(max_length=50, null=True, blank=True)
     transaction_id = models.CharField(max_length=100, null=True, blank=True)
 
     # Metadata
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-        
+
     def __str__(self):
         return f"Invoice {self.invoice_number} - {self.bill_to_name}"

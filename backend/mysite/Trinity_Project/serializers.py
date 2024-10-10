@@ -1,3 +1,4 @@
+import uuid
 from rest_framework import serializers
 from .models import *
 
@@ -123,5 +124,7 @@ class AnnouncmentsSerializer(serializers.ModelSerializer):
         return instance
     
 class InvoiceSerializer(serializers.ModelSerializer):
+    invoice_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     model=Invoice
-    fields = []
+    fields = '__all__'
+    read_only_fields = ['invoice_id']

@@ -16,7 +16,6 @@ from rest_framework import status
 @login_required
 @api_view(['GET','POST'])
 def invoice_list(request):
-    
     if request.method == 'GET':
         invoice= Invoice.objects.all()
         serializer = InvoiceSerializer(invoice, many=True)
