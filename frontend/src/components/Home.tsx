@@ -86,7 +86,6 @@ export function Login(){
 
   const handleSubmit = async (e: any) => { 
     e.preventDefault()
-
     setLoading(true)
 
     // Do Validation Here
@@ -105,19 +104,17 @@ export function Login(){
       if (response === 200) {
         navigate("/main_menu")
 
-      } else {
-        if (response === 403) {
-          setErrorCode("Incorrect email or password")
-        }
-        else {
-          setErrorCode("Server Error")
-        }
-
-        setLoading(false)
-        setError(true)
+      } else if (response === 403) {
+        setErrorCode("Incorrect email or password")
       }
+      else {
+        setErrorCode("Server Error")
+      }
+
+      setLoading(false)
+      setError(true)
     }
-    catch  {
+    catch (error) {
       setLoading(false)
       setError(true)
       setErrorCode("Network Error")

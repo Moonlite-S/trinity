@@ -148,7 +148,7 @@ describe('Home Page', () => {
 
         it('should show error message with incorrect password', async() => {
 
-            (login as jest.Mock).mockResolvedValue(401)
+            (login as jest.Mock).mockResolvedValue(403)
 
             render(
             <MemoryRouter>

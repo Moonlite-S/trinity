@@ -57,7 +57,6 @@ export function MainMenu() {
             </div>
             
             <MainMenuDashboard user={user} announcements={announcements}/>
-        
         </>
     )
 }
