@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 
-from backend.mysite.Trinity_Project.models import Invoice
+from ..models import Invoice
 from ..serializers import InvoiceSerializer, UserSerializer
 from rest_framework.views import APIView
 import jwt
@@ -12,9 +12,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate,login,logout
 from django.middleware.csrf import get_token
 from rest_framework import status
-
-from backend.mysite.Trinity_Project import serializers
-
 
 @login_required
 @api_view(['GET','POST'])
