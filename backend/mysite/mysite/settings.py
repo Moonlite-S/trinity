@@ -214,7 +214,7 @@ LOGIN_URL = "two_factor:login"
 #LOGIN_URL = "api/login"
 
 AUTO_LOGOUT = {
-    'IDLE_TIME': timedelta(minutes=3), 
+    'IDLE_TIME': timedelta(minutes=15), 
     'REDIRECT_TO_LOGIN_IMMEDIATELY': True,
     'MESSAGE': 'The session has expired. Please login again to continue.',
     } 

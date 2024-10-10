@@ -25,6 +25,12 @@ class TaskChangeLogAdmin(admin.ModelAdmin):
     list_filter = ('task_id','changed_by','change_time')
     search_fields = ('change_description','task_title','changed_by__name')
 
+@admin.register(RFIChangeLog)
+class RFIChangeLogAdmin(admin.ModelAdmin):
+    list_display=('project','date_received','RFI_id','sent_out_date','type','user','notes','notes_closed','description','changed_by','change_time','change_description')
+    list_filter=('RFI_id','changed_by','change_time')
+    search_fields=('change_description','changed_by__name')
+
 
 @admin.register(PendingChange)
 class PendingChangeAdmin(admin.ModelAdmin):

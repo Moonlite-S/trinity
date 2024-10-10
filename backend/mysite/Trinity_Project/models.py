@@ -1,6 +1,7 @@
 from logging import NOTSET
 from pyexpat import model
 from telnetlib import STATUS
+from attrs import field
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
@@ -221,6 +222,47 @@ class RFI(models.Model):
             return (current_date - self.date_received).days
         return None
     
+    
+    def save(self, *args, **kwargs):
+        if self.pk:
+            try:
+                old_instance=RFI.objects.get(pk=self.pk)
+                self._old_values = {
+                    field.name: getattr(old_instance, field.name)
+                    for field in self._meta.get_fields()
+                    if isinstance(field, models.Field)
+                }
+            except RFI.DoesNotExist:
+                self._old_values = {}
+        else:
+            self._old_values = {}
+            
+        super(RFI, self).save(*args, **kwargs)    
+        
+    def get_old_values(self):
+        if hasattr(self, '_old_values'):
+            return self._old_values
+        return {}
+
+                                                                            
+class RFIChangeLog(models.Model):
+    project=models.CharField(max_length=50)
+    date_received=models.CharField(max_length=50)
+    RFI_id=models.CharField(max_length=50)
+    sent_out_date=models.CharField(max_length=50)
+    type=models.CharField(max_length=50)
+    user=models.CharField(max_length=50)
+    notes=models.TextField()
+    notes_closed=models.TextField()
+    description=models.TextField()
+    changed_by =models.CharField(max_length=50)
+    change_time = models.DateField(auto_now_add=True)
+    change_description = models.TextField()
+    
+    def __str__(self):
+        return f"Change to {self.RFI_id} by {self.changed_by} at {self.change_time}"
+    
+
 class Invoice(models.Model):
     invoice_id = models.CharField(max_length=20, unique=True, primary_key=True)
     invoice_date = models.DateField()
