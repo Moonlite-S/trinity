@@ -6,7 +6,7 @@ import userEvent from '@testing-library/user-event'
 import { ProjectProps } from '../interfaces/project_types'
 import selectEvent from 'react-select-event';
 import { act } from 'react'
-import { ProjectFormCreation } from '../components/ProjectForm'
+import { ProjectForm } from '../components/ProjectForm'
 
 vi.mock('../api/auth', async(importOriginal) => {
     const original = await importOriginal<typeof import('../api/auth')>()
@@ -72,7 +72,7 @@ describe('Project Creation', () => {
                 ]}
                 authContextValue={test_user_dummy}
             >
-                <ProjectFormCreation />
+                <ProjectForm method="POST" />
             </TestRouterWrapper>
         )
 
@@ -81,7 +81,6 @@ describe('Project Creation', () => {
         fireEvent.change(screen.getByLabelText(/Project description/i), { target: { value: new_project.description } })
         fireEvent.change(screen.getByLabelText(/Date Created/i), { target: { value: new_project.start_date } })
         fireEvent.change(screen.getByLabelText(/Date Due/i), { target: { value: new_project.end_date } })
-        fireEvent.change(screen.getByLabelText(/Folder Name/i), { target: { value: new_project.folder_location } })
         
         // For React-Select components
         const managerSelect = screen.getByLabelText(/Project Manager/i)

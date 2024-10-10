@@ -8,6 +8,7 @@ from Trinity_Project.views.user_view import *
 from Trinity_Project.views.task_view import *
 from Trinity_Project.views.submittal_view import *
 from Trinity_Project.views.rfi_view import *
+from Trinity_Project.views.Invoice_view import *
 
 #from . import views
 urlpatterns = [
@@ -24,6 +25,9 @@ urlpatterns = [
     path("user/all_users_names",return_all_users_names),
     path("user/all_users_name_and_email", return_all_users_name_and_email),
     path("user/all_users",user_list),
+    path("user/id/<str:id>",get_user_by_id),
+    path("user/update_user/<str:id>", update_user),
+    path("user/delete_user/<str:id>", delete_user),
     path("task/",task_list),
     path("task/id/<str:task_id>",task_detail),
     path("task/project_id/<str:project_id>",task_filter_by_project_id),
@@ -41,4 +45,7 @@ urlpatterns = [
     path("rfi/",RFI_list),
     path("rfi/id/<str:rfi_id>",RFI_detail),
     path("rfi/user/<str:email>", rfi_by_user),
+    path("announcement/",announcement),
+    path("invoice/",invoice_list),
+    path("invoice/id/<str:invoice_id>",invoice_detail)
 ]

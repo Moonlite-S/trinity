@@ -7,7 +7,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password, **extra_fields):
         if not email:
-            raise ValueError(_('The Email must be set'))
+            raise ValueError(('The Email must be set'))
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
@@ -20,9 +20,9 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_active', True)
 
         if extra_fields.get('is_staff') is not True:
-            raise ValueError(_('Superuser must have is_staff=True.'))
+            raise ValueError(('Superuser must have is_staff=True.'))
         if extra_fields.get('is_superuser') is not True:
-            raise ValueError(_('Superuser must have is_superuser=True.'))
+            raise ValueError(('Superuser must have is_superuser=True.'))
         return self.create_user(email, password, **extra_fields)
     
 class Project(models.Model):
@@ -209,5 +209,37 @@ class RFI(models.Model):
     def days_old(self):
         if self.date_received:
             current_date = datetime.now().date()
-            return (current_date - self.date_received).days 
+            return (current_date - self.date_received).days
         return None
+    
+class Invoice(models.Model):
+    invoice_id = models.CharField(max_length=20, unique=True, primary_key=True)
+    invoice_date = models.DateField()
+    due_date = models.DateField()
+
+    # Billing Information
+    bill_to_name = models.CharField(max_length=255)
+    bill_to_address = models.TextField()
+    bill_to_email = models.EmailField()
+
+    # Business Information
+    from_name = models.CharField(max_length=255)
+    from_address = models.TextField()
+    from_email = models.EmailField()
+
+    # Item/Service Details (related through another model for multiple items)
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
+    tax = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    # Payment Information
+    payment_status = models.CharField(max_length=50, choices=[('Pending', 'Pending'), ('Paid', 'Paid'), ('Overdue', 'Overdue')])
+    payment_method = models.CharField(max_length=50, null=True, blank=True)
+    transaction_id = models.CharField(max_length=100, null=True, blank=True)
+
+    # Metadata
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+        
+    def __str__(self):
+        return f"Invoice {self.invoice_number} - {self.bill_to_name}"

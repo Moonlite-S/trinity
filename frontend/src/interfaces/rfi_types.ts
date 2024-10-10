@@ -37,5 +37,5 @@ export type RFIFormBaseProps = {
     handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void
     handleProjectChange: (e: unknown) => void
     handleCreatedByEmployeeChange: (e: unknown) => void
-    handleSentByEmployeeChange: (e: unknown) => void
+    handleAssignedToEmployeeChange: (e: unknown) => void
 }

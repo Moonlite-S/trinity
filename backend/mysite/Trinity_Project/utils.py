@@ -11,6 +11,11 @@ def authenticate_jwt(request):
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
     except jwt.ExpiredSignatureError:
-        raise AuthenticationFailed('Unauthenticated!')
+        response = AuthenticationFailed('Token has expired!')
+        response.delete_cookie('jwt_token')
+        response.delete_cookie('csrftoken')
+        raise response
+    except jwt.DecodeError:
+        raise AuthenticationFailed('Invalid token!')
     
     return payload

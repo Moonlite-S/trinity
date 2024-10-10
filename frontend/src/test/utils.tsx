@@ -41,7 +41,7 @@ export function TestRouterWrapper({
 }: TestRouterWrapper) {
   const defaultAuthContextValue: AuthContextType = {
     auth: false,
-    user: { name: '', email: '', username: '', password: '', role: 'Manager' },
+    user: { name: '', email: '', username: '', password: '', role: 'Team Member' },
     loading: false,
     setAuth: vi.fn(),
     setUser: vi.fn(),

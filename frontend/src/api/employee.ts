@@ -10,17 +10,9 @@ import { EmployeeNameEmail, EmployeeProps } from "../interfaces/employee_type";
  * @returns Code 200 if successful and error if not
  * 
  */
-export async function createEmployee({name, email, password, role} : EmployeeProps): Promise<number> {
+export async function createEmployee(user : EmployeeProps): Promise<number> {
     try {
-        const response = await AxiosInstance.post('api/register', {
-            name: name,
-            email: email,
-            password: password,
-            username: name,
-            role: role
-        });
-        
-        console.log(response)
+        const response = await AxiosInstance.post('api/register', user);
 
         if (response.status === 200) {
             return response.status
@@ -28,6 +20,36 @@ export async function createEmployee({name, email, password, role} : EmployeePro
             throw new Error('Error creating employee')
         }
 
+    } catch (error) {
+        console.error("Server Error: ",error)
+        throw error
+    }
+}
+
+export async function updateEmployee(user : EmployeeProps): Promise<number> {
+    try {
+        const response = await AxiosInstance.put('api/user/update_user/' + user.id, user);
+
+        if (response.status === 200) {
+            return response.status
+        } else {
+            throw new Error('Error updating employee')
+        }
+    } catch (error) {
+        console.error("Server Error: ",error)
+        throw error
+    }
+}
+
+export async function deleteEmployee(id: string): Promise<number> {
+    try {
+        const response = await AxiosInstance.delete('api/user/delete_user/' + id);
+
+        if (response.status === 204) {
+            return response.status
+        } else {
+            throw new Error('Error deleting employee')
+        }
     } catch (error) {
         console.error("Server Error: ",error)
         throw error
@@ -56,16 +78,14 @@ export async function getEmployeeNameList(): Promise<string[]> {
     }
 }
 
-/** Have this serach for one employee by email or id
+/** Have this serach for one employee by email 
  * 
  * - Backend still needs to implement this
  */
-export async function getOneEmployee(email: string): Promise<EmployeeProps
+export async function getEmployeeDataById(id: string): Promise<EmployeeProps
 > {
     try {
-        const response = await AxiosInstance.get('api/user/:id' + email)
-
-        console.log(response)
+        const response = await AxiosInstance.get('api/user/id/' + id)
 
         if (response.status === 200) {
             return response.data

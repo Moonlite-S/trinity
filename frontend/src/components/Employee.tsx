@@ -1,121 +1,63 @@
-import { useNavigate } from "react-router-dom";
-import { createEmployee, getAllEmployeeData } from "../api/employee";
+import { deleteEmployee, getAllEmployeeData, getEmployeeDataById } from "../api/employee";
 import { Header } from "./misc";
 import { useEffect, useMemo, useState } from "react";
 import DataTable, { Direction, TableColumn } from "react-data-table-component";
 import { EmployeeProps, FilterProps } from "../interfaces/employee_type";
-import { RouteButton } from "./Buttons";
+import { OrangeButton, RouteButton } from "./Buttons";
+import { EmployeeForm } from "./EmployeeForm";
+import { useParams } from "react-router-dom";
 
 /**
  *  ### [Route for ('/create_employee')]
  * 
  * Create an employee and sends a POST request to the backend
- * 
  */
 export function CreateEmployee() {
-    const [errorString, setErrorString] = useState<string>("")
-    const email_regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-    const navigate = useNavigate();
+    return (
+        <>
+            <Header />
 
-    const onSubmit = async(e: any) => {
-        e.preventDefault()
-        
-        setErrorString("")
+            <div className="justify-center mx-auto p-5">
+                <h1>Create Employee</h1>
+            </div>
 
-        if (e.target.password.value !== e.target.re_password.value) {
-            setErrorString("Passwords do not match.")
-            return
-        } else if (!email_regex.test(e.target.email.value)) {
-            setErrorString("Invalid email.")
-            return
-        }
+            <EmployeeForm method="POST"/>
+        </>
+    )
+}
 
-        try {
-            const code = await createEmployee({
-                name: e.target.name.value,
-                email: e.target.email.value,
-                password: e.target.password.value,
-                username: e.target.name.value,
-                role: e.target.role.value,
-                
-            })
-
-            if (code === 200) {
-                alert("Employee created successfully!")
-                navigate("/main_menu")
-            } else if (code === 403) {
-                setErrorString("Not Authorized to create Employee. Please contact the admin. Error code: " + code)
-            } else {
-                setErrorString("Employee creation failed! Error code: " + code)
-            }
-
-        } catch (error) {
-            console.error("Error creating employee:", error);
-            setErrorString("Network Error. Employee was not created.")
-            throw error; // Re-throw the error so the caller can handle it if needed
-        }
+export function UpdateEmployee() {
+    const { id } = useParams();
+    if (!id) {
+        console.error("No employee selected")
+        return <div>No employee selected</div>
     }
+    const [employeeData, setEmployeeData] = useState<EmployeeProps>();
+
+    useEffect(() => {
+        const fetchEmployeeData = async () => {
+            try {
+                const response = await getEmployeeDataById(id);
+                setEmployeeData({...response, id: id});
+            } catch (error) {
+                console.error("Error fetching employee data:", error);
+            }
+        };
+
+        fetchEmployeeData();
+    }, [id]);
+
+    console.log("Employee Data: ", employeeData)
 
     return (
         <>
-        <Header />
+            <Header />
 
-        <div className="px-5">
-
-            <h1 className="text-center">Create Employee Form:</h1>
-            <form id="project_creation" onSubmit={onSubmit}  method="post">
-
-                <div className="grid grid-cols-2 gap-5 p-24 mx-auto max-w-screen-lg bg-zinc-50 mt-5" >
-
-                    <div className="grid grid-cols-2 gap-3 justify-center">
-
-                        <label htmlFor="name">Name:</label>
-                        <input type="text" name="name" className="bg-slate-100 border border-zinc-300" required/>
-
-                        <label htmlFor="name">Email:</label>
-                        <input type="text" name="email"  className="bg-slate-100 border border-zinc-300" required/>
-
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3 justify-center">
-
-                        <label htmlFor="name">Password:</label>
-                        <input type="password" name="password" className="bg-slate-100 border border-zinc-300" required/>
-
-                        <label htmlFor="name">Re-enter Password:</label>
-                        <input type="password" name="re_password" className="bg-slate-100 border border-zinc-300" required/>
-
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3 justify-center">
-
-                        <label htmlFor="name">Role:</label>
-                        <select name="role" className="bg-slate-100 border border-zinc-300" required>
-                            <option value="Manager">Manager</option>
-                            <option value="Employee">Team Member</option>
-                            <option value="Accountant">Accountant</option>
-                        </select>
-
-                    </div>
-
-                </div>
-
-                <div className="flex flex-row justify-center gap-3 m-2">
-
-                    <RouteButton route={"/main_menu"} text="Back"/>
-
-                    <button type="submit" className="bg-orange-300 rounded p-4 m-2">
-                        <h6 className="inline-block">Submit</h6>    
-                    </button>
-
-                </div>
-
-                <div className="mt-5">
-                    {errorString && <p className="text-red-500 text-center">{errorString}</p>}
-                </div>
-
-            </form>
-        </div>
+            <div className="justify-center mx-auto p-5">
+                <h1>Update Employee</h1>
+            </div>
+            
+            {employeeData && <EmployeeForm method="PUT" employee={employeeData as EmployeeProps}/>}
         </>
     )
 }
@@ -192,14 +134,33 @@ const FilterComponent = ({ filterText, onFilter, onClear }: FilterProps) => (
  * @param param0 data The props of a give row
  * 
  */
-const ExpandableRowComponent = ({ data }: { data: EmployeeProps }) => (
+const ExpandableRowComponent = ({ data }: { data: EmployeeProps }) => {
+    const deleteEmployeeFunc = async (id: string) => {
+        if (confirm("Are you sure you want to delete this employee?") && confirm("Are you really sure?")) {
+        try {
+            const response = await deleteEmployee(id);
+            if (response === 204) {
+                alert("Employee deleted successfully");
+                window.location.reload();
+            } else {
+                throw new Error("Error deleting employee")
+            }
+        } catch (error) {
+            console.error("Error deleting employee:", error);
+            throw error;
+            }
+        }
+    }
+    
+    return (
     <div className="flex flex-col gap-5 bg-slate-50">
         <div className="flex flex-row gap-5 m-5">
             <RouteButton route={"/employees/update_employee/" + data.id} text="Edit"/>
-            <RouteButton route={"/employees/delete/" + data.id} text="Delete" isDelete/>
+            <OrangeButton onClick={() => deleteEmployeeFunc(data.id as string)}>Delete</OrangeButton>
         </div>
     </div>
-)
+    )
+}
 
 /**
  * The Table Component that lists the employees

@@ -40,9 +40,8 @@ def login_view(request):
 
     user = authenticate(request, email=email, password = password)
 
-    # Removed as we are using own auth method
-    # if user is not None:
-    #     login(request, user)
+    if user is not None:
+        login(request, user)
 
     if user is None:
         raise AuthenticationFailed('Invalid credentials!')
@@ -85,3 +84,37 @@ def logout_view(request):
 
 def index(request):
     return HttpResponse("Hello, world. You're at the Project index.")
+
+@api_view(['GET'])
+def get_user_by_id(request, id):
+    try:
+        user = User.objects.get(id=id)
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['PUT'])
+def update_user(request, id):
+    user = User.objects.get(id=id)
+
+    print("Request Data: ", request.data)
+    print("User: ", user.password)
+
+    # Verify the password
+    if not authenticate(email=user.email, password=request.data['password']):
+        return Response({"error": "Current password is incorrect"}, status=status.HTTP_400_BAD_REQUEST)
+
+    serializer = UserSerializer(user, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+def delete_user(request, id):
+    user = User.objects.get(id=id)
+    user.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)

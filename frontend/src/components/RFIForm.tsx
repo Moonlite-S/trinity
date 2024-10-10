@@ -56,7 +56,7 @@ export default function RFIFormCreation() {
         fetchProjects()
     }, [])
 
-    const { handleSubmit, handleProjectChange, handleCreatedByEmployeeChange, handleSentByEmployeeChange } = useRFIFormHandler({setCurrentRFIData, currentRFIData, navigate, setErrorString, method: "POST"})
+    const { handleSubmit, handleProjectChange, handleCreatedByEmployeeChange, handleAssignedToEmployeeChange } = useRFIFormHandler({setCurrentRFIData, currentRFIData, navigate, setErrorString, method: "POST"})
 
     return (
         <RFIFormBase 
@@ -66,33 +66,43 @@ export default function RFIFormCreation() {
         handleSubmit={handleSubmit} 
         handleProjectChange={handleProjectChange} 
         handleCreatedByEmployeeChange={handleCreatedByEmployeeChange}
-        handleSentByEmployeeChange={handleSentByEmployeeChange}
+        handleAssignedToEmployeeChange={handleAssignedToEmployeeChange}
         projects={projects} 
         employees={employees}
         method="POST"/>
     )
 }
 
-export function RFIFormUpdate({RFIProps}: {RFIProps: RFIProps}) {
+export function RFIForm({RFIProps, method}: {RFIProps?: RFIProps, method: "POST" | "PUT"}) {
     const { user } = useAuth()
     if (!user) return <div>Loading...</div>
 
     const { id } = useParams<string>()
-    if (!id) return <div>Loading...</div>
 
-    const [currentRFIData, setCurrentRFIData] = useState<RFIProps>({
-        ...RFIProps,
-        created_by_pk: RFIProps.created_by?.id as string,
-        assigned_to_pk: RFIProps.assigned_to?.id as string,
-        project: RFIProps.project_id as string
+    const [currentRFIData, setCurrentRFIData] = useState<RFIProps>(RFIProps ?? {
+        RFI_id: "",
+        notes: "",
+        notes_closed: "",
+        sent_out_date: new Date().toLocaleDateString('en-CA'),
+        date_received: new Date().toLocaleDateString('en-CA'),
+        type: "MECHANICAL",
+        project: "",
+        created_by_pk: user?.id as string,
+        assigned_to_pk: "",
+        description: "",
+        status: "ACTIVE"
     })
+
+
+    console.log("currentRFIData: ", currentRFIData)
+
     const [loading, setLoading] = useState<boolean>(true)
     const [errorString, setErrorString] = useState<string>()
     const [projects, setProjects] = useState<SelectionButtonProps[]>([])
     const [employees, setEmployees] = useState<SelectionButtonProps[]>([])
     const navigate = useNavigate()
 
-    const { handleSubmit, handleProjectChange, handleCreatedByEmployeeChange, handleSentByEmployeeChange } = useRFIFormHandler({setCurrentRFIData, currentRFIData, navigate, setErrorString, method: "PUT"})
+    const { handleSubmit, handleProjectChange, handleCreatedByEmployeeChange, handleAssignedToEmployeeChange } = useRFIFormHandler({setCurrentRFIData, currentRFIData, navigate, setErrorString, method})
 
     useEffect(() => {
         const getRFIData = async () => {
@@ -100,10 +110,18 @@ export function RFIFormUpdate({RFIProps}: {RFIProps: RFIProps}) {
             setProjects(data.projects)
             setEmployees(data.employees)
             setLoading(false)
+
+            if (RFIProps){
+                setCurrentRFIData({
+                    ...currentRFIData,
+                    created_by_pk: RFIProps.created_by?.id as string,
+                    assigned_to_pk: RFIProps.assigned_to?.id as string,
+                })
+            }
         }
 
         getRFIData()
-    }, [id, navigate])
+    }, [id])
 
     if (loading) return <div>Loading...</div>
 
@@ -115,14 +133,14 @@ export function RFIFormUpdate({RFIProps}: {RFIProps: RFIProps}) {
         handleSubmit={handleSubmit} 
         handleProjectChange={handleProjectChange} 
         handleCreatedByEmployeeChange={handleCreatedByEmployeeChange}
-        handleSentByEmployeeChange={handleSentByEmployeeChange}
+        handleAssignedToEmployeeChange={handleAssignedToEmployeeChange}
         projects={projects} 
         employees={employees}
-        method="PUT"/>
+        method={method}/>
     )
 }
 
-function RFIFormBase({user, errorString, currentRFIData, handleSubmit, handleProjectChange, handleCreatedByEmployeeChange, handleSentByEmployeeChange, projects, employees, method }: RFIFormBaseProps){
+function RFIFormBase({user, errorString, currentRFIData, handleSubmit, handleProjectChange, handleCreatedByEmployeeChange, handleAssignedToEmployeeChange, projects, employees, method }: RFIFormBaseProps){
     const method_string = {
         POST: "Create RFI",
         PUT: "Update RFI",
@@ -134,7 +152,7 @@ function RFIFormBase({user, errorString, currentRFIData, handleSubmit, handlePro
     <>
     {errorString && <Error_Component errorString={errorString} />}
     <GenericForm form_id="rfi_form" onSubmit={handleSubmit}>
-        <SelectionComponent label="Project" name="project" Value={currentRFIData.project} options={projects} onChange={handleProjectChange}/>
+        <SelectionComponent label="Project" name="project" Value={currentRFIData.project_name} options={projects} onChange={handleProjectChange}/>
         
         <div className="grid grid-cols-2 gap-4">
             <GenericInput label="Sent Out Date" name="sent_out_date" type="date" value={currentRFIData.sent_out_date} />
@@ -144,7 +162,7 @@ function RFIFormBase({user, errorString, currentRFIData, handleSubmit, handlePro
         <GenericSelect label="Type" name="type" options={["MECHANICAL", "ELECTRICAL", "PLUMBING", "OTHER"]} value={currentRFIData.type} />
         
         <div className="grid grid-cols-2 gap-4">
-            <SelectionComponent label="Assigned To" name="assigned_to_pk" Value={currentRFIData.assigned_to_pk} options={employees} onChange={handleSentByEmployeeChange}/>
+            <SelectionComponent label="Assigned To" name="assigned_to_pk" Value={currentRFIData.assigned_to_pk} options={employees} onChange={handleAssignedToEmployeeChange}/>
             <SelectionComponent label="Created By" name="created_by_pk" Value={currentRFIData.created_by_pk} options={employees} onChange={handleCreatedByEmployeeChange}/>
         </div>
 

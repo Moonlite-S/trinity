@@ -15,22 +15,22 @@ const templates = [
 /**
  * This component shows the user the form to create a new project.
  * 
- * @param FormProps : ( see type FormProps )  
+ * @param FormProps : The ProjectProp object that is used to fill the form (If updating)
+ * @param method : The method to use to submit the form (POST or PUT)
  * 
- * TODO:
- *  - REFACTOR THIS IN AN EASIER WAY (NO PROP DRILLING)
- *  - DefaultManager sends only the name, not the email
- *  - I think the best way to decouple this is to just have two ProjectForm components. One for creating and one for updating. 
  */
-export function ProjectFormCreation() { 
+export function ProjectForm(
+    {formProps, method}: {formProps?: ProjectProps, method: "POST" | "PUT"}
+) { 
     const { user } = useAuth()
-    const navigate = useNavigate()
 
     if (!user) {
         return <Error_Component errorString="User not found" />
     }
-    
-    const [currentProjectData, setCurrentProjectData] = useState<ProjectProps>({
+
+    const navigate = useNavigate()
+
+    const [currentProjectData, setCurrentProjectData] = useState<ProjectProps>(formProps ?? {
         project_id: "",
         project_name: "",
         status: "ACTIVE",
@@ -40,107 +40,15 @@ export function ProjectFormCreation() {
         city: "",
         description: "",
         client_name: "",
-        template: "",
-        folder_location: "",
+        template: "default"
     })
-
-    const [ProjectManagers, setProjectManagers] = useState<string[]>([])
-    const [Clients, setClients] = useState<{ value: string, label: string }[] | undefined>()
-    const [Cities, setCities] = useState<{ value: string, label: string }[] | undefined>()
-    const [isLoading, setIsLoading] = useState<boolean>(false)
-
-    const [errorString, setErrorString] = useState<string>()
-
-    const projectManagerListOptions = ProjectManagers?.map((value: string) => {
-        return { value: value[1], label: value[0] }
-    })
-
-    const { onSubmit, onManagerChange, onClientChange, onCityChange } = useProjectFormHandler(setCurrentProjectData, currentProjectData, navigate, setErrorString, "POST")
-
-    useEffect(() => {
-        const get_project_data = async () => {
-            try {
-                setIsLoading(true)
-
-                const DateStart = currentProjectData.start_date
-                const response = await getDataForProjectCreation(DateStart)
-
-                if (!response) {
-                    throw new Error("Error fetching project list")
-                }
-
-                const project_count = String(response.project_count + 1).padStart(3, "0") 
-
-                const date_start = DateStart.split('-')[0] + '-' + DateStart.split('-')[1]
-                setCurrentProjectData(prev => ({...prev, project_id: date_start + "-" + project_count}))
-                
-                setProjectManagers(response.users)
-                const obj_client_names = response.client_names.map((value: string) => {
-                    return { value: value, label: value }
-                })
-                const obj_cities = response.cities.map((value: string) => {
-                    return { value: value, label: value }
-                })
-
-                setClients(obj_client_names)
-                setCities(obj_cities)
-            } catch (error) {
-                console.error("Error fetching project list:", error)
-                setErrorString("Error fetching project list: " + error)
-            }
-        }
-
-        get_project_data()
-        setIsLoading(false)
-    },[])
-
-    if (isLoading){
-        return <h1>Loading...</h1>
-    }
-
-    return (
-    <>
-    {errorString && <Error_Component errorString={errorString} />}
-
-    <ProjectFormBase 
-        currentProjectData={currentProjectData} 
-        projectManagerListOptions={projectManagerListOptions} 
-        Clients={Clients ?? []} 
-        Cities={Cities ?? []} 
-        templates={templates} 
-        onSubmit={onSubmit} 
-        onManagerChange={onManagerChange} 
-        onClientChange={onClientChange} 
-        onCityChange={onCityChange} 
-        method="POST"
-    />
-    </>
-    )
-}
-
-export function ProjectFormUpdate(
-    {formProps}: {formProps: ProjectProps}
-) { 
-    const { user } = useAuth()
-
-    if (!user) {
-        return <Error_Component errorString="User not found" />
-    }
-
-    if (!formProps) {
-        return <Error_Component errorString="Project not found" />
-    }
-
-    const navigate = useNavigate()
-
-    const [currentProjectData, setCurrentProjectData] = useState<ProjectProps>(formProps)
 
     const [ProjectManagers, setProjectManagers] = useState<string[]>([])
     const [Clients, setClients] = useState<{ value: string, label: string }[] | undefined>()
     const [Cities, setCities] = useState<{ value: string, label: string }[] | undefined>()
     const [errorString, setErrorString] = useState<string>()
 
-    const { onSubmit, onManagerChange, onClientChange, onCityChange } = useProjectFormHandler(setCurrentProjectData, currentProjectData, navigate, setErrorString, "PUT")
+    const { onSubmit, onManagerChange, onClientChange, onCityChange } = useProjectFormHandler(setCurrentProjectData, currentProjectData, navigate, setErrorString, method)
 
     const projectManagerListOptions = ProjectManagers?.map((value: string) => {
         return { value: value[1], label: value[0] }
@@ -176,29 +84,6 @@ export function ProjectFormUpdate(
         get_project_data()
     },[])
 
-    // Disabled as long as we decide that we don't want to allow changing the start date
-    // TODO: Remove this comment if we decide to allow changing the start date
-    // const onDateStartChange = async(event: React.ChangeEvent<HTMLInputElement>) => {
-    //     const value = event.target.value
-    //     setDateStart(value)
-
-    //     try {
-    //         const response = await getDataForProjectCreation(value)
-
-    //         if (!response) {
-    //             throw new Error("Error fetching project list")
-    //         }
-    //         const project_count = String(response.project_count + 1).padStart(3, "0")
-
-    //         if (button_text != "Update Project") {
-    //             setProjectID(value + "-" + project_count)
-    //         }
-    //     } catch (error) {
-    //         console.error("Error fetching project list:", error)
-    //         setErrorString("Error fetching project list: " + error)
-    //     }
-    // }
-
     return (
     <>
     {errorString && <Error_Component errorString={errorString} />}
@@ -213,7 +98,7 @@ export function ProjectFormUpdate(
         onManagerChange={onManagerChange} 
         onClientChange={onClientChange} 
         onCityChange={onCityChange} 
-        method="PUT"
+        method={method}
     />
     </>
     )
