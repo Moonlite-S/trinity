@@ -65,7 +65,6 @@ describe('Project Creation', () => {
 
         render(
             <TestRouterWrapper
-                initialEntries={['/']}
                 routes={[
                     {path: '/projects/create_project', element: <CreateProject />},
                     {path: '/projects', element: <UpdateProjectList />}

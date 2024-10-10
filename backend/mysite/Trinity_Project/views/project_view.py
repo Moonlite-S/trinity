@@ -7,15 +7,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from datetime import datetime,timezone, timedelta
 
-from ..utils import authenticate_jwt
+from ..utils import authenticate_jwt, role_required
 from ..azure_file_share import AzureFileShareClient
 from ..models import Project, ProjectChangeLog, User
 from ..serializers import ProjectSerializer, ProjectSerializerUserObjectVer
 from django.contrib.auth.decorators import login_required
 from rest_framework.exceptions import PermissionDenied
 
-@login_required
-@api_view(['GET','POST'])
+@role_required(allowed_roles=['Manager', 'Administrator'], allowed_methods=['GET', 'POST'])
 def project_list(request):
     if request.method == 'GET':
         projects = Project.objects.all()
@@ -78,8 +77,7 @@ def project_list(request):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@login_required
-@api_view(['GET','PUT','DELETE'])
+@role_required(allowed_roles=['Manager', 'Administrator'], allowed_methods=['GET', 'PUT', 'DELETE'])
 def project_detail(request, project_id):
     payload = authenticate_jwt(request) #this is used to check if your are login
 
@@ -95,9 +93,6 @@ def project_detail(request, project_id):
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        # if project.manager != user.name and not user.is_superuser:
-        #     raise PermissionDenied("You do not have permission to edit this project.")
-
         # I don't send the folder location in the request data because it is not allowed to be changed
         folder_location = Project.objects.get(project_id=project_id).folder_location
         request.data['folder_location'] = folder_location
@@ -127,8 +122,7 @@ def project_detail(request, project_id):
         except Exception as e:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
-@login_required
-@api_view(['GET'])
+@role_required(allowed_roles=['Manager', 'Administrator'], allowed_methods=['GET'])
 def project_filter_by_manager(request, manager):
 
     try:
@@ -142,8 +136,7 @@ def project_filter_by_manager(request, manager):
             serializer = ProjectSerializer(project,many=True)
         return Response(serializer.data)
 
-@login_required
-@api_view(['GET'])
+@role_required(allowed_roles=['Manager', 'Administrator'], allowed_methods=['GET'])
 def project_filter_by_status(request, project_status):
     try:
         project=Project.objects.filter(status=project_status)
@@ -157,8 +150,7 @@ def project_filter_by_status(request, project_status):
             serializer = ProjectSerializer(project,many=True)
         return Response(serializer.data)
 
-@login_required
-@api_view(['GET'])
+@role_required(allowed_roles=['Manager', 'Administrator'], allowed_methods=['GET'])
 def project_by_date(request):
     
     year = request.GET.get('year')
@@ -183,7 +175,7 @@ def project_by_date(request):
             
         return Response(serializer.data)
 
-@api_view(['GET'])
+@role_required(allowed_roles=['Manager', 'Administrator'], allowed_methods=['GET'])
 def project_creation_data(request):
     '''
     ### This API returns neccessary data for project creation
@@ -226,7 +218,7 @@ def project_creation_data(request):
 
     return Response(data_to_send, status=status.HTTP_200_OK)
 
-@api_view(['GET'])
+@role_required(allowed_roles=['Manager', 'Administrator'], allowed_methods=['GET'])
 def project_by_date(request):
     
     year = request.GET.get('year')
@@ -251,7 +243,7 @@ def project_by_date(request):
             
         return Response(serializer.data)
     
-@api_view(['DELETE'])
+@role_required(allowed_roles=['Manager', 'Administrator'], allowed_methods=['DELETE'])
 def project_delete_log(request):
     if request.method == 'DELETE':
         ProjectChangeLog.objects.all().delete()

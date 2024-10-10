@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from Trinity_Project.azure_file_share import AzureFileShareClient
-from Trinity_Project.utils import authenticate_jwt
+from Trinity_Project.utils import authenticate_jwt, role_required
 from ..models import Project, Submittal, User
 from ..serializers import SubmittalSerializer
 from django.contrib.auth.decorators import login_required
@@ -13,8 +13,7 @@ from rest_framework.decorators import api_view
 from azure.core.exceptions import ResourceExistsError, ResourceNotFoundError
 
 
-@login_required
-@api_view(['GET','POST'])
+@role_required(allowed_roles=['Manager', 'Administrator', 'Team Member'], allowed_methods=['GET', 'POST'])
 def submittal_list(request):
     
     if request.method == 'GET':
@@ -71,8 +70,7 @@ def submittal_list(request):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@login_required
-@api_view(['GET','PUT','DELETE'])
+@role_required(allowed_roles=['Manager', 'Administrator', 'Team Member'], allowed_methods=['GET', 'PUT', 'DELETE'])
 def submittal_detail(request,submittal_id):
     user = request.user
     try:
@@ -119,8 +117,7 @@ def submittal_detail(request,submittal_id):
         return Response(status=status.HTTP_204_NO_CONTENT)
            
 
-@login_required
-@api_view(['GET'])
+@role_required(allowed_roles=['Manager', 'Administrator', 'Team Member'], allowed_methods=['GET'])
 def submittal_by_assigned_to(request,assigned_to):
     user_obj = User.objects.get(email=assigned_to)
     try:
@@ -129,13 +126,10 @@ def submittal_by_assigned_to(request,assigned_to):
         return Response(status=status.HTTP_404_NOT_FOUND)
     
     if request.method == 'GET':
-        if submittals.count() == 1:
-            serializer = SubmittalSerializer(submittals.first())
-        else:
-            serializer = SubmittalSerializer(submittals,many=True)
+        serializer = SubmittalSerializer(submittals,many=True)
         return Response(serializer.data)
     
-@api_view(['GET'])
+@role_required(allowed_roles=['Manager', 'Administrator', 'Team Member'], allowed_methods=['GET'])
 def submittal_creation_data(request):
     payload = authenticate_jwt(request)
 
@@ -156,8 +150,7 @@ def submittal_creation_data(request):
 
     return Response(data_to_send, status=status.HTTP_200_OK)
 
-@login_required
-@api_view(['GET'])
+@role_required(allowed_roles=['Manager', 'Administrator', 'Team Member'], allowed_methods=['GET'])
 def submittal_by_project_id(request, project_id):
     try:
         submittals = Submittal.objects.filter(project__project_id=project_id)

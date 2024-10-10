@@ -4,20 +4,20 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 
+from Trinity_Project.utils import role_required
+
 from ..models import Invoice
 from ..serializers import InvoiceSerializer, UserSerializer
 from rest_framework.views import APIView
 import jwt
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate,login,logout
-from django.middleware.csrf import get_token
 from rest_framework import status
 
-@login_required
-@api_view(['GET','POST'])
+@role_required(allowed_roles=['Accountant', 'Administrator'], allowed_methods=['GET', 'POST'])
 def invoice_list(request):
     if request.method == 'GET':
-        invoice= Invoice.objects.all()
+        invoice = Invoice.objects.all()
         serializer = InvoiceSerializer(invoice, many=True)
         return Response(serializer.data)
 
@@ -27,10 +27,11 @@ def invoice_list(request):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            print("Serializer errors:", serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@login_required
-@api_view(['GET','PUT','DELETE'])
+@role_required(allowed_roles=['Accountant', 'Administrator'], allowed_methods=['GET', 'PUT', 'DELETE'])
 def invoice_detail(request,invoice_id):
     try:
         invoice=Invoice.objects.get(pk=invoice_id)

@@ -1,5 +1,5 @@
 export type InvoiceProps = {
-    invoice_id?: number
+    invoice_id?: string
     invoice_date: string
     due_date: string
 
@@ -19,7 +19,7 @@ export type InvoiceProps = {
     payment_method: string
     transaction_id: string
 
-    created_at: string
-    updated_at: string
+    created_at?: string
+    updated_at?: string
 
 }

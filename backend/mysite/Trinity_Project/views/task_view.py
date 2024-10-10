@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from ..utils import authenticate_jwt
+from ..utils import authenticate_jwt, role_required
 from ..models import Project,Task, User
 from ..serializers import TaskSerializer
 from django.contrib.auth.decorators import login_required
@@ -13,8 +13,7 @@ from rest_framework.exceptions import PermissionDenied
 from ..models import PendingChange
 import string
 
-@login_required
-@api_view(['GET','POST'])
+@role_required(allowed_roles=['Manager', 'Administrator', 'Team Member'], allowed_methods=['GET', 'POST'])
 def task_list(request):
 
     if request.method == 'GET':
@@ -77,8 +76,7 @@ def task_list(request):
             
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@login_required
-@api_view(['GET','PUT','DELETE'])
+@role_required(allowed_roles=['Manager', 'Administrator', 'Team Member'], allowed_methods=['GET', 'PUT', 'DELETE'])
 def task_detail(request, task_id):
     try:
         task=Task.objects.get(pk=task_id)
@@ -155,8 +153,7 @@ def task_detail(request, task_id):
         task.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-@login_required
-@api_view(['GET'])
+@role_required(allowed_roles=['Manager', 'Administrator', 'Team Member'], allowed_methods=['GET'])
 def task_filter_by_name(request, name):
 
     #user = request.user
@@ -173,8 +170,7 @@ def task_filter_by_name(request, name):
     
         return Response(serializer.data)
 
-@login_required
-@api_view(['GET'])
+@role_required(allowed_roles=['Manager', 'Administrator', 'Team Member'], allowed_methods=['GET'])
 def task_filter_by_project_id(request, project_id):
     #project=User.objects.get(project_id=project_id)
     #user = request.user
@@ -187,7 +183,7 @@ def task_filter_by_project_id(request, project_id):
         serializer = TaskSerializer(tasks,many=True)
         return Response(serializer.data)
     
-@api_view(['GET'])
+@role_required(allowed_roles=['Manager', 'Administrator', 'Team Member'], allowed_methods=['GET'])
 def task_filter_by_all_user_projects(request, email):
     '''
     ### This API returns all tasks associated with all projects that a team member is assigned to
@@ -212,7 +208,7 @@ def task_filter_by_all_user_projects(request, email):
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
    
-@api_view(['GET'])
+@role_required(allowed_roles=['Manager', 'Administrator', 'Team Member'], allowed_methods=['GET'])
 def task_filter_by_user(request, email):
 
     #user = request.user
@@ -230,7 +226,7 @@ def task_filter_by_user(request, email):
     
         return Response(serializer.data)
     
-@api_view(['GET'])
+@role_required(allowed_roles=['Manager', 'Administrator', 'Team Member'], allowed_methods=['GET'])
 def task_creation_data(request):
     payload = authenticate_jwt(request)
 

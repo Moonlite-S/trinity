@@ -81,10 +81,9 @@ export function MainMenuDashboard(
             }
             // If statuses are the same, sort by received date
             return a.received_date.localeCompare(b.received_date);
-        });
+        })
     }
     
-
     const sorted_submittals = sort_submittals(submittals)
 
     const sort_rfis = (rfis: RFIProps[]) => {
@@ -317,10 +316,10 @@ export function MainNavBar(
     return (
     <div className='p-2 flex flex-col justify-items-center'>
         {(role === "Manager" || role === "Administrator") && <Button_Card text="Create Announcement" route="/announcements/create_anncouncement" />}  
-        {(role === "Accountant" || role === "Administrator") && <Button_Card text="Create Invoice" route="/invoice/create_invoice" />}
-        {(role === "Accountant" || role === "Administrator") && <Button_Card text="View Invoices" route="/invoice/" />}
+        {(role === "Accountant" || role === "Administrator") && <Button_Card text="Create Invoice" route="/invoices/create_invoice" />}
+        {(role === "Accountant" || role === "Administrator") && <Button_Card text="View Invoices" route="/invoices/" />}
         {(role === "Manager" || role === "Administrator" )&& <Button_Card text="Create Project" route="/projects/create_project" />}
-        {(role === "Manager" || role === "Administrator") && <Button_Card text="Update Project" route="/projects/" />}
+        {(role === "Manager" || role === "Administrator") && <Button_Card text="View Projects" route="/projects/" />}
         <Button_Card text="Project Status Report" route="/projects/project_status_report" popup_window />
         <Button_Card text="Your Tasks" route="/tasks" />
         {(role === "Manager" || role === "Administrator") && <Button_Card text="Create Task" route="/tasks/create_task" />}

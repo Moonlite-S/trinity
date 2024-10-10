@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
@@ -65,10 +66,16 @@ class Project(models.Model):
         return {}
 
 class User(AbstractUser):
+    role_choices = [
+        ('Manager', 'Manager'),
+        ('Employee', 'Employee'),
+        ('Administrator', 'Administrator'),
+        ('Accountant', 'Accountant'),
+    ]   
     name=models.CharField(max_length=50)
     email=models.EmailField(max_length=50, unique=True)
     password=models.CharField(max_length=255)
-    role=models.CharField(max_length=50)
+    role=models.CharField(max_length=50, choices=role_choices)
     date_joined=models.DateField(auto_now_add=True)
     username= None
 
@@ -218,7 +225,7 @@ class Invoice(models.Model):
         ('Paid', 'Paid'), 
         ('Overdue', 'Overdue')
     ]
-    invoice_id = models.CharField(max_length=20, unique=True, primary_key=True)
+    invoice_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     invoice_date = models.DateField()
     due_date = models.DateField()
 
@@ -247,4 +254,4 @@ class Invoice(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Invoice {self.invoice_number} - {self.bill_to_name}"
+        return f"Invoice {self.invoice_id} - {self.bill_to_name}"
