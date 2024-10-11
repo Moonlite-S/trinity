@@ -17,7 +17,7 @@ export type InvoiceProps = {
 
     payment_status: "Pending" | "Paid" | "Overdue"
     payment_method: string
-    transaction_id: string
+    transaction_id?: string
 
     created_at?: string
     updated_at?: string

@@ -36,7 +36,6 @@ export function useInvoiceFormHandler(
             total_amount: parseFloat(data_obj.total_amount as string),
             payment_status: data_obj.payment_status as "Pending" | "Paid" | "Overdue",
             payment_method: data_obj.payment_method as string,
-            transaction_id: data_obj.transaction_id as string,
         }
 
         if (method === "POST") {

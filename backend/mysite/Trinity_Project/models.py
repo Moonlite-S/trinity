@@ -247,7 +247,7 @@ class Invoice(models.Model):
     # Payment Information
     payment_status = models.CharField(max_length=50, choices=payment_status_choices)
     payment_method = models.CharField(max_length=50, null=True, blank=True)
-    transaction_id = models.CharField(max_length=100, null=True, blank=True)
+    transaction_id = models.UUIDField()
 
     # Metadata
     created_at = models.DateTimeField(auto_now_add=True)

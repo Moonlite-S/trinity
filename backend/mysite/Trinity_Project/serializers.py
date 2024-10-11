@@ -125,6 +125,7 @@ class AnnouncmentsSerializer(serializers.ModelSerializer):
     
 class InvoiceSerializer(serializers.ModelSerializer):
     invoice_id = serializers.UUIDField(read_only=True)
+    transaction_id = serializers.UUIDField(read_only=True)
     class Meta:
         model = Invoice
         fields = ['invoice_id', 'invoice_date', 'due_date', 'bill_to_name', 'bill_to_address', 'bill_to_email',

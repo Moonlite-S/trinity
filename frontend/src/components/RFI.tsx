@@ -80,7 +80,16 @@ export default function ViewRFI() {
     }, [])
 
     const columns: TableColumn<RFIProps>[] = [
-        { name: "Days Old", selector: row => row.days_old !== undefined ? row.days_old.toString() : "N/A", sortable: true },
+        { 
+            name: "Days Old", 
+            selector: row => row.days_old !== undefined ? row.days_old.toString() : "N/A", 
+            sortable: true,
+            conditionalCellStyles: [
+                { when: row => row.days_old !== undefined && row.days_old <= 3, style: { backgroundColor: '#90EE90' } },
+                { when: row => row.days_old !== undefined && row.days_old > 3, style: { backgroundColor: '#FFEE99' } }, // Light yellow
+                { when: row => row.days_old !== undefined && row.days_old > 6, style: { backgroundColor: '#FFCCCC' } }, // Light red
+            ]
+        },
         { name: "RFI ID", selector: row => row.RFI_id ? row.RFI_id : "N/A", sortable: true },
         { name: "Assigned To", selector: row => row.assigned_to ? row.assigned_to.name : "N/A", sortable: true },
         { name: "Created By", selector: row => row.created_by ? row.created_by.name : "N/A", sortable: true },

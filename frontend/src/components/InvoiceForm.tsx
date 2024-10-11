@@ -30,8 +30,6 @@ export function InvoiceForm({ method, current_invoice_data }: { method: string, 
         updated_at: "",
     })
 
-    console.log(currentInvoiceData)
-    
     const { handleSubmit, handleNumeralChange } = useInvoiceFormHandler({ method, setCurrentInvoiceData, currentInvoiceData, navigate, setErrorString })
 
     return (
@@ -44,7 +42,15 @@ export function InvoiceForm({ method, current_invoice_data }: { method: string, 
     )
 }
 
-export function InvoiceFormBase({ method, errorString, handleSubmit, currentInvoiceData, handleNumeralChange }: { method: string, errorString: string, handleSubmit: (data: React.FormEvent<HTMLFormElement>) => void, currentInvoiceData?: InvoiceProps, handleNumeralChange: (event: React.ChangeEvent<HTMLInputElement>) => void }) {
+type InvoiceFormBaseProps = {
+    method: string
+    errorString: string
+    handleSubmit: (data: React.FormEvent<HTMLFormElement>) => void
+    currentInvoiceData?: InvoiceProps
+    handleNumeralChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+}
+
+export function InvoiceFormBase({ method, errorString, handleSubmit, currentInvoiceData, handleNumeralChange }: InvoiceFormBaseProps) {
     return (
         <>
             {errorString && <Error_Component errorString={errorString} />}
@@ -63,7 +69,6 @@ export function InvoiceFormBase({ method, errorString, handleSubmit, currentInvo
             <GenericInput type="text" name="tax" label="Tax" value={currentInvoiceData?.tax?.toString()} onChange={handleNumeralChange} />
             <GenericInput type="text" name="total_amount" label="Total Amount" value={currentInvoiceData?.total_amount?.toString()} onChange={handleNumeralChange} />
             <GenericInput type="text" name="payment_method" label="Payment Method" value={currentInvoiceData?.payment_method} />
-            <GenericInput type="text" name="transaction_id" label="Transaction ID" value={currentInvoiceData?.transaction_id} />
             <GenericSelect options={["Pending", "Paid", "Overdue"]} name="payment_status" label="Payment Status" value={currentInvoiceData?.payment_status} />
 
             <BottomFormButton button_text={method === "POST" ? "Create Invoice" : "Update Invoice"} />

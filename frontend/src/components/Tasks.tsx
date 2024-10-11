@@ -105,7 +105,13 @@ export function TaskList() {
     { name: "Assigned To", selector: (row: TaskProps) => row.assigned_to.split('|')[0] },  // Uses the __str__ representation of the employee object
     { name: "Project", selector: (row: TaskProps) => row.project_id.split('|')[1] },  // Uses the __str__ representation of the project object (Yeah I don't lke this either)
     { name: "Due Date", selector: (row: TaskProps) => row.due_date },
-    { name: "Status", selector: (row: TaskProps) => row.status }
+    { name: "Status", selector: (row: TaskProps) => row.status,
+      conditionalCellStyles: [
+        { when: (row: TaskProps) => row.status === "ACTIVE", style: { backgroundColor: '#FFCCCC' } },
+        { when: (row: TaskProps) => row.status === "CLOSING", style: { backgroundColor: '#FFEE99' } },
+        { when: (row: TaskProps) => row.status === "COMPLETED", style: { backgroundColor: '#90EE90' } },
+    ]
+     }
   ];
   
   return (
