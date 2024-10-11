@@ -3,7 +3,7 @@ const config = {
         apiBaseUrl: "http://localhost:8000",
     },
     production: {
-        apiBaseUrl: "https://django-react-test-e9ghbqcrf2djcmfu.israelcentral-01.azurewebsites.net/",
+        apiBaseUrl: "https://django-react-test-e9ghbqcrf2djcmfu.israelcentral-01.azurewebsites.net",
     }
 }
 

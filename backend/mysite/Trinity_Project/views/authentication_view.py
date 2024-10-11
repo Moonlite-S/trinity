@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 import jwt
 from django.contrib.auth import authenticate,login,logout
 from django.middleware.csrf import get_token
-
+from django.views.decorators.csrf import csrf_exempt
 class RegisterView(APIView):
     def post(self,request):
         serializer = UserSerializer(data=request.data)
@@ -32,7 +32,8 @@ class UserView(APIView):
         except Exception as e:
             print(f"An error occurred while getting the user: {e}")
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            
+
+@csrf_exempt
 @api_view(['POST'])
 def login_view(request):
     email = request.data['email']

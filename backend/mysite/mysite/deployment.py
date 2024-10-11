@@ -57,3 +57,5 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = 'None'
 SESSION_COOKIE_SAMESITE = 'None'
+
+CSRF_COOKIE_DOMAIN = 'https://yellow-sea-07d8df30f.5.azurestaticapps.net'
