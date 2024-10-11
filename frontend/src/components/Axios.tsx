@@ -8,6 +8,9 @@ export const AxiosInstance = axios.create({
     baseURL: baseUrl,
     timeout: 10000,
     withCredentials: true,
+    xsrfCookieName: 'csrftoken',
+    xsrfHeaderName: 'X-CSRFToken',
+    withXSRFToken: true,
     headers: {
         "Content-Type": "application/json",
         "Accept": "application/json",
