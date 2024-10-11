@@ -8,10 +8,10 @@ from .settings import *
 from .settings import BASE_DIR
 
 ALLOWED_HOSTS = [os.environ["WEBSITE_HOSTNAME"]]
-CSRF_TRUSTED_ORIGINS = [
-    'https://'+ os.environ["WEBSITE_HOSTNAME"], 
-    'https://yellow-sea-07d8df30f.5.azurestaticapps.net'
-    ]
+# CSRF_TRUSTED_ORIGINS = [
+#     'https://'+ os.environ["WEBSITE_HOSTNAME"], 
+#     'https://yellow-sea-07d8df30f.5.azurestaticapps.net'
+#     ]
 DEBUG = False
 SECRET_KEY = os.environ['SECRET_KEY']
 LOGIN_URL = 'login'
@@ -54,8 +54,6 @@ DATABASES = {
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = 'None'
+# CSRF_COOKIE_SECURE = True
+# CSRF_COOKIE_SAMESITE = 'None'
 SESSION_COOKIE_SAMESITE = 'None'
-
-CSRF_COOKIE_DOMAIN = 'https://yellow-sea-07d8df30f.5.azurestaticapps.net'

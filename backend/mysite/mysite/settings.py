@@ -201,3 +201,4 @@ AUTH_USER_MODEL = 'Trinity_Project.User'
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+CSRF_EXEMPT_VIEW = True
