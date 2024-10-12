@@ -1,12 +1,14 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
-
+from datetime import datetime, timedelta, timezone
+from django.core.validators import MinValueValidator, MaxValueValidator
 # Create your models here.
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password, **extra_fields):
         if not email:
-            raise ValueError(_('The Email must be set'))
+            raise ValueError(('The Email must be set'))
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
@@ -19,15 +21,13 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_active', True)
 
         if extra_fields.get('is_staff') is not True:
-            raise ValueError(_('Superuser must have is_staff=True.'))
+            raise ValueError(('Superuser must have is_staff=True.'))
         if extra_fields.get('is_superuser') is not True:
-            raise ValueError(_('Superuser must have is_superuser=True.'))
+            raise ValueError(('Superuser must have is_superuser=True.'))
         return self.create_user(email, password, **extra_fields)
     
-
-    
 class Project(models.Model):
-    project_id=models.CharField(max_length=50, unique=True)
+    project_id=models.CharField(max_length=50, unique=True, primary_key=True)
     project_name=models.CharField(max_length=50)
     manager=models.ForeignKey("User", on_delete=models.CASCADE, related_name="projects")
     client_name=models.CharField(max_length=50)
@@ -44,29 +44,38 @@ class Project(models.Model):
     
     def save(self, *args, **kwargs):
         if self.pk:  # Update scenario
-            old_instance = Project.objects.get(pk=self.pk)
-            # Filter out reverse relationships
-            self._old_values = {
-                field.name: getattr(old_instance, field.name)
-                for field in self._meta.get_fields()
-                if isinstance(field, models.Field)
-            }
+            try:
+                old_instance = Project.objects.get(pk=self.pk)
+                # Filter out reverse relationships
+                self._old_values = {
+                    field.name: getattr(old_instance, field.name)
+                    for field in self._meta.get_fields()
+                    if isinstance(field, models.Field)
+                }
+            except Project.DoesNotExist:
+                # Handle the case where the instance doesn't exist anymore
+                self._old_values = {}
+        else:
+            self._old_values = {}
+
         super(Project, self).save(*args, **kwargs)
 
     def get_old_values(self):
         if hasattr(self, '_old_values'):
             return self._old_values
         return {}
-    # def save(self, *args, **kwargs):
-    #     if not self.id:
-    #         self.id = generate_id()
-    #     super().save(*args, **kwargs)
-        
+
 class User(AbstractUser):
+    role_choices = [
+        ('Manager', 'Manager'),
+        ('Employee', 'Employee'),
+        ('Administrator', 'Administrator'),
+        ('Accountant', 'Accountant'),
+    ]   
     name=models.CharField(max_length=50)
     email=models.EmailField(max_length=50, unique=True)
     password=models.CharField(max_length=255)
-    role=models.CharField(max_length=50)
+    role=models.CharField(max_length=50, choices=role_choices)
     date_joined=models.DateField(auto_now_add=True)
     username= None
 
@@ -78,36 +87,39 @@ class User(AbstractUser):
     def __str__(self):
         return f"{self.name} | {self.email}"
 
-# We MUST link this model to the User model
-class Client(models.Model):
-    client_id=models.CharField(max_length=50, unique=True)
-    client_name=models.CharField(max_length=50)
-    address=models.CharField(max_length=50)
-    city=models.CharField(max_length=50)
-    state=models.CharField(max_length=50)
-    zip=models.CharField(max_length=50)
-    phone=models.CharField(max_length=50)
-    email=models.EmailField(max_length=50)
-    manager=models.CharField(max_length=50)
-    notes=models.TextField(blank=True)
-
 class Task(models.Model):
-    task_id=models.CharField(max_length=50, unique=True)
+    task_id=models.CharField(max_length=50, unique=True, primary_key=True)
     title=models.CharField(max_length=50)
     description=models.CharField(max_length=50)
     assigned_to=models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks")
-    project_id=models.ForeignKey(Project, to_field='project_id', on_delete=models.CASCADE, related_name="project")
+    project_id=models.ForeignKey(Project, on_delete=models.CASCADE, related_name="tasks")
     due_date=models.DateField()
+    status=models.CharField(max_length=50, default="ACTIVE")
+    is_approved = models.BooleanField(default=True)
+    completion_percentage = models.IntegerField(
+        default=0,
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(100)
+        ]
+    )
     
     def save(self, *args, **kwargs):
         if self.pk:  # Update scenario
-            old_instance = Task.objects.get(pk=self.pk)
-            # Filter out reverse relationships
-            self._old_values = {
-                field.name: getattr(old_instance, field.name)
-                for field in self._meta.get_fields()
-                if isinstance(field, models.Field)
-            }
+            try:
+                old_instance = Task.objects.get(task_id=self.pk)
+                # Filter out reverse relationships
+                self._old_values = {
+                    field.name: getattr(old_instance, field.name)
+                    for field in self._meta.get_fields()
+                    if isinstance(field, models.Field)
+                }
+            except Task.DoesNotExist:
+                # Handle the case where the instance doesn't exist anymore
+                self._old_values = {}
+        else:
+            self._old_values = {}
+
         super(Task, self).save(*args, **kwargs)
 
     def get_old_values(self):
@@ -115,14 +127,33 @@ class Task(models.Model):
             return self._old_values
         return {}
 
+class Submittal(models.Model):
+    submittal_id=models.CharField(max_length=50, primary_key=True)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="submittals")
+    received_date=models.DateField()
+    sub_description=models.TextField()
+    type=models.CharField(max_length=50)
+    user=models.ForeignKey(User, on_delete=models.CASCADE, related_name="submittals")
+    status=models.CharField(max_length=50)
+    notes=models.TextField()
+    closing_notes=models.TextField(default="", blank=True)
+    sent_item=models.TextField(default="", blank=True)
+    send_email=models.TextField(default="", blank=True)
+    
     def __str__(self):
-        return f"ID: {self.task_id} | {self.title} | {self.assigned_to}"
-
+        return f"Submittal ID: {self.submittal_id} | Project: {self.project.project_name} | Status: {self.status}"
+    
 class Announcements(models.Model):
     title=models.CharField(max_length=255)
     content=models.TextField(max_length=255)
     author=models.ForeignKey(User, on_delete=models.CASCADE, related_name="announcements")
     date=models.DateField(auto_now_add=True)
+    created_at = models.DateField(auto_now_add=True)
+    duration = models.DurationField(default=timedelta(seconds=7))
+    
+    @property
+    def is_active(self):
+        return timezone.now() < self.created_at + self.duration
 
     def __str__(self):
         return self.title
@@ -149,11 +180,78 @@ class TaskChangeLog(models.Model):
     task_title = models.CharField(max_length=50)
     description=models.TextField()
     assigned_to=models.CharField(max_length=50)
-    project_id=models.CharField(max_length=50)
+    project_id=models.CharField(max_length=100)
     due_date=models.CharField(max_length=50)
     changed_by = models.CharField(max_length=50)
     change_time = models.DateTimeField(auto_now_add=True)
     change_description = models.TextField()
+    is_approved = models.BooleanField(default=True)
     
     def __str__(self):
         return f"Change to {self.task_title} by {self.changed_by} at {self.change_time}"      
+    
+class PendingChange(models.Model):
+    task = models.ForeignKey(Task, to_field="task_id", on_delete=models.CASCADE)
+    field_name=models.CharField(max_length=50)
+    old_value=models.TextField()
+    new_value=models.TextField()
+    requested_by=models.ForeignKey(User, on_delete=models.CASCADE)
+    approved = models.BooleanField(default=False)
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateField(auto_now=True)
+    
+class RFI(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="rfi")
+    date_received =models.DateField()
+    RFI_id = models.CharField(max_length=50,primary_key=True)
+    sent_out_date = models.DateField()
+    type = models.CharField(max_length=50)
+    assigned_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name="rfi_sent")
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="rfi_created")
+    notes=models.TextField(default="", blank=True)
+    notes_closed=models.TextField(default="", blank=True)
+    description= models.TextField(default="", blank=True)
+    status=models.CharField(max_length=50, default="ACTIVE")
+    
+    def days_old(self):
+        if self.date_received:
+            current_date = datetime.now().date()
+            return (current_date - self.date_received).days
+        return None
+    
+class Invoice(models.Model):
+    payment_status_choices = [
+        ('Pending', 'Pending'), 
+        ('Paid', 'Paid'), 
+        ('Overdue', 'Overdue')
+    ]
+    invoice_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    invoice_date = models.DateField()
+    due_date = models.DateField()
+
+    # Billing Information
+    bill_to_name = models.CharField(max_length=255)
+    bill_to_address = models.TextField()
+    bill_to_email = models.EmailField()
+
+    # Business Information
+    from_name = models.CharField(max_length=255)
+    from_address = models.TextField()
+    from_email = models.EmailField()
+
+    # Item/Service Details (related through another model for multiple items)
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
+    tax = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    # Payment Information
+    payment_status = models.CharField(max_length=50, choices=payment_status_choices)
+    payment_method = models.CharField(max_length=50, null=True, blank=True)
+    transaction_id = models.UUIDField()
+
+    # Metadata
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Invoice {self.invoice_id} - {self.bill_to_name}"

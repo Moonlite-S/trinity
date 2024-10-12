@@ -9,3 +9,9 @@ export type CalendarProps = {
     projects?: ProjectProps[]
     day: number
 }
+
+export type DayButtonPropsWeekly = {
+    date: Date
+    projects?: ProjectProps[]
+    isCurrentMonth: boolean
+}

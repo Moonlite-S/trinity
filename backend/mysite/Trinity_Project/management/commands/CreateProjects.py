@@ -18,8 +18,8 @@ class Command(BaseCommand):
                 print(f"Employee '{employee['name']}' created successfully!")
             except Exception as ex:
                 print(f"An error occurred while creating employee: {ex}")
-                User.objects.all().delete()
-                self.stdout.write(self.style.ERROR('All users deleted successfully!'))
+                #User.objects.all().delete()
+                #self.stdout.write(self.style.ERROR('All users deleted successfully!'))
                 return
 
         for project in projects:

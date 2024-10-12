@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormEvent, useEffect, useMemo, useState } from "react";
-import { Error_Component, Header, TaskCard } from "./misc";
-import { createProject, getProjectList, getProject, updateProject, deleteProject } from "../api/projects";
+import { useEffect, useState } from "react";
+import { GenericTable, Header } from "./misc";
+import { getProjectList, getProject, deleteProject } from "../api/projects";
 import { useNavigate, useParams } from "react-router-dom";
-import DataTable, { Direction, TableColumn } from "react-data-table-component";
-import { FilterProps, ProjectProps } from "../interfaces/project_types";
-import { getAllEmployeeNameAndEmail } from "../api/employee";
-import { ProjectFormCreation, ProjectFormUpdate } from "./ProjectForm";
-import { Route_Button } from "./Buttons";
-import { useAuth } from "../App";
+import { TableColumn } from "react-data-table-component";
+import { ProjectFilterProps, ProjectProps } from "../interfaces/project_types";
+import { ProjectForm } from "./ProjectForm";
+import { OrangeButton, RouteButton } from "./Buttons";
 import { filterTasksByProject } from "../api/tasks";
-import { TaskProps } from "../interfaces/tasks_types";
+import { SubmittalProps } from "../interfaces/submittal_types";
+import { AxiosError } from "axios";
+import { EmployeeProps } from "../interfaces/employee_type";
+import { useAuth } from "../App";
 
 /**
  * ### [Route for ('/create_project')]
@@ -19,60 +20,13 @@ import { TaskProps } from "../interfaces/tasks_types";
  * 
  */
 export function CreateProject() {
-    const { user } = useAuth();
-    const [errorString, setErrorString] = useState<string>()
-    const navigate = useNavigate()
-
-    const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-        
-        const formData = new FormData(event.currentTarget)
-        const data = Object.fromEntries(formData)
-
-        if (data.notify_manager === "on" && data.manager !== user?.email) {
-                const to = data.manager // Change this so that it's the user's email
-                const subject = "New Project (" + data.project_name + ") Assigned to you"
-                const body = "You have been assigned a new project, " + data.project_name + ". Please check it out."
-
-                const mail_url = `mailto:${encodeURIComponent(String(to))}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
-
-                window.location.href = mail_url
-            }
-
-        try {
-            setErrorString(undefined)
-            const result_code = await createProject(data)
-            
-            console.log(data)
-            console.log(result_code)
-
-            // Error handling
-            switch (result_code) {
-                case 201:
-                    alert("Project created successfully!")
-                    navigate("/projects")
-                    break
-                case 400:
-                    setErrorString("Bad Request: Invalid data. Please make sure all fields are filled out. Error: " + result_code)
-                    break
-                case 403:
-                    setErrorString("Forbidden: You are not authorized to create projects. Error: " + result_code)
-                    break
-                default:
-                    throw new Error("Error creating project: " + result_code)
-            }
-
-        } catch (error: unknown) {
-            console.error("Something went wrong: ", error)
-            setErrorString("Error 500")
-        }
-    }
+    //const [errorString, setErrorString] = useState<string>()
 
     return (
         <>
             <Header />
 
-            {errorString && <Error_Component errorString={errorString} />}
+            {/* {errorString && <Error_Component errorString={errorString} />} */}
 
             <div className="justify-center mx-auto p-5">
 
@@ -80,7 +34,7 @@ export function CreateProject() {
 
             </div>
 
-            <ProjectFormCreation onSubmit={onSubmit} />
+            <ProjectForm method="POST"/>
 
         </>
     )
@@ -91,10 +45,14 @@ export function CreateProject() {
  * 
  * This component fetches a list of projects and shows them in a table.
  * 
- * TODO: 
- *  - Fix Default Project Manager
  */
 export function UpdateProjectList() {
+    const { user } = useAuth()
+
+    if (!user) {
+        return <div>Loading...</div>
+    }
+
     const [projectList, setProjectList] = useState<ProjectProps[]>([])
     const [projectLoaded, setProjectLoaded] = useState<boolean>(false)
 
@@ -116,14 +74,31 @@ export function UpdateProjectList() {
         fetchProjects()
     }, [])
 
+    const projectColumns: TableColumn<ProjectProps>[] = [
+        { name: "Project Name", selector: (row: ProjectProps) => row.project_name, sortable: true, cell: (row: ProjectProps) => <div className="">{row.project_name}</div> },
+        { name: "Project ID", selector: (row: ProjectProps) => row.project_id ?? "N/A", sortable: true, cell: (row: ProjectProps) => <div className="">{row.project_id}</div> },
+        { name: "Client Name", selector: (row: ProjectProps) => row.client_name, sortable: true, cell: (row: ProjectProps) => <div className="">{row.client_name}</div> },
+        { name: "Manager", selector: (row: ProjectProps) => row.manager.name, sortable: true, cell: (row: ProjectProps) => <div className="">{row.manager.name}</div> },
+        { name: "City", selector: (row: ProjectProps) => row.city, sortable: true, cell: (row: ProjectProps) => <div className="">{row.city}</div> },
+        { name: "Next Deadline", selector: (row: ProjectProps) => row.end_date, sortable: true, cell: (row: ProjectProps) => <div className="">{row.end_date}</div> }
+    ]
+
     return(
         <>
             <Header />
-
-            <ProjectUpdateTable projectList={projectList} projectLoaded={projectLoaded} />
+            <h1 className="mx-4 text-x1 font-semibold">Projects</h1>
+            
+            <GenericTable
+                dataList={projectList}
+                isDataLoaded={projectLoaded}
+                columns={projectColumns}
+                FilterComponent={FilterComponent}
+                expandableRowComponent={({data}) => <ExpandableRowComponent data={data} user={user} />}
+                filterField="project_name"
+            />
 
             <div className="flex flex-row justify-center gap-3 m-2">
-                <Route_Button route={"/main_menu"} text="Back"/>
+                <RouteButton route={"/main_menu"} text="Back"/>
             </div>
         </>
     )
@@ -136,20 +111,18 @@ export function UpdateProjectList() {
  */
 export function UpdateProject() {
     const { id } = useParams<string>()
+    if (!id) return <div>Loading...</div>
+
     const [currentProject, setCurrentProject] = useState<ProjectProps>()
-    const [errorString, setErrorString] = useState<string>()
     const [loading, setLoading] = useState<boolean>(true)
     const navigate = useNavigate()
 
     useEffect(() => {
-        // We need to fetch a list of projects
-        const project = async () => {
-            if (!id) return
-
+        const fetchProject = async () => {
             try {
                 const data = await getProject(id)
 
-                setCurrentProject(data)
+                setCurrentProject({...data, project_id: id})
 
                 setLoading(false)
             } catch (error) {
@@ -158,51 +131,18 @@ export function UpdateProject() {
             }
         }
 
-        project()
+        fetchProject()
     }, [id, navigate])
-
-    const onSubmit = async(event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-        
-        try {
-            const form_data = new FormData(event.currentTarget)
-
-            const data = Object.fromEntries(form_data)
-
-            console.log("Data: ", data)
-
-            const response = await updateProject(data, id)
-
-            switch (response) {
-                case 200:
-                    alert("Project updated successfully!")
-                    navigate("/projects")
-                    break;
-                case 403:
-                    setErrorString("Failed to update project. Error code: " + response + " Forbidden. Only the current project manager can update the project.")
-                    break;
-                case 404:
-                    setErrorString("Failed to update project. Error code: " + response + " Not Found")
-                    break;
-                default:    
-                    setErrorString("Failed to update project. Error code: " + response)
-            }
-
-        } catch (error) {
-            console.error("Error updating project:", error);
-            throw error; // Re-throw the error so the caller can handle it if needed
-        }
-    }
 
     return (
         <>
             <Header />
 
-            {errorString && <Error_Component errorString={errorString} />}
+            <h1 className="mx-4 text-x1 font-semibold">Update Project</h1>
 
             {loading ? <div>Loading...</div> 
             : 
-            <ProjectFormUpdate onSubmit={onSubmit} formProps={currentProject} />}
+            currentProject && <ProjectForm formProps={currentProject} method="PUT" />}
             
         </>
     )
@@ -231,20 +171,11 @@ export function ProjectStatusReport() {
 
             const unique_managers = [...new Set(response.map(project => project.manager.name))];
 
-            console.log("test", response)
-
-            console.log("Unique Managers: ", unique_managers)
-            
             setManagers(unique_managers)
-            
             setProject(response)
         }
-
-
         get_data()
     }, [])
-
-    console.log("Managers: ", managers)
 
     return(
         <>
@@ -290,7 +221,7 @@ export function ProjectStatusReport() {
             )}
 
             <div className="flex justify-center">
-                <Route_Button route="/main_menu" text="Back to Projects" />
+                <RouteButton route="/main_menu" text="Back to Projects" />
             </div>
         </>
     )
@@ -303,7 +234,7 @@ export function ProjectStatusReport() {
  * 
  * At some point, we'll implement the vector search here maybe
  */
-const FilterComponent = ({ filterText, onFilter, onClear }: FilterProps) => (
+const FilterComponent = ({ filterText, onFilter, onClear }: ProjectFilterProps) => (
     <>
         <input
          id="search"
@@ -323,29 +254,128 @@ const FilterComponent = ({ filterText, onFilter, onClear }: FilterProps) => (
 
 /**
  * A Component that shows when the user clicks on a row on the table.
- * 
  * This is where the description of the project will be stored
  * 
- * But also I want buttons to see a report or edit the project
- * 
- * @param param0 data The props of a give row
+ * @param data The props of a given row
  * 
  */
-const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
-    const [tasks, setTasks] = useState<TaskProps[]>([])
+const ExpandableRowComponent = ({ data, user }: { data: ProjectProps, user: EmployeeProps }) => {
+    const [submittals, setSubmittals] = useState<SubmittalProps[]>([])
+
+    const [taskCounts, setTaskCounts] = useState<{
+        total: number,
+        completed: number
+    }>({
+        total: 0,
+        completed: 0
+    })
+
+    // Keeps track of the submittal counts and their status all in one object
+    const [submittalCounts, setSubmittalCounts] = useState<{
+        MECHANICAL: { total: number, completed: number },
+        ELECTRICAL: { total: number, completed: number },
+        PLUMBING: { total: number, completed: number },
+        FIRE_PROTECTION: { total: number, completed: number },
+        OTHER: { total: number, completed: number }
+    }>({
+        MECHANICAL: { total: 0, completed: 0 },
+        ELECTRICAL: { total: 0, completed: 0 },
+        PLUMBING: { total: 0, completed: 0 },
+        FIRE_PROTECTION: { total: 0, completed: 0 },
+        OTHER: { total: 0, completed: 0 }
+    })
 
     useEffect(() => {
-        console.log("Data: ", data)
         const get_tasks = async () => {
+            
+            if (!data.project_id) {
+                throw new Error("Project ID not found")
+            }
+
             const response = await filterTasksByProject(data.project_id)
-            setTasks(response)
+            const calculateTaskCounts = async () => {
+                const counts = {
+                    total: 0,
+                    completed: 0
+                };
+                
+                response.forEach(task => {
+                    counts.total++;
+                    if (task.status === "COMPLETED") {
+                        counts.completed++;
+                    }
+                });
+                
+                setTaskCounts(counts);
+            };
+            
+            calculateTaskCounts();
+        }
+        
+        if (data.submittals) {
+            console.log("Data Sub", data.submittals)
+            setSubmittals(data.submittals)
+            
+            const calculateSubmittalCounts = () => {
+                const counts = {
+                    MECHANICAL: { total: 0, completed: 0 },
+                    ELECTRICAL: { total: 0, completed: 0 },
+                    PLUMBING: { total: 0, completed: 0 },
+                    FIRE_PROTECTION: { total: 0, completed: 0 },
+                    OTHER: { total: 0, completed: 0 },
+            };
+            
+            submittals.forEach(submittal => {
+                counts[submittal.type].total++
+                if (submittal.status === "COMPLETED") {
+                    counts[submittal.type].completed++;
+                }
+            })
+            
+            setSubmittalCounts(counts);
         }
 
+        calculateSubmittalCounts();
+        }
+        
         get_tasks()
+    }, [data, submittals])
 
-    }, [data])
+    const handleDelete = async () => {
+        if (confirm("Are you sure you want to delete this project?") && confirm("Are you really sure?")) {
+            try {
+                if (!data.project_id) {
+                    throw new Error("Project ID is undefined");
+                }
 
-    console.log("Tasks: ", tasks)
+                const response = await deleteProject(data.project_id);
+                if (response === 204) {
+                    alert("Project deleted successfully");
+                    window.location.href = "/projects/"
+                } else {
+                    alert("Error deleting project:" + response);
+                }
+            } catch (error: unknown) {
+                if (error instanceof AxiosError) {
+                    if (error.response?.status === 400) {
+                        // 400 Bad Request
+                        return 400
+                    } else if (error.response?.status === 403) {
+                        // 403 Forbidden
+                        return 403
+                    }
+                }
+                alert("Error deleting project: Error" + error);
+            }
+        }
+    };
+    
+
+    const totalSubmittals = Object.values(submittalCounts).reduce((sum, { total }) => sum + total, 0);
+    const totalCompletedSubmittals = Object.values(submittalCounts).reduce((sum, { completed }) => sum + completed, 0);
+    const totalProgress = totalSubmittals > 0 ? (totalCompletedSubmittals / totalSubmittals) * 100 : 0;
+
+    console.log("Task Counts: ", taskCounts)
 
     return (
     <div className="flex flex-col gap-5 bg-slate-50">
@@ -358,127 +388,84 @@ const ExpandableRowComponent = ({ data }: { data: ProjectProps }) => {
             </div>
 
             <div>
-                <h3>Tasks:</h3>
-                {tasks.length > 0 ? tasks.map(task => 
-                    <div key={task.task_id} className="w-1/2"> 
-                        <TaskCard task={task} />
+                <h3>Task Overview:</h3>
+                {taskCounts.total > 0 ? 
+                <div className="flex flex-col gap-2">
+                    <h4>Total Tasks: {taskCounts.total}</h4>
+                    <div className="w-1/2 bg-slate-200 rounded-full h-6">
+                        <div 
+                            className="bg-orange-500 h-6 rounded-full" 
+                            style={{ width: `${taskCounts.completed === 0 && taskCounts.total === 0 ? 0 : (taskCounts.completed / taskCounts.total * 100)}%` }}
+                        >
+                            <p className="ml-2 text-nowrap">Completed Tasks: {taskCounts.completed} / {taskCounts.total}</p>
+                        </div>
                     </div>
-                ) 
+                    <div>
+                        <p>Total Progress: {taskCounts.completed / taskCounts.total * 100}%</p>
+                    </div>
+                </div> 
                 : 
-                <p>No tasks found</p>
+                <p>(No tasks found)</p>
                 }
+            </div>
+
+            <div>
+                <h3>Submittal Overview:</h3>
+                {submittals.length > 0 ? (
+                    <div>
+                        <h4>Total Submittals: {totalSubmittals}</h4>
+                        
+                        <div className="flex flex-col gap-2">
+                            <div className="h-6 bg-slate-200 rounded-full w-1/2">
+                                <div className="bg-green-200 h-6 rounded-full" style={{ width: `${submittalCounts.MECHANICAL.completed === 0 && submittalCounts.MECHANICAL.total === 0 ? 0 : (submittalCounts.MECHANICAL.completed / submittalCounts.MECHANICAL.total * 100)}%` }}>
+                                    <p className="ml-2 text-nowrap">Mechanical: {submittalCounts.MECHANICAL.completed} / {submittalCounts.MECHANICAL.total}</p>
+                                </div>
+                            </div>
+                            <div className="h-6 bg-slate-200 rounded-full w-1/2">
+                                <div className="bg-yellow-200 h-6 rounded-full" style={{ width: `${submittalCounts.ELECTRICAL.completed === 0 && submittalCounts.ELECTRICAL.total === 0 ? 0 : (submittalCounts.ELECTRICAL.completed / submittalCounts.ELECTRICAL.total * 100)}%` }}>
+                                    <p className="ml-2 text-nowrap">Electrical: {submittalCounts.ELECTRICAL.completed} / {submittalCounts.ELECTRICAL.total}</p>
+                                </div>
+                            </div>
+                            <div className="h-6 bg-slate-200 rounded-full w-1/2">
+                                <div className="bg-blue-200 h-6 rounded-full" style={{ width: `${submittalCounts.PLUMBING.completed === 0 && submittalCounts.PLUMBING.total === 0 ? 0 : (submittalCounts.PLUMBING.completed / submittalCounts.PLUMBING.total * 100)}%` }}>
+                                    <p className="ml-2 text-nowrap">Plumbing: {submittalCounts.PLUMBING.completed} / {submittalCounts.PLUMBING.total}</p>
+                                </div>
+                            </div>
+                            <div className="h-6 bg-slate-200 rounded-full w-1/2">
+                                <div className="bg-red-200 h-6 rounded-full" style={{ width: `${submittalCounts.FIRE_PROTECTION.completed === 0 && submittalCounts.FIRE_PROTECTION.total === 0 ? 0 : (submittalCounts.FIRE_PROTECTION.completed / submittalCounts.FIRE_PROTECTION.total * 100)}%` }}>
+                                    <p className="ml-2 text-nowrap">Fire Protection: {submittalCounts.FIRE_PROTECTION.completed} / {submittalCounts.FIRE_PROTECTION.total}</p>
+                                </div>
+                            </div>
+                            <div className="h-6 bg-slate-200 rounded-full w-1/2">
+                                <div className="bg-purple-200 h-6 rounded-full" style={{ width: `${submittalCounts.OTHER.completed === 0 && submittalCounts.OTHER.total === 0 ? 0 : (submittalCounts.OTHER.completed / submittalCounts.OTHER.total * 100)}%` }}>
+                                    <p className="ml-2 text-nowrap">Other: {submittalCounts.OTHER.completed} / {submittalCounts.OTHER.total}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4>Total Progress: {totalProgress.toFixed(2)}%</h4>
+                        <div className="w-1/2 bg-slate-200 rounded-full h-6">
+                            <div 
+                                className="bg-orange-500 h-6 rounded-full" 
+                                style={{ width: `${totalProgress}%` }}
+                            />
+                        </div>
+                    </div>
+                ) : (
+                    <p>(No submittals found)</p>
+                )}
             </div>
 
         </div>
 
         <div className="flex flex-row gap-5 m-5">
-            <Route_Button route={"/projects/update_project/" + data.project_id} text="Edit"/>
-            <Route_Button route={"/projects/delete/" + data.project_id} text="Delete" isDelete/>
-            <a href="https://onedrive.live.com/?cid=ccb859f08aa718d1&id=CCB859F08AA718D1!se45563fe218e4c4186d0c3cc64182850" target="_blank" rel="noopener noreferrer">
-                <button className="bg-blue-300 rounded p-4 my-2 hover:bg-blue-400 transition">
-                        View on OneDrive
-                </button>
+            <RouteButton route={"/projects/update_project/" + data.project_id} text="Edit"/>
+            {user.role === "Manager" || user.role === "Administrator" && <OrangeButton onClick={handleDelete}>Delete Project</OrangeButton>}
+            <a href={'localexplorer:L:\\projects\\' + data.folder_location}>
+                <button className="bg-blue-300 rounded p-4 my-2 hover:bg-blue-400 transition">Open Folder</button>
             </a>
         </div>
 
     </div>
     )
 }
-
-/**
- * The Table Component that lists the projects
- * 
- * Features sorting by any field, and filtering by Project Name currently.
- * 
- * @param param0 projectList - List of projects 
- * @param param1 projectLoaded - Boolean to check if projects have been loaded
- */
-function ProjectUpdateTable({ projectList, projectLoaded }: { projectList: ProjectProps[], projectLoaded: boolean }) {
-    const [filterText, setFilterText] = useState<string>('')
-    const [resetPaginationToggle, setResetPaginationToggle] = useState<boolean>(false)
-
-    const filteredProjects: ProjectProps[] = projectList.filter(item => item.project_name.toLowerCase().includes(filterText.toLowerCase()))
-
-    // Column Names
-    const columns: TableColumn<ProjectProps>[] = [
-        { name: "Project ID", selector: row => row.project_id, sortable: true },
-        { name: "Project Name", selector: row => row.project_name, sortable: true },
-        { name: "Project Manager", selector: row => row.manager.name, sortable: true },
-        { name: "Status", selector: row => row.status, sortable: true },
-        { name: "Customer", selector: row => row.client_name, sortable: true },
-        { name: "City", selector: row => row.city, sortable: true },
-        { name: "Date Created", selector: row => row.start_date, sortable: true },
-        { name: "Date Ended", selector: row => row.end_date, sortable: true },
-        { name: "Folder Location", selector: row => row.folder_location, sortable: true },
-    ]
-
-    // For the filter function
-    const filterSearchBox = useMemo(() => {
-        const handleClear = () => {
-            if (filterText) {
-                setResetPaginationToggle(!resetPaginationToggle);
-                setFilterText('')
-            }
-        }
-
-        return (
-            <FilterComponent onFilter={(e: any) => setFilterText(e.target.value)} onClear={handleClear} filterText={filterText} />
-
-        )
-    }, [filterText, resetPaginationToggle])
-
-    return(
-        <DataTable
-        title="Project List"
-        columns={columns}
-        data={filteredProjects}
-        direction={Direction.AUTO}
-        progressPending={!projectLoaded}
-        subHeaderComponent={filterSearchBox}
-        expandableRowsComponent={ExpandableRowComponent}
-        paginationResetDefaultPage={resetPaginationToggle}
-        persistTableHead
-        highlightOnHover
-        expandableRows
-        selectableRows
-        pagination
-        subHeader
-        />        
-    )
-}
-
-/**
- * Delete Confirmation Page for Projects
- * 
- * Need to make have a sort of backup before deleting the project
- * or have multiple confirmation pages
- * 
- */
-export function ProjectDeleteConfimation() {
-    const { id } = useParams<string>();
-    const navigate = useNavigate();
-
-    const handleClick = async() => {
-        await deleteProject(id);
-        navigate("/projects");
-    }
-    return (
-        <>
-        <Header />
-
-        <div className="p-20 text-center">
-            <p>Are you sure you want to delete this project?</p>
-
-            <div className="flex flex-row justify-center gap-5">
-                <Route_Button route="/projects/" text="Back" />
-                <button className="bg-red-300 rounded p-4 my-2 hover:bg-red-400 transition" onClick={handleClick}>Yes</button>
-            </div>
-        </div>
-        </>
-
-    )
-}
-function return_all_users_name_and_email() {
-    throw new Error("Function not implemented.");
-}
-

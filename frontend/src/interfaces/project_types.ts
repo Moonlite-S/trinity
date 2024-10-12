@@ -1,5 +1,7 @@
 import { FormEvent } from "react"
 import { EmployeeProps } from "./employee_type"
+import { SubmittalProps } from "./submittal_types"
+import { RFIProps } from "./rfi_types"
 
 export type ProjectStatus = 
     "ACTIVE" |
@@ -7,34 +9,26 @@ export type ProjectStatus =
     "COMPLETED" |
     "CANCELLED"
 
-export type quarter = "Q1" | "Q2" | "Q3" | "Q4"
-
 export type ProjectProps = {
-    project_id: string
+    project_id?: string
     project_name: string
     manager: EmployeeProps
     city: string
-    quarter: quarter
     client_name: string
     start_date: string
     end_date: string
     description?: string
     status: ProjectStatus
-    folder_location: string
-    project_template: string,
+    folder_location?: string
+    template: string,
+    submittals?: SubmittalProps[],
+    rfis?: RFIProps[]
 }
 
-export type FilterProps = {
+export type ProjectFilterProps = {
     filterText: string
     onFilter: (e: FormEvent<HTMLInputElement>) => void
     onClear: () => void
-}
-
-export type ProjectFormProps = {
-    onSubmit: (event: FormEvent<HTMLFormElement>) => void
-
-    // For Project Update
-    formProps?: ProjectProps
 }
 
 export type ProjectCreationProps = {
@@ -45,17 +39,15 @@ export type ProjectCreationProps = {
     current_user: string[]
 }
 
-
-export type SelectionComponentProps = {
-    defaultValue?: string,
-    value?: string,
-    multiple?: boolean,
-    options: { value: string, label: string }[] | undefined,
-    name: string    
-    onChange?: () => void
-}
-
-export type SelectButtonProps = {
-    label: string
-    value: string
+export type ProjectFormBaseProps = {
+    currentProjectData: ProjectProps
+    projectManagerListOptions: { value: string, label: string }[]
+    Clients: { value: string, label: string }[]
+    Cities: { value: string, label: string }[]
+    templates: string[]
+    method: "POST" | "PUT"
+    onSubmit: (e: React.FormEvent<HTMLFormElement>) => void
+    onManagerChange: (e: unknown) => void
+    onClientChange: (e: unknown) => void
+    onCityChange: (e: unknown) => void
 }

@@ -1,9 +1,8 @@
 // For miscelaneous components
 import {useNavigate } from 'react-router-dom';
 import logo from '/trinity_logo.png'
-import { TaskProps } from '../interfaces/tasks_types';
-import { AnnouncementProps } from '../interfaces/announcement_types';
-import { ProjectProps } from '../interfaces/project_types';
+import { useMemo, useState } from 'react';
+import DataTable, { Direction, TableColumn } from 'react-data-table-component';
 
 // Header Component for all pages
 export function Header() {
@@ -29,38 +28,85 @@ export function Error_Component({ errorString }: { errorString: string }) {
   )
 }
 
-export function TaskCard ({task} : {task: TaskProps}) {
-    const formatProjectName = task.project_id.split('|')[1]
-    const formatCompanyName = task.project_id.split('|')[2]
+/**
+ * This function handles the api method at the end of the form
+ * @param create_fn corresponds to the POST method
+ * @param edit_fn corresponds to the PUT method
+ * 
+ * @returns An API call function from their respective files
+ */
 
-    return (
-      <div className=" bg-slate-100 p-4 my-4 mx-2 rounded-md shadow-md">
-          <h3>{formatProjectName}</h3>
-          <h4 className='font-bold'>Task: {task.title}</h4> 
-          <p className="py-4 break-words">{task.description}</p>
-          <p className="text-red-800">Due: {task.due_date}</p>
-          <p>From Project: {formatCompanyName}</p>
-      </div>
-    )
+export function MethodHandler(method: "POST" | "PUT" , create_fn: Function, update_fn: Function): Function {
+  if (method === "POST"){
+      return create_fn
+  }
+  else if (method === "PUT"){
+      return update_fn
+  } 
+  throw new Error("Invalid method: Received " + method)
 }
 
-export function AnnouncementCard({announcement} : {announcement: AnnouncementProps}) {
-    return (
-    <div className="bg-slate-100 p-2 my-4 mx-2 rounded-md shadow-md">
-        <h3>{announcement.title}</h3>
-        <p>{announcement.content}</p>
-        <p>{announcement.author}</p>
-    </div>
-    )
+type GenericTableProps<T> = {
+  dataList: T[]
+  isDataLoaded: boolean
+  columns: TableColumn<T>[]
+  FilterComponent: React.ComponentType<{ filterText: string; onFilter: (e: any) => void; onClear: () => void }>
+  expandableRowComponent: React.ComponentType<{ data: T }>
+  filterField: string
 }
 
-export function ProjectCard ({project} : {project: ProjectProps}) {
-  return (
-  <div className="bg-slate-100 p-2 my-4 mx-2 rounded-md shadow-md">
-      <h3>{project.project_name}</h3>
-      <p>Client: {project.client_name}</p>
-      <p className="py-4">Notes: {project.description ? project.description : '(No Notes Written)'}</p>
-      <p className="text-red-800">Next Deadline: {project.end_date}</p>
-  </div>
+/**
+ * The Univseral Table Component
+ * 
+ * (You still need to create the FilterComponent and expandableRowComponents)
+ * 
+ * @param dataList - List of data to be displayed
+ * @param isDataLoaded - Boolean to check if data has been loaded
+ * @param columns - The columns to be displayed
+ * @param FilterComponent - The component to be used for the filter
+ * @param expandableRowComponent - The component to be used for the expandable row
+ * @param filterField - The field to be used for the filter
+ */
+export function GenericTable<T>({ dataList, isDataLoaded, columns, FilterComponent, expandableRowComponent, filterField }: GenericTableProps<T>) {
+  const [filterText, setFilterText] = useState<string>('')
+  const [resetPaginationToggle, setResetPaginationToggle] = useState<boolean>(false)
+
+  // Filter the data based on the filterField
+  const filteredData: T[] = dataList.filter((item: T) => {
+    const fieldValue = item[filterField as keyof T];
+    return typeof fieldValue === 'string' ? fieldValue.toLowerCase().includes(filterText.toLowerCase()) : true;
+  })
+
+  // For the filter function
+  const filterSearchBox = useMemo(() => {
+      const handleClear = () => {
+          if (filterText) {
+              setResetPaginationToggle(!resetPaginationToggle);
+              setFilterText('')
+          }
+      }
+
+      return (
+          <FilterComponent onFilter={(e: any) => setFilterText(e.target.value)} onClear={handleClear} filterText={filterText} />
+
+      )
+  }, [filterText, resetPaginationToggle])
+
+  return(
+      <DataTable
+      columns={columns}
+      data={filteredData}
+      direction={Direction.AUTO}
+      progressPending={!isDataLoaded}
+      subHeaderComponent={filterSearchBox}
+      expandableRowsComponent={expandableRowComponent}
+      paginationResetDefaultPage={resetPaginationToggle}
+      persistTableHead
+      highlightOnHover
+      expandableRows
+      selectableRows
+      pagination
+      subHeader
+      />        
   )
 }

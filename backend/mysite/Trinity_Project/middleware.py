@@ -11,7 +11,7 @@ from django.conf import settings
 
 User = get_user_model()
 _user = local()
-#This get the current user for log changes class
+#This get the current user for log and task changes class
 class CurrentUserMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
@@ -36,3 +36,18 @@ class CurrentUserMiddleware:
     @staticmethod
     def get_current_user():
         return getattr(_user, 'value', AnonymousUser())
+    
+class PartitionedCookieMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        
+        if 'jwt_token' in response.cookies:
+            response.cookies['jwt_token']['Partitioned'] = 'True'
+
+        if 'csrftoken' in response.cookies:
+            response.cookies['csrftoken']['Partitioned'] = 'True'
+        
+        return response

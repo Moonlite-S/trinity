@@ -104,3 +104,34 @@ class GraphAPI():
             print("Error response:")
             print(json.dumps(response.json(), indent=2))
             raise Exception(f'Failed to list root folders. Status code: {response.status_code}')
+        
+    
+    def create_online_meeting():
+        token = GraphAPI.get_access_token()
+        if token is None:
+            return "Authentication failed"
+
+        url = 'https://graph.microsoft.com/v1.0/me/onlineMeetings'
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+        meeting_details = {
+            "subject": "Team Call",
+            "startDateTime": "2024-09-30T14:30:00Z",  # Format: ISO8601
+            "endDateTime": "2024-09-30T15:00:00Z",
+            "participants": {
+                "attendees": [
+                    {
+                        "identity": {
+                            "user": {
+                                "id": "<user-id>"  # User ID of the participant
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+
+        response = requests.post(url, json=meeting_details, headers=headers)
+        return response.json()

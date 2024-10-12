@@ -95,13 +95,9 @@ export async function login({email, password }: LoginProps): Promise<number> {
           console.error("Axios error: ", error)
           return 500
         }
-    } else if (error instanceof Error) {
+    } else 
         console.error("Error: ", error)
         return 500
-      } else {
-        console.error("Unknown error: ", error)
-        return 500
-      }
     }
 }
 
@@ -115,12 +111,7 @@ export async function logout(): Promise<number> {
     try {
       const response = await AxiosInstance.post('api/logout')
 
-      const data = response.data
-
-      console.log(data)
-
-
-      if (data.message == 'success') {
+      if (response.status == 200) {
         console.log("Logged out")
         return 200
       } else {
