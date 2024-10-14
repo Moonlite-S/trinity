@@ -2,8 +2,6 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { test_user_dummy, TestRouterWrapper } from './utils'
 import { CreateProject, UpdateProjectList } from '../components/Project'
 import { createProject } from '../api/projects'
-import userEvent from '@testing-library/user-event'
-import { ProjectProps } from '../interfaces/project_types'
 import selectEvent from 'react-select-event';
 import { act } from 'react'
 import { ProjectForm } from '../components/ProjectForm'
@@ -35,24 +33,16 @@ vi.mock('../api/projects', async(importOriginal) => {
     }
 })
 
-const project: ProjectProps = {
-    project_id: '2024-02-001',
+const project = {
     project_name: 'Test Project',
     description: 'This is a test project',
     start_date: '2024-02-20',
     end_date: '2024-02-20',
     status: 'ACTIVE',
-    manager: {
-        name: 'Sean',
-        email: 'sean@example.com',
-        username: 'sean',
-        password: 'password',
-        role: 'Manager'
-    },
-    city: 'test',
-    client_name: 'test',
-    folder_location: '2024-02-01',
-    template: ''
+    manager: 'sean@example.com',
+    city: 'test city',
+    client_name: 'test client',
+    template: 'default'
 }
 
 describe('Project Creation', () => {
@@ -65,7 +55,6 @@ describe('Project Creation', () => {
 
         render(
             <TestRouterWrapper
-                initialEntries={['/']}
                 routes={[
                     {path: '/projects/create_project', element: <CreateProject />},
                     {path: '/projects', element: <UpdateProjectList />}
@@ -103,11 +92,13 @@ describe('Project Creation', () => {
         })
         fireEvent.click(screen.getByText('test client'))
 
-        const createButton = screen.getByText('Create Project')
-        userEvent.click(createButton)
+        fireEvent.submit(screen.getByTestId('project_creation'))
 
         await waitFor(() => {
-            expect(createProject).toHaveBeenCalledTimes(1)
+            expect(createProject).toHaveBeenCalledWith({...new_project, 
+                project_id: expect.any(String)})
         })
+
+        expect(createProject).toHaveBeenCalledTimes(1)
     })
 })

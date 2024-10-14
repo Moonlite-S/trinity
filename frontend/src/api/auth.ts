@@ -1,7 +1,7 @@
 import { AxiosError } from 'axios';
 import AxiosInstance from '../components/Axios';
 import { EmployeeProps } from '../interfaces/employee_type';
-
+import { removeCookie, setCookie } from 'typescript-cookie'
 /**
  * This sends a GET request to the backend and verifies a user's authentication status
  * via the session token / cookie.
@@ -12,15 +12,16 @@ import { EmployeeProps } from '../interfaces/employee_type';
  */
 export async function checkUser(): Promise<EmployeeProps> {
     try {
-      const response = await AxiosInstance.get('api/user')
-      const data = response.data
-      console.log(data)
+      const response = await AxiosInstance.get('auth/user/')
+      const data = response.data['user']
+      console.log("Data: ", data)
       return data
 
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error.response?.status === 401) {
-          // 401 Unauthorized
+          // User is not authenticated
+          console.log("User is not authenticated")
           throw new Error('Unauthorized')
         } else if (error.response?.status === 403) {
           // 403 Forbidden
@@ -54,7 +55,6 @@ export async function getCurrentUser(): Promise<EmployeeProps> {
     console.log(data)
 
     return response.data
-
   } catch (error) {
     console.error("Network Error: ",error)
     throw new Error("Network Error")
@@ -74,30 +74,30 @@ type LoginProps = {
  * 
  * @param email user-inputted email
  * @param password user-inputted password
+ * 
+ * @returns the session token
  */
-export async function login({email, password }: LoginProps): Promise<number> {
+export async function login({email, password }: LoginProps): Promise<string> {
     try {
-      await AxiosInstance.post('api/login', {
-        email: email,
+      const response = await AxiosInstance.post('auth/login/', {
+        username: email,
         password: password
       })
 
-      return 200
+      const token = response.data.key
+
+      setCookie('authToken', token, { secure: true, sameSite: 'strict' })
+
+      //Set the token in the AxiosInstance headers
+      AxiosInstance.defaults.headers['Authorization'] = `Token ${token}`;
+
+      return "200"
     } catch (error) {
       if (error instanceof AxiosError) {
-        if (error.response?.status === 401) {
-          // 401 Unauthorized
-          return 401
-        } else if (error.response?.status === 403) {
-          // 403 Forbidden
-          return 403
-        } else {
-          console.error("Axios error: ", error)
-          return 500
-        }
-    } else 
-        console.error("Error: ", error)
-        return 500
+        const errorMessage = error.response?.data.non_field_errors[0]
+        return errorMessage
+      }
+      return "500"
     }
 }
 
@@ -110,9 +110,10 @@ export async function login({email, password }: LoginProps): Promise<number> {
 export async function logout(): Promise<number> {
     try {
       const response = await AxiosInstance.post('api/logout')
-
+      
       if (response.status == 200) {
         console.log("Logged out")
+        removeCookie('authToken')
         return 200
       } else {
         console.log("Logout failed")
@@ -125,3 +126,7 @@ export async function logout(): Promise<number> {
     }
 }
 
+export async function getCSRFToken(): Promise<string> {
+  const response = await AxiosInstance.get('auth/csrf/')
+  return response.data.csrftoken
+}

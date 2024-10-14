@@ -84,8 +84,8 @@ export function Login(){
   const email_regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: any) => { 
-    e.preventDefault()
+  const handleSubmit = async (event: any) => { 
+    event.preventDefault()
     setLoading(true)
 
     // Do Validation Here
@@ -98,14 +98,17 @@ export function Login(){
     setError(false)
 
     try {
-      const response: number = await login({email, password})
+      const response: string = await login({email, password})
       console.log(response)
 
-      if (response === 200) {
+      if (response === "200") {
         navigate("/main_menu")
 
-      } else if (response === 403) {
+      } else if (response === "Unable to log in with provided credentials.") {
         setErrorCode("Incorrect email or password")
+      }
+      else if (response === "E-mail is not verified.") {
+        setErrorCode("Email on file is not verified")
       }
       else {
         setErrorCode("Server Error")

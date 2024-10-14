@@ -21,7 +21,7 @@ export default function CreateSubmittal() {
             <Header />
 
             <div className="justify-center mx-auto p-5">
-                <h1>Create Submittal</h1>
+                <h1>Submittal Creation</h1>
             </div>
 
             <SubmittalForm method="POST" />

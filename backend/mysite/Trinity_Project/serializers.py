@@ -1,3 +1,4 @@
+import uuid
 from rest_framework import serializers
 from .models import *
 
@@ -123,5 +124,11 @@ class AnnouncmentsSerializer(serializers.ModelSerializer):
         return instance
     
 class InvoiceSerializer(serializers.ModelSerializer):
-    model=Invoice
-    fields = []
+    invoice_id = serializers.UUIDField(read_only=True)
+    transaction_id = serializers.UUIDField(read_only=True)
+    class Meta:
+        model = Invoice
+        fields = ['invoice_id', 'invoice_date', 'due_date', 'bill_to_name', 'bill_to_address', 'bill_to_email',
+                  'from_name', 'from_address', 'from_email', 'subtotal', 'tax', 'total_amount',
+                  'payment_status', 'payment_method', 'transaction_id', 'created_at', 'updated_at']
+        read_only_fields = ['invoice_id', 'created_at', 'updated_at']

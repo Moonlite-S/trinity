@@ -14,12 +14,11 @@ type RFIFormHandlerProps = {
 export function useRFIFormHandler (
     { setCurrentRFIData, currentRFIData, navigate, setErrorString, method }: RFIFormHandlerProps
 ) {
-    
     const handleProjectChange = (e: unknown) => {
-        console.log(e)  
+        console.log("Projects", e)  
         
         if (typeof e === "object" && e !== null && "value" in e && "label" in e){
-            setCurrentRFIData(prev => ({...prev, project: e.value as string}))
+            setCurrentRFIData(prev => ({...prev, project_name: e.value as string}))
         }
     }
 

@@ -22,6 +22,7 @@ export function MonthlyCalendar() {
     const [projectsDueThisMonth, setProjectsDueThisMonth] = useState<CalendarProps[]>([]);
     const daysInMonth = getDaysInMonth(currentMonth);
 
+    //*** Handles month navigation
     const handlePrevMonth = () => {
         setCurrentMonth(subMonths(currentMonth, 1));
     }

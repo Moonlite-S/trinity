@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
@@ -65,12 +66,18 @@ class Project(models.Model):
         return {}
 
 class User(AbstractUser):
+    role_choices = [
+        ('Manager', 'Manager'),
+        ('Team Member', 'Team Member'),
+        ('Administrator', 'Administrator'),
+        ('Accountant', 'Accountant'),
+    ]   
     name=models.CharField(max_length=50)
     email=models.EmailField(max_length=50, unique=True)
     password=models.CharField(max_length=255)
-    role=models.CharField(max_length=50)
+    role=models.CharField(max_length=50, choices=role_choices, default="Team Member")
     date_joined=models.DateField(auto_now_add=True)
-    username= None
+    username= models.CharField(max_length=50, default="", blank=True)
 
     objects = CustomUserManager()
     
@@ -213,7 +220,12 @@ class RFI(models.Model):
         return None
     
 class Invoice(models.Model):
-    invoice_id = models.CharField(max_length=20, unique=True, primary_key=True)
+    payment_status_choices = [
+        ('Pending', 'Pending'), 
+        ('Paid', 'Paid'), 
+        ('Overdue', 'Overdue')
+    ]
+    invoice_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     invoice_date = models.DateField()
     due_date = models.DateField()
 
@@ -233,13 +245,13 @@ class Invoice(models.Model):
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
 
     # Payment Information
-    payment_status = models.CharField(max_length=50, choices=[('Pending', 'Pending'), ('Paid', 'Paid'), ('Overdue', 'Overdue')])
+    payment_status = models.CharField(max_length=50, choices=payment_status_choices)
     payment_method = models.CharField(max_length=50, null=True, blank=True)
-    transaction_id = models.CharField(max_length=100, null=True, blank=True)
+    transaction_id = models.UUIDField()
 
     # Metadata
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-        
+
     def __str__(self):
-        return f"Invoice {self.invoice_number} - {self.bill_to_name}"
+        return f"Invoice {self.invoice_id} - {self.bill_to_name}"

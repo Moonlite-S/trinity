@@ -1,4 +1,4 @@
-from django.urls import  path
+from django.urls import path
 from django.contrib import admin
 
 from Trinity_Project.views.authentication_view import *

@@ -145,7 +145,7 @@ describe('MainMenu Dashboard', () => {
             // All the buttons should be displayed
             expect(screen.getByText(/create announcement/i)).toBeInTheDocument()
             expect(screen.getByText(/create project/i)).toBeInTheDocument()
-            expect(screen.getByText(/update project/i)).toBeInTheDocument()
+            expect(screen.getByText(/view projects/i)).toBeInTheDocument()
             expect(screen.getByText(/project status report/i)).toBeInTheDocument()
             expect(screen.getByText(/your tasks/i)).toBeInTheDocument()
             expect(screen.getByText(/create task/i)).toBeInTheDocument()
@@ -182,7 +182,7 @@ describe('MainMenu Dashboard', () => {
             // All the buttons should be displayed
             expect(screen.getByText(/create announcement/i)).toBeInTheDocument()
             expect(screen.getByText(/create project/i)).toBeInTheDocument()
-            expect(screen.getByText(/update project/i)).toBeInTheDocument()
+            expect(screen.getByText(/view projects/i)).toBeInTheDocument()
             expect(screen.getByText(/project status report/i)).toBeInTheDocument()
             expect(screen.getByText(/your tasks/i)).toBeInTheDocument()
             expect(screen.getByText(/create task/i)).toBeInTheDocument()

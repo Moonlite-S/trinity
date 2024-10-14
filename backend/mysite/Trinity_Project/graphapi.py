@@ -1,7 +1,7 @@
 import json
 from urllib.parse import parse_qs, urlparse
 import webbrowser
-from msal import ConfidentialClientApplication, PublicClientApplication
+from msal import ConfidentialClientApplication
 import requests
 import os
 from dotenv import load_dotenv
@@ -10,23 +10,26 @@ load_dotenv()
 
 class GraphAPI():
     '''
-    ###A class that uses MSAL for authentication and user profiles.
-    Ideally, this is how we're going to authenticate our users.
+    A class that uses MSAL for authentication and user profiles.
+    This version uses PublicClientApplication for user login.
     '''
     MS_GRAPH_API_URL = 'https://graph.microsoft.com/v1.0'
 
     def __init__(self):
-        self.client_id = '44b016a4-9378-4875-9473-7033edbc120b'
-        self.authority = "https://login.microsoftonline.com/consumers"
-        self.scopes = ["Files.Read", "Files.ReadWrite"]
+        self.client_id = os.getenv('AZURE_CLIENT_ID')
+        self.tenant_id = os.getenv('AZURE_TENANT_ID')
+        self.client_secret = os.getenv('AZURE_CLIENT_SECRET')
+        self.authority = f"https://login.microsoftonline.com/{self.tenant_id}"
         self.redirect_uri = "http://localhost:8000"
 
-        self.app = PublicClientApplication(
-            self.client_id,
-            authority=self.authority
+        self.app = ConfidentialClientApplication(
+            client_id=self.client_id,
+            authority=self.authority,
+            client_credential=self.client_secret
         )
 
-        self.access_token = self.get_access_token()
+        self.scopes = ["User.Read"]
+        self.access_token = None
 
     def get_access_token(self):
         accounts = self.app.get_accounts()
@@ -55,10 +58,20 @@ class GraphAPI():
 
         if "access_token" in result:
             return result["access_token"]
+
         else:
             print("Full error response:")
             print(json.dumps(result, indent=2))
             raise Exception(f'No access token found. Error: {result.get("error")}. Error description: {result.get("error_description")}')
+
+
+    def get_all_users(self, access_token):
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'Content-Type': 'application/json'
+        }
+        response = requests.get('https://graph.microsoft.com/v1.0/users', headers=headers)
+        return response
 
     def get_folder_link(self, folder_name):
         headers = {'Authorization': f'Bearer {self.access_token}'}
@@ -106,30 +119,21 @@ class GraphAPI():
             raise Exception(f'Failed to list root folders. Status code: {response.status_code}')
         
     
-    def create_online_meeting():
-        token = GraphAPI.get_access_token()
-        if token is None:
-            return "Authentication failed"
+    def create_online_meeting(self, subject, start_time, end_time, attendees):
+        if not self.access_token:
+            raise Exception("User not authenticated. Call acquire_token_by_auth_code_flow first.")
 
-        url = 'https://graph.microsoft.com/v1.0/me/onlineMeetings'
+        url = f'{self.MS_GRAPH_API_URL}/me/onlineMeetings'
         headers = {
-            'Authorization': f'Bearer {token}',
+            'Authorization': f'Bearer {self.access_token}',
             'Content-Type': 'application/json'
         }
         meeting_details = {
-            "subject": "Team Call",
-            "startDateTime": "2024-09-30T14:30:00Z",  # Format: ISO8601
-            "endDateTime": "2024-09-30T15:00:00Z",
+            "subject": subject,
+            "startDateTime": start_time,
+            "endDateTime": end_time,
             "participants": {
-                "attendees": [
-                    {
-                        "identity": {
-                            "user": {
-                                "id": "<user-id>"  # User ID of the participant
-                            }
-                        }
-                    }
-                ]
+                "attendees": [{"emailAddress": {"address": attendee}} for attendee in attendees]
             }
         }
 

@@ -5,13 +5,13 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from Trinity_Project.utils import authenticate_jwt
+from Trinity_Project.utils import authenticate_user, role_required
 from ..models import RFI, Project, User
 from ..serializers import RFISerializer
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-@login_required
-@api_view(['GET', 'POST'])
+
+@role_required(allowed_roles=['Manager', 'Administrator'], allowed_methods=['GET', 'POST'])
 def RFI_list(request):
     try:
         rfis=RFI.objects.all()
@@ -49,8 +49,7 @@ def RFI_list(request):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-@login_required
-@api_view(['GET','PUT','DELETE'])
+@role_required(allowed_roles=['Manager', 'Administrator'], allowed_methods=['GET', 'PUT', 'DELETE'])
 def RFI_detail(request,rfi_id):
     try:
         rfi=RFI.objects.get(pk=rfi_id)
@@ -72,9 +71,9 @@ def RFI_detail(request,rfi_id):
         rfi.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-@api_view(['GET'])
+@role_required(allowed_roles=['Manager', 'Administrator'], allowed_methods=['GET'])
 def rfi_creation_data(request):
-    authenticate_jwt(request)
+    authenticate_user(request)
 
     data_to_send = {}
 
@@ -92,9 +91,9 @@ def rfi_creation_data(request):
 
     return Response(data_to_send, status=status.HTTP_200_OK)
 
-@api_view(['GET'])
+@role_required(allowed_roles=['Manager', 'Administrator'], allowed_methods=['GET'])
 def rfi_creation_data(request):
-    authenticate_jwt(request)
+    authenticate_user(request)
 
     data_to_send = {}
 
@@ -112,7 +111,7 @@ def rfi_creation_data(request):
 
     return Response(data_to_send, status=status.HTTP_200_OK)
 
-@api_view(['GET'])
+@role_required(allowed_roles=['Manager', 'Administrator'], allowed_methods=['GET'])
 def rfi_by_user(request, email):
     user_obj = User.objects.get(email=email)
     try:
