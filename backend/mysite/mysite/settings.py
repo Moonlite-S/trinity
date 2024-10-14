@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False # Truned off/Made 'False' for Graph API
+DEBUG = True # Truned off/Made 'False' for Graph API
 
 ALLOWED_HOSTS = [
     "localhost",
@@ -37,15 +37,24 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     "rest_framework",
+    "rest_framework.authtoken",
     "django.contrib.admin",
     "django.contrib.auth",
+    "django.contrib.sites",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "corsheaders",
     "Trinity_Project", 
+    "authentication.apps.AuthenticationConfig",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.microsoft",
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -59,6 +68,17 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+    ]
+}
+
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend"
+)
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -201,3 +221,40 @@ AUTH_USER_MODEL = 'Trinity_Project.User'
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_HOST = "smtp-relay.brevo.com"                    # smtp-relay.sendinblue.com
+EMAIL_USE_TLS = False                               # False
+EMAIL_PORT = 587                    # 587
+EMAIL_HOST_USER = "7ddbd4001@smtp-brevo.com"               # your email address
+EMAIL_HOST_PASSWORD = "gCdfAJW4hwa3D2X1"       # your password
+DEFAULT_FROM_EMAIL = "7ddbd4001@smtp-brevo.com"    # email ending with @sendinblue.com
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+
+# <EMAIL_CONFIRM_REDIRECT_BASE_URL>/<key>
+EMAIL_CONFIRM_REDIRECT_BASE_URL = \
+    "http://localhost:5173/email/confirm/"
+
+# <PASSWORD_RESET_CONFIRM_REDIRECT_BASE_URL>/<uidb64>/<token>/
+PASSWORD_RESET_CONFIRM_REDIRECT_BASE_URL = \
+    "http://localhost:5173/password-reset/confirm/"
+
+SOCIALACCOUNT_PROVIDERS = {
+    "microsoft": {
+        "APP": {
+            "client_id": os.getenv('AZURE_CLIENT_ID'),  # replace me
+            "secret": os.getenv('AZURE_CLIENT_SECRET'),        # replace me
+            "key": "",                               # leave empty
+        },
+        "SCOPE": [
+            "user.read",
+            "mailboxsettings.read",
+            "calendars.readwrite",
+        ],
+        "AUTH_PARAMS": {
+            "access_type": "online",
+        },
+        "VERIFIED_EMAIL": True,
+    },
+}

@@ -77,7 +77,7 @@ class User(AbstractUser):
     password=models.CharField(max_length=255)
     role=models.CharField(max_length=50, choices=role_choices)
     date_joined=models.DateField(auto_now_add=True)
-    username= None
+    username= models.CharField(max_length=50, default="", blank=True)
 
     objects = CustomUserManager()
     

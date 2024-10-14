@@ -18,6 +18,7 @@ import { EditTask } from './components/Tasks'
 import ViewRFI, { CreateRFI, EditRFI } from './components/RFI'
 import ProposalList from './components/Proposal'
 import { ViewInvoices, CreateInvoice, EditInvoice } from './components/Invoice'
+import { EmailConfirmation } from './auth/VerifyEmail'
 // Main Router for the application
 export default function App() {
   return (
@@ -62,6 +63,8 @@ export default function App() {
               <Route path='/proposal/' element={<ProposalList />} />
 
             </Route>
+
+            <Route path='/email/confirm/:key' element={<EmailConfirmation />} />
 
             <Route path='*' element={<ErrorPage />} />
         </Routes>
