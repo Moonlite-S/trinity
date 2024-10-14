@@ -199,7 +199,7 @@ def project_creation_data(request):
         start_date__month=chosen_month
     )
     data_to_send['project_count'] = projects.count()
-
+    print(payload)
     # Gets lists of project managers
     users = User.objects.filter(role__in=['Manager', 'Administrator'], is_active=True).values_list('name', 'email')
     data_to_send['users'] = list(users)

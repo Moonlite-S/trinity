@@ -77,7 +77,7 @@ type LoginProps = {
  * 
  * @returns the session token
  */
-export async function login({email, password }: LoginProps): Promise<number> {
+export async function login({email, password }: LoginProps): Promise<string> {
     try {
       const response = await AxiosInstance.post('auth/login/', {
         username: email,
@@ -91,10 +91,13 @@ export async function login({email, password }: LoginProps): Promise<number> {
       //Set the token in the AxiosInstance headers
       AxiosInstance.defaults.headers['Authorization'] = `Token ${token}`;
 
-      return 200
+      return "200"
     } catch (error) {
-        console.error("Error: ", error)
-        return 401
+      if (error instanceof AxiosError) {
+        const errorMessage = error.response?.data.non_field_errors[0]
+        return errorMessage
+      }
+      return "500"
     }
 }
 

@@ -1,3 +1,4 @@
+from django.forms import model_to_dict
 from django.shortcuts import render
 
 # Create your views here.
@@ -35,14 +36,30 @@ class GetUserInfo(UserDetailsView):
             if email:
                 try:
                     user = User.objects.get(email=email)
-                    # Add any additional user data you want to include
+
+                    projects = user.projects.select_related('manager').all()
+                    project_list = []
+                    for project in projects:
+                        project_dict = model_to_dict(project)
+                        project_dict['manager'] = model_to_dict(project.manager)
+                        project_list.append(project_dict)
+
+                    tasks = user.tasks.select_related('assigned_to', 'project_id').all()
+                    task_list = []
+                    for task in tasks:
+                        task_dict = model_to_dict(task)
+                        task_dict['assigned_to'] = model_to_dict(task.assigned_to)
+                        task_dict['project_id'] = model_to_dict(task.project_id)
+                        task_list.append(task_dict)
+
                     response.data['user'] = {
                         'id': user.id,
                         'email': user.email,
                         'name': user.name,
                         'role': user.role,
                         'date_joined': user.date_joined,
-                        # Add any other fields you want to include
+                        'projects': project_list,
+                        'tasks': task_list,
                     }
                 except User.DoesNotExist:
                     pass
