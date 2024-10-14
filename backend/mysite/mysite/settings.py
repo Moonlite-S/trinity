@@ -38,6 +38,8 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
+    "dj_rest_auth",
+    "dj_rest_auth.registration",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.sites",
@@ -72,6 +74,7 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
+        'rest_framework.authentication.SessionAuthentication',
     ]
 }
 
@@ -255,4 +258,10 @@ SOCIALACCOUNT_PROVIDERS = {
             }
         ],
     }
+}
+
+# dj-rest-auth settings
+REST_AUTH = {
+    'USE_JWT': False,
+    'SESSION_LOGIN': True,
 }

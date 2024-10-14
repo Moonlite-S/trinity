@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from ..serializers import AnnouncmentsSerializer
-from ..utils import authenticate_jwt
+from ..utils import authenticate_user
 from ..models import Announcements, ProjectChangeLog, User
 import jwt, datetime
 from datetime import datetime, timezone
@@ -20,7 +20,6 @@ def project_delete_log(request):
     
 @api_view(['GET', 'POST'])
 def announcement(request):
-    payload = authenticate_jwt(request)
     
     if request.method == 'GET':
         announcements = Announcements.objects.all()

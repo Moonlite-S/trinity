@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from datetime import datetime,timezone, timedelta
 
-from ..utils import authenticate_jwt, role_required
+from ..utils import authenticate_user, role_required
 from ..azure_file_share import AzureFileShareClient
 from ..models import Project, ProjectChangeLog, User
 from ..serializers import ProjectSerializer, ProjectSerializerUserObjectVer
@@ -79,7 +79,7 @@ def project_list(request):
 
 @role_required(allowed_roles=['Manager', 'Administrator'], allowed_methods=['GET', 'PUT', 'DELETE'])
 def project_detail(request, project_id):
-    payload = authenticate_jwt(request) #this is used to check if your are login
+    payload = authenticate_user(request) #this is used to check if your are login
 
     try:
         project=Project.objects.get(project_id=project_id)
@@ -187,7 +187,7 @@ def project_creation_data(request):
     - `city`: list of cities
 
     '''
-    payload = authenticate_jwt(request)
+    payload = authenticate_user(request)
     data_to_send = {}
 
     # gets projects create with the given date

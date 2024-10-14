@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from Trinity_Project.azure_file_share import AzureFileShareClient
-from Trinity_Project.utils import authenticate_jwt, role_required
+from Trinity_Project.utils import authenticate_user, role_required
 from ..models import Project, Submittal, User
 from ..serializers import SubmittalSerializer
 from django.contrib.auth.decorators import login_required
@@ -131,7 +131,7 @@ def submittal_by_assigned_to(request,assigned_to):
     
 @role_required(allowed_roles=['Manager', 'Administrator', 'Team Member'], allowed_methods=['GET'])
 def submittal_creation_data(request):
-    payload = authenticate_jwt(request)
+    payload = authenticate_user(request)
 
     data_to_send = {}
 

@@ -6,13 +6,14 @@ from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework import status
 from ..models import User
-from ..utils import authenticate_jwt
+from ..utils import authenticate_user
 from ..serializers import UserSerializer
 from rest_framework.views import APIView
 import jwt
 from django.contrib.auth import authenticate,login,logout
 from django.middleware.csrf import get_token
 
+# Deprecated
 class RegisterView(APIView):
     def post(self,request):
         serializer = UserSerializer(data=request.data)
@@ -20,9 +21,10 @@ class RegisterView(APIView):
         serializer.save()
         return Response(serializer.data)
 
+# Deprecated
 class UserView(APIView):
     def get(self, request):
-        payload = authenticate_jwt(request)
+        payload = authenticate_user(request)
 
         try: 
             user = User.objects.filter(id=payload['id']).first()
@@ -32,7 +34,8 @@ class UserView(APIView):
         except Exception as e:
             print(f"An error occurred while getting the user: {e}")
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            
+
+# Deprecated
 @api_view(['POST'])
 def login_view(request):
     email = request.data['email']
@@ -65,6 +68,7 @@ def login_view(request):
     response.data = {"message": "Successfully logged in."}
     return response
 
+# Deprecated
 @api_view(['POST'])
 def logout_view(request):
     # # Log the user out

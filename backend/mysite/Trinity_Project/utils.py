@@ -1,51 +1,37 @@
 from functools import wraps
 from django.conf import settings
-import jwt
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from .models import User  # Import your custom User model
+from .models import User
+from rest_framework.authtoken.models import Token
 
-def authenticate_jwt(request):
-    token = request.COOKIES.get('jwt_token')
+def authenticate_user(request):
+    auth_token = request.COOKIES.get('authToken')
     
-    if not token:
-        raise AuthenticationFailed('Unauthenticated!') 
+    if not auth_token:
+        raise AuthenticationFailed('Unauthenticated! No token provided.')
     
     try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
-    except jwt.ExpiredSignatureError:
-        response = AuthenticationFailed('Token has expired!')
-        response.delete_cookie('jwt_token')
-        response.delete_cookie('csrftoken')
-        raise response
-    except jwt.DecodeError:
+        token = Token.objects.get(key=auth_token)
+        user = token.user
+    except Token.DoesNotExist:
         raise AuthenticationFailed('Invalid token!')
     
-    return payload
+    if not user.is_active:
+        raise AuthenticationFailed('User is inactive!')
+    
+    return user
 
 def role_required(allowed_roles, allowed_methods):
     def decorator(view_func):
         @wraps(view_func)
-        @api_view(allowed_methods)  # Include all methods you need
+        @api_view(allowed_methods)
         def wrapper(request, *args, **kwargs):
             try:
-                token = request.COOKIES.get('jwt_token')
-
-                if not token:
-                    raise AuthenticationFailed('Unauthenticated! Token not found.')
-
-                try:
-                    payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
-                except jwt.ExpiredSignatureError:
-                    raise AuthenticationFailed('Unauthenticated! Token expired.')
-
-                user = User.objects.filter(id=payload['id']).first()
-                if user is None:
-                    raise AuthenticationFailed('User not found!')
-
+                user = authenticate_user(request)
+                
                 if user.role not in allowed_roles:
                     return Response({"error": "You do not have permission to perform this action"}, status=status.HTTP_403_FORBIDDEN)
                 

@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from Trinity_Project.utils import authenticate_jwt, role_required
+from Trinity_Project.utils import authenticate_user, role_required
 from ..models import RFI, Project, User
 from ..serializers import RFISerializer
 from django.contrib.auth.decorators import login_required
@@ -73,7 +73,7 @@ def RFI_detail(request,rfi_id):
 
 @role_required(allowed_roles=['Manager', 'Administrator'], allowed_methods=['GET'])
 def rfi_creation_data(request):
-    authenticate_jwt(request)
+    authenticate_user(request)
 
     data_to_send = {}
 
@@ -93,7 +93,7 @@ def rfi_creation_data(request):
 
 @role_required(allowed_roles=['Manager', 'Administrator'], allowed_methods=['GET'])
 def rfi_creation_data(request):
-    authenticate_jwt(request)
+    authenticate_user(request)
 
     data_to_send = {}
 

@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from ..utils import authenticate_jwt
+from ..utils import authenticate_user
 from ..models import User
 from ..serializers import UserNameAndEmail, UserNameSerializer, UserSerializer
 from django.contrib.auth.decorators import login_required
@@ -66,7 +66,7 @@ def user_edit(request,user_email):
         
 @api_view(['GET'])
 def return_all_users_name_and_email(request):
-    payload = authenticate_jwt(request)
+    payload = authenticate_user(request)
 
     users = User.objects.all()
     serializer = UserNameAndEmail(users, many=True)

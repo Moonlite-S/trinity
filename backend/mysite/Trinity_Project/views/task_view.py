@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from ..utils import authenticate_jwt, role_required
+from ..utils import authenticate_user, role_required
 from ..models import Project,Task, User
 from ..serializers import TaskSerializer
 from django.contrib.auth.decorators import login_required
@@ -191,7 +191,7 @@ def task_filter_by_all_user_projects(request, email):
     @param email: The email of the user
     @return: A list of tasks
     '''
-    payload = authenticate_jwt(request)
+    payload = authenticate_user(request)
     try:
         # Get the user
         user = User.objects.get(email=email)
@@ -228,7 +228,7 @@ def task_filter_by_user(request, email):
     
 @role_required(allowed_roles=['Manager', 'Administrator', 'Team Member'], allowed_methods=['GET'])
 def task_creation_data(request):
-    payload = authenticate_jwt(request)
+    payload = authenticate_user(request)
 
     data_to_send = {}
 
