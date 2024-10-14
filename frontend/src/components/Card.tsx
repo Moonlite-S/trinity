@@ -17,9 +17,9 @@ import { useEffect, useState } from "react"
  * - Add the person who created the task
  */
 export function TaskCard ({task, isNew, onView} : {task: TaskProps, isNew: boolean, onView: () => void}) {
-    // The project_id is using the __str__ representation of the object
-    // So i just need to split to get the project name and company name
-    const formatProjectName = task.project_id.split('|')[1]
+    // The project_id is using the project_name from the project object
+    // I really need to change around the types...
+    const formatProjectName = task.project_id
 
     // This is used because onView would make isNew false immediately.
     // So we need to use a local state to prevent unnecessary re-renders

@@ -9,7 +9,7 @@ from allauth.socialaccount.providers.microsoft.views import MicrosoftGraphOAuth2
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.views import UserDetailsView
 from rest_framework.response import Response
-from Trinity_Project.models import User
+from Trinity_Project.models import User, Project
 
 def email_confirm_redirect(request, key):
     return HttpResponseRedirect(
@@ -49,7 +49,7 @@ class GetUserInfo(UserDetailsView):
                     for task in tasks:
                         task_dict = model_to_dict(task)
                         task_dict['assigned_to'] = model_to_dict(task.assigned_to)
-                        task_dict['project_id'] = model_to_dict(task.project_id)
+                        task_dict['project_id'] = Project.objects.filter(project_id=task.project_id.project_id).first().project_name
                         task_list.append(task_dict)
 
                     response.data['user'] = {

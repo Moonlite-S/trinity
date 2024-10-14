@@ -64,7 +64,6 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     'Trinity_Project.middleware.CurrentUserMiddleware',
     "django.contrib.messages.middleware.MessageMiddleware",

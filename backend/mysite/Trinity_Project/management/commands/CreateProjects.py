@@ -9,6 +9,7 @@ from allauth.account.models import EmailAddress
 from django.contrib.sites.models import Site
 from allauth.socialaccount.models import SocialApp
 from django.contrib.auth.models import AnonymousUser
+from django.middleware.csrf import get_token
 
 class Command(BaseCommand):
     help = 'Creates Example Projects'
@@ -31,46 +32,45 @@ class Command(BaseCommand):
         # Create Users
         for employee in employees:
             try:
-                if employee['name'] == 'admin':
-                    User.objects.create_superuser(**employee)
+                # Create a GET request (for CSRF token)
+                get_request = factory.get('/accounts/signup/')
+                get_request.user = AnonymousUser()
+                get_request.session = {}
+                get_request.site = site
+
+                # Get CSRF token
+                csrf_token = get_token(get_request)
+
+                # Create a POST request
+                post_request = factory.post('/accounts/signup/', {
+                    'email': employee['email'],
+                    'password1': employee['password'],
+                    'password2': employee['password'],
+                    'name': employee['name'],
+                    'username': employee['email'],
+                    'role': employee['role'],
+                    'csrfmiddlewaretoken': csrf_token,
+                })
+                post_request.user = AnonymousUser()
+                post_request.session = {}
+                post_request.site = site
+
+                form = SignupForm(post_request.POST)
+                if form.is_valid():
+                    user = form.save(post_request)
+                    user.name = employee['name']
+                    user.role = employee['role']
+                    if employee['name'] == 'admin':
+                        user.is_superuser = True
+                        user.is_staff = True
+                    user.save()
+
+                    # Verify the email
+                    EmailAddress.objects.filter(user=user, email=user.email).update(verified=True)
+
+                    self.stdout.write(self.style.SUCCESS(f"User '{employee['name']}' registered successfully!"))
                 else:
-                    # Create a GET request (for CSRF token)
-                    get_request = factory.get('/accounts/signup/')
-                    get_request.user = AnonymousUser()
-                    get_request.session = {}
-                    get_request.site = site
-
-                    # Get CSRF token
-                    from django.middleware.csrf import get_token
-                    csrf_token = get_token(get_request)
-
-                    # Create a POST request
-                    post_request = factory.post('/accounts/signup/', {
-                        'email': employee['email'],
-                        'password1': employee['password'],
-                        'password2': employee['password'],
-                        'name': employee['name'],
-                        'username': employee['email'],
-                        'role': employee['role'],
-                        'csrfmiddlewaretoken': csrf_token,
-                    })
-                    post_request.user = AnonymousUser()
-                    post_request.session = {}
-                    post_request.site = site
-
-                    form = SignupForm(post_request.POST)
-                    if form.is_valid():
-                        user = form.save(post_request)
-                        user.name = employee['name']
-                        user.role = employee['role']
-                        user.save()
-
-                        # Verify the email
-                        EmailAddress.objects.filter(user=user, email=user.email).update(verified=True)
-
-                        self.stdout.write(self.style.SUCCESS(f"User '{employee['name']}' registered successfully!"))
-                    else:
-                        self.stdout.write(self.style.ERROR(f"Failed to register user '{employee['name']}': {form.errors}"))
+                    self.stdout.write(self.style.ERROR(f"Failed to register user '{employee['name']}': {form.errors}"))
 
             except Exception as ex:
                 print(f"An error occurred while creating employee: {ex}. Skipping...")

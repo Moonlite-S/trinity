@@ -16,13 +16,23 @@ def authenticate_user(request):
     try:
         token = Token.objects.get(key=auth_token)
         user = token.user
+        
+        if not user.is_active:
+            raise AuthenticationFailed('User is inactive!')
+        
+        # Convert user object to dictionary
+        user_dict = {
+            'id': user.id,
+            'name': user.name,
+            'email': user.email,
+            'role': user.role,
+        }
+        
+        return user_dict
+
     except Token.DoesNotExist:
         raise AuthenticationFailed('Invalid token!')
     
-    if not user.is_active:
-        raise AuthenticationFailed('User is inactive!')
-    
-    return user
 
 def role_required(allowed_roles, allowed_methods):
     def decorator(view_func):
@@ -32,7 +42,7 @@ def role_required(allowed_roles, allowed_methods):
             try:
                 user = authenticate_user(request)
                 
-                if user.role not in allowed_roles:
+                if user['role'] not in allowed_roles:
                     return Response({"error": "You do not have permission to perform this action"}, status=status.HTTP_403_FORBIDDEN)
                 
                 return view_func(request, *args, **kwargs)
