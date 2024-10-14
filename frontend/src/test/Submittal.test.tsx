@@ -1,9 +1,9 @@
 import { test_user_dummy, TestRouterWrapper } from "./utils"
 import CreateSubmittal from "../components/Submittal"
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { vi } from "vitest"
-import { SubmittalCreationProps, SubmittalProps } from "../interfaces/submittal_types"
-import { createSubmittal, getDataForSubmittalCreation } from "../api/submittal"
+import { SubmittalProps } from "../interfaces/submittal_types"
+import { createSubmittal } from "../api/submittal"
 import { SubmittalForm } from "../components/SubmittalForm"
 
 const test_submittal: SubmittalProps = {
@@ -19,11 +19,11 @@ const test_submittal: SubmittalProps = {
     status: "OPEN",
 }
 
-const test_creation_data: SubmittalCreationProps = {
-    projects: [['Test Project', '1']],
-    users: [['Test User', '1']],
-    client_names: ['Test Client']
-}
+// const test_creation_data: SubmittalCreationProps = {
+//     projects: [['Test Project', '1']],
+//     users: [['Test User', '1']],
+//     client_names: ['Test Client']
+// }
 
 vi.mock('../api/submittal', async (importOriginal) => {
     const original = await importOriginal<typeof import('../api/submittal')>()
