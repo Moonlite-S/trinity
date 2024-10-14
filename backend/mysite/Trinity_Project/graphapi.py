@@ -1,7 +1,7 @@
 import json
 from urllib.parse import parse_qs, urlparse
 import webbrowser
-from msal import ConfidentialClientApplication, PublicClientApplication
+from msal import ConfidentialClientApplication
 import requests
 import os
 from dotenv import load_dotenv
@@ -10,44 +10,60 @@ load_dotenv()
 
 class GraphAPI():
     '''
-    ###A class that uses MSAL for authentication and user profiles.
-    Ideally, this is how we're going to authenticate our users.
+    A class that uses MSAL for authentication and user profiles.
+    This version uses PublicClientApplication for user login.
     '''
     MS_GRAPH_API_URL = 'https://graph.microsoft.com/v1.0'
 
     def __init__(self):
         self.client_id = os.getenv('AZURE_CLIENT_ID')
+        self.tenant_id = os.getenv('AZURE_TENANT_ID')
         self.client_secret = os.getenv('AZURE_CLIENT_SECRET')
-        self.tenant_id = os.getenv('AZURE_TENANT')
-
         self.authority = f"https://login.microsoftonline.com/{self.tenant_id}"
+        self.redirect_uri = "http://localhost:8000"
 
-        self.msal_app = ConfidentialClientApplication(
+        self.app = ConfidentialClientApplication(
             client_id=self.client_id,
             authority=self.authority,
             client_credential=self.client_secret
         )
 
-        self.scopes = ["https://graph.microsoft.com/.default"]
+        self.scopes = ["User.Read"]
+        self.access_token = None
 
-        self.result = self.msal_app.acquire_token_silent(
-            scopes=self.scopes, 
-            account=None
-        )
+    def get_access_token(self):
+        accounts = self.app.get_accounts()
+        if accounts:
+            result = self.app.acquire_token_silent(self.scopes, account=accounts[0])
+            if result:
+                return result['access_token']
 
-        if not self.result:
-            self.result = self.msal_app.acquire_token_for_client(scopes=self.scopes)
+        flow = self.app.initiate_auth_code_flow(scopes=self.scopes, redirect_uri=self.redirect_uri)
+        auth_url = flow['auth_uri']
+        
+        print(f"Please go to this URL and authorize the app: {auth_url}")
+        webbrowser.open(auth_url)
+        
+        auth_response = input("Enter the full redirect URL: ")
+        
+        parsed_url = urlparse(auth_response)
+        query_dict = parse_qs(parsed_url.query)
+        
+        auth_response_dict = {
+            'code': query_dict.get('code', [None])[0],
+            'state': query_dict.get('state', [None])[0],
+        }
+        
+        result = self.app.acquire_token_by_auth_code_flow(flow, auth_response_dict)
 
-        if "access_token" in self.result:
-            self.access_token = self.result["access_token"]
+        if "access_token" in result:
+            return result["access_token"]
+
         else:
-            raise Exception('No access_token found.')
+            print("Full error response:")
+            print(json.dumps(result, indent=2))
+            raise Exception(f'No access token found. Error: {result.get("error")}. Error description: {result.get("error_description")}')
 
-    def get_auth_url(self, redirect_uri):
-        return self.msal_app.get_authorization_request_url(self.scopes, redirect_uri=redirect_uri)
-
-    def acquire_token_by_code(self, code, redirect_uri):
-        return self.msal_app.acquire_token_by_authorization_code(code, scopes=self.scopes, redirect_uri=redirect_uri)
 
     def get_all_users(self, access_token):
         headers = {
@@ -103,35 +119,23 @@ class GraphAPI():
             raise Exception(f'Failed to list root folders. Status code: {response.status_code}')
         
     
-    def create_online_meeting():
-        token = GraphAPI.get_access_token()
-        if token is None:
-            return "Authentication failed"
+    def create_online_meeting(self, subject, start_time, end_time, attendees):
+        if not self.access_token:
+            raise Exception("User not authenticated. Call acquire_token_by_auth_code_flow first.")
 
-        url = 'https://graph.microsoft.com/v1.0/me/onlineMeetings'
+        url = f'{self.MS_GRAPH_API_URL}/me/onlineMeetings'
         headers = {
-            'Authorization': f'Bearer {token}',
+            'Authorization': f'Bearer {self.access_token}',
             'Content-Type': 'application/json'
         }
         meeting_details = {
-            "subject": "Team Call",
-            "startDateTime": "2024-09-30T14:30:00Z",  # Format: ISO8601
-            "endDateTime": "2024-09-30T15:00:00Z",
+            "subject": subject,
+            "startDateTime": start_time,
+            "endDateTime": end_time,
             "participants": {
-                "attendees": [
-                    {
-                        "identity": {
-                            "user": {
-                                "id": "<user-id>"  # User ID of the participant
-                            }
-                        }
-                    }
-                ]
+                "attendees": [{"emailAddress": {"address": attendee}} for attendee in attendees]
             }
         }
 
         response = requests.post(url, json=meeting_details, headers=headers)
         return response.json()
-
-test = GraphAPI()
-print(test.access_token)

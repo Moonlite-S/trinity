@@ -242,19 +242,17 @@ PASSWORD_RESET_CONFIRM_REDIRECT_BASE_URL = \
 
 SOCIALACCOUNT_PROVIDERS = {
     "microsoft": {
-        "APP": {
-            "client_id": os.getenv('AZURE_CLIENT_ID'),  # replace me
-            "secret": os.getenv('AZURE_CLIENT_SECRET'),        # replace me
-            "key": "",                               # leave empty
-        },
-        "SCOPE": [
-            "user.read",
-            "mailboxsettings.read",
-            "calendars.readwrite",
+        "APPS": [
+            {
+                "client_id": os.getenv('AZURE_CLIENT_ID'),  # replace me
+                "secret": os.getenv('AZURE_CLIENT_SECRET'),        # replace me
+                "key": "",                                          # leave empty
+                "settings": {
+                    "tenant": "tenant",
+                    "login_url": "https://login.microsoftonline.com",
+                    "graph_url": "https://graph.microsoft.com",
+                }
+            }
         ],
-        "AUTH_PARAMS": {
-            "access_type": "online",
-        },
-        "VERIFIED_EMAIL": True,
-    },
+    }
 }

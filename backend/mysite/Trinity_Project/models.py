@@ -68,14 +68,14 @@ class Project(models.Model):
 class User(AbstractUser):
     role_choices = [
         ('Manager', 'Manager'),
-        ('Employee', 'Employee'),
+        ('Team Member', 'Team Member'),
         ('Administrator', 'Administrator'),
         ('Accountant', 'Accountant'),
     ]   
     name=models.CharField(max_length=50)
     email=models.EmailField(max_length=50, unique=True)
     password=models.CharField(max_length=255)
-    role=models.CharField(max_length=50, choices=role_choices)
+    role=models.CharField(max_length=50, choices=role_choices, default="Team Member")
     date_joined=models.DateField(auto_now_add=True)
     username= models.CharField(max_length=50, default="", blank=True)
 

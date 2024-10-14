@@ -19,6 +19,7 @@ import ViewRFI, { CreateRFI, EditRFI } from './components/RFI'
 import ProposalList from './components/Proposal'
 import { ViewInvoices, CreateInvoice, EditInvoice } from './components/Invoice'
 import { EmailConfirmation } from './auth/VerifyEmail'
+import { PasswordReset } from './auth/PasswordReset'
 // Main Router for the application
 export default function App() {
   return (
@@ -27,7 +28,6 @@ export default function App() {
             <Route path='/' element={<Home />} />
 
             {/* All routes here are checked for authentication. */}
-            <Route element={<Verification />}>
 
               <Route path='/main_menu' element={<MainMenu/>} />
 
@@ -62,9 +62,9 @@ export default function App() {
 
               <Route path='/proposal/' element={<ProposalList />} />
 
-            </Route>
 
             <Route path='/email/confirm/:key' element={<EmailConfirmation />} />
+            <Route path='/password/reset/:key' element={<PasswordReset />} />
 
             <Route path='*' element={<ErrorPage />} />
         </Routes>

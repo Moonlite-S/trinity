@@ -10,7 +10,6 @@ from ..models import Announcements, ProjectChangeLog, User
 import jwt, datetime
 from datetime import datetime, timezone
 from django.contrib.auth.decorators import login_required
-from ..graphapi import GraphAPI
 from django.db.models import F
 
 @api_view(['DELETE'])

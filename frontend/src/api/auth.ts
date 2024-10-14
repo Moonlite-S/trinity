@@ -77,8 +77,8 @@ type LoginProps = {
  */
 export async function login({email, password }: LoginProps): Promise<number> {
     try {
-      await AxiosInstance.post('api/login', {
-        email: email,
+      await AxiosInstance.post('auth/login/', {
+        username: email,
         password: password
       })
 
