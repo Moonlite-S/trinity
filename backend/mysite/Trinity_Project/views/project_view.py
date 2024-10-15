@@ -14,7 +14,7 @@ from ..serializers import ProjectSerializer, ProjectSerializerUserObjectVer
 from django.contrib.auth.decorators import login_required
 from rest_framework.exceptions import PermissionDenied
 
-@role_required(allowed_roles=['Manager', 'Administrator'], allowed_methods=['GET', 'POST'])
+@role_required(allowed_roles=['Manager', 'Administrator', 'Team Member'], allowed_methods=['GET', 'POST'])
 def project_list(request):
     if request.method == 'GET':
         projects = Project.objects.all()
