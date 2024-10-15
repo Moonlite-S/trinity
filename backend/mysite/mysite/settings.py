@@ -261,7 +261,7 @@ SOCIALACCOUNT_PROVIDERS = {
 
 # dj-rest-auth settings
 REST_AUTH = {
-    'USE_JWT': False,
+    'USE_JWT': True,
     'SESSION_LOGIN': True,
 }
 
