@@ -8,7 +8,7 @@ import { removeCookie, setCookie } from 'typescript-cookie'
  * 
  * This is called everytime the user navigates anywhere in the app, aside from the login page
  * 
- * @returns a repsponse code representing if the user is verified or not
+ * @returns the user's information like name, email, their assigned role, and their assigned projects and tasks
  */
 export async function checkUser(): Promise<EmployeeProps> {
     try {
@@ -40,27 +40,6 @@ export async function checkUser(): Promise<EmployeeProps> {
     }
 }
 
-/**
- * This sends a GET request to the backend and gets the current user's information
- * 
- * @returns the current user's information
- * 
- * (Personally I think we can just put this as the checkUser function instead. I'll just need to alter the function that uses it)
- */
-export async function getCurrentUser(): Promise<EmployeeProps> {
-  try {
-    const response = await AxiosInstance.get('api/user')
-    const data = response.data
-
-    console.log(data)
-
-    return response.data
-  } catch (error) {
-    console.error("Network Error: ",error)
-    throw new Error("Network Error")
-  }
-}
-
 type LoginProps = {
     email: string,
     password: string
@@ -86,7 +65,7 @@ export async function login({email, password }: LoginProps): Promise<string> {
 
       const token = response.data.key
 
-      setCookie('authToken', token, { secure: true, sameSite: 'strict' })
+      setCookie('authToken', token, { secure: true, sameSite: 'strict' }) // We need to set this in the backend 
 
       //Set the token in the AxiosInstance headers
       AxiosInstance.defaults.headers['Authorization'] = `Token ${token}`;

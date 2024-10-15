@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react"
 import { ProjectFormBaseProps, ProjectProps } from "../interfaces/project_types"
 import { getDataForProjectCreation } from "../api/projects";
-import { CreateableSelectionComponent, SelectionComponent, BottomFormButton } from "./Buttons";
+import { CreateableSelectionComponent, SelectionComponent, BottomFormButton, OrangeButton } from "./Buttons";
 import { Error_Component } from "./misc";
 import { useAuth } from "../App";
 import { useNavigate } from "react-router-dom";
 import { useProjectFormHandler } from "../hooks/projectFormHandler";
-import { GenericForm, GenericInput, GenericSelect, GenericTextArea } from "./GenericForm";
+import { GenericCheckbox, GenericForm, GenericInput, GenericSelect, GenericSlider, GenericTextArea } from "./GenericForm";
+import { InvoiceProps } from "../interfaces/invoices_types";
+import { getInvoiceByProjectId } from "../api/invoices";
 
 const templates = [
     'default'
@@ -43,12 +45,20 @@ export function ProjectForm(
         template: "default"
     })
 
+
     const [ProjectManagers, setProjectManagers] = useState<string[]>([])
     const [Clients, setClients] = useState<{ value: string, label: string }[] | undefined>()
     const [Cities, setCities] = useState<{ value: string, label: string }[] | undefined>()
     const [errorString, setErrorString] = useState<string>()
+    const [invoiceData, setInvoiceData] = useState<InvoiceProps>({
+        invoice_date: new Date().toLocaleDateString("en-CA"),
+        payment_status: "Pending",
+        payment_amount: 0,
+        project_id: "",
+        project_name: ""
+    })
 
-    const { onSubmit, onManagerChange, onClientChange, onCityChange } = useProjectFormHandler(setCurrentProjectData, currentProjectData, navigate, setErrorString, method)
+    const { onSubmit, onManagerChange, onClientChange, onCityChange, onSendInvoice } = useProjectFormHandler(setCurrentProjectData, currentProjectData, invoiceData, navigate, setErrorString, method)
 
     const projectManagerListOptions = ProjectManagers?.map((value: string) => {
         return { value: value[1], label: value[0] }
@@ -59,7 +69,6 @@ export function ProjectForm(
             try {
                 const response = await getDataForProjectCreation(currentProjectData.start_date)
 
-                console.log(response)
                 if (!response) {
                     throw new Error("Error fetching project list")
                 }
@@ -81,6 +90,19 @@ export function ProjectForm(
             }
         }
 
+        const get_invoice_data = async () => {
+            try {
+                if (currentProjectData.project_id) {
+                    const response = await getInvoiceByProjectId(currentProjectData.project_id)
+                    console.log("response", response)
+                    setInvoiceData(response)
+                }
+            } catch (error) {
+                console.error("Error fetching invoice data:", error)
+            }
+        }
+
+        get_invoice_data()
         get_project_data()
     },[])
 
@@ -99,12 +121,32 @@ export function ProjectForm(
         onClientChange={onClientChange} 
         onCityChange={onCityChange} 
         method={method}
+        onSendInvoice={onSendInvoice}
+        invoiceData={invoiceData}
+        setInvoiceData={setInvoiceData}
     />
     </>
     )
 }
 
-function ProjectFormBase({ currentProjectData, projectManagerListOptions, Clients, Cities, templates, onSubmit, onManagerChange, onClientChange, onCityChange, method }: ProjectFormBaseProps) {
+function ProjectFormBase({ 
+    currentProjectData,
+    projectManagerListOptions, 
+    Clients, Cities, templates, 
+    onSubmit, onManagerChange, onClientChange, 
+    onCityChange, method, onSendInvoice, 
+    invoiceData, setInvoiceData
+}: ProjectFormBaseProps) {
+    const [sendInvoice, setSendInvoice] = useState<boolean>(false)
+
+    const onSendInvoiceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSendInvoice(e.target.checked)
+    }
+
+    const onInvoiceBillingAmountChange = (value: number) => {
+        setInvoiceData({...invoiceData, payment_amount: value})
+    }
+
     return (
         <GenericForm form_id="project_creation" onSubmit={onSubmit}>
             <GenericInput label="Project Name" value={currentProjectData.project_name} type="text" name="project_name"/>
@@ -122,7 +164,13 @@ function ProjectFormBase({ currentProjectData, projectManagerListOptions, Client
                 <GenericSelect label="Template" value={currentProjectData.template} options={templates} name="template" />
             </div>
             <GenericTextArea label="Project Description" value={currentProjectData.description} name="description" />
-            <BottomFormButton button_text={method === "POST" ? "Create Project" : "Update Project"}/>
+
+            <GenericCheckbox label="Send Invoice" value={sendInvoice} name="send_invoice" onChange={onSendInvoiceChange}/>
+            {sendInvoice && <GenericSlider label="Invoice Billing Amount (%)" value={invoiceData.payment_amount ?? 0} name="invoice_billing_amount" onChange={onInvoiceBillingAmountChange}/>}
+
+            <BottomFormButton button_text={method === "POST" ? "Create Project" : "Update Project"}>
+                {sendInvoice && <OrangeButton onClick={onSendInvoice}>Send Invoice</OrangeButton>}
+            </BottomFormButton>
         </GenericForm>
     )
 }

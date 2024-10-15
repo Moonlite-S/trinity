@@ -122,3 +122,20 @@ export function GenericSlider({label, value, name, className, onChange}: Generic
         </div>
     )
 }
+
+type GenericCheckboxProps = {
+    label: string
+    value: boolean
+    name: string
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+}
+
+export function GenericCheckbox({label, value, name, onChange}: GenericCheckboxProps) {
+    return (
+        <div className="flex flex-col gap-2">
+            <label htmlFor={name}>{label}</label>
+            <input type="checkbox" id={name} name={name} checked={value} onChange={onChange} className="bg-white border rounded-md border-zinc-500 focus:outline-none focus:ring focus:ring-orange-400 p-2"/>
+        </div>
+    )
+}
+

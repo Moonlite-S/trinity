@@ -1,20 +1,10 @@
-from os import name
-from django.http import HttpResponse
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.exceptions import AuthenticationFailed
-
 from Trinity_Project.utils import role_required
-
 from ..models import Invoice
-from ..serializers import InvoiceSerializer, UserSerializer
-from rest_framework.views import APIView
-import jwt
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate,login,logout
+from ..serializers import InvoiceSerializer
 from rest_framework import status
 
-@role_required(allowed_roles=['Accountant', 'Administrator'], allowed_methods=['GET', 'POST'])
+@role_required(allowed_roles=['Accountant', 'Manager', 'Administrator'], allowed_methods=['GET', 'POST'])
 def invoice_list(request):
     if request.method == 'GET':
         invoice = Invoice.objects.all()
@@ -22,16 +12,23 @@ def invoice_list(request):
         return Response(serializer.data)
 
     if request.method == 'POST':
-        serializer = InvoiceSerializer(data=request.data)
+        project_id = request.data.get('project_id')
+        existing_invoice = Invoice.objects.filter(project_id=project_id).first()
+
+        if existing_invoice:
+            print("Invoice already exists. Updating...")
+            serializer = InvoiceSerializer(existing_invoice, data=request.data)
+        else:
+            serializer = InvoiceSerializer(data=request.data)
         
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_200_OK if existing_invoice else status.HTTP_201_CREATED)
         else:
             print("Serializer errors:", serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@role_required(allowed_roles=['Accountant', 'Administrator'], allowed_methods=['GET', 'PUT', 'DELETE'])
+@role_required(allowed_roles=['Accountant', 'Manager', 'Administrator'], allowed_methods=['GET', 'PUT', 'DELETE'])
 def invoice_detail(request,invoice_id):
     try:
         invoice=Invoice.objects.get(pk=invoice_id)
@@ -55,3 +52,9 @@ def invoice_detail(request,invoice_id):
         invoice.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+@role_required(allowed_roles=['Accountant', 'Manager', 'Administrator'], allowed_methods=['GET'])
+def invoice_by_project_id(request, project_id):
+    if request.method == 'GET':
+        invoice = Invoice.objects.filter(project_id=project_id).first()
+        serializer = InvoiceSerializer(invoice)
+        return Response(serializer.data)

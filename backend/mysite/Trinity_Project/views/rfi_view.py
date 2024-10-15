@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
+from Trinity_Project.azure_file_share import AzureFileShareClient
 from Trinity_Project.utils import authenticate_user, role_required
 from ..models import RFI, Project, User
 from ..serializers import RFISerializer
@@ -44,6 +45,20 @@ def RFI_list(request):
 
         if serializer.is_valid():
             print(serializer.validated_data)
+
+            # Create folder in Azure File Share
+            folder = AzureFileShareClient()
+            parent_folder = serializer.validated_data['project'].project_id
+
+            # Check if the folder exists and create it if it doesn't
+            try: 
+                folder.create_folder_directory(parent_folder + "/RFI")
+            except Exception as e:
+                print(f"An error occurred while creating the folder: {e}")
+                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+            folder.create_sub_folder_directory(parent_folder + "/RFI/", rfi_id)
+
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         

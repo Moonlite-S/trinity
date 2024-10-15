@@ -223,35 +223,15 @@ class Invoice(models.Model):
     payment_status_choices = [
         ('Pending', 'Pending'), 
         ('Paid', 'Paid'), 
-        ('Overdue', 'Overdue')
     ]
     invoice_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     invoice_date = models.DateField()
-    due_date = models.DateField()
-
-    # Billing Information
-    bill_to_name = models.CharField(max_length=255)
-    bill_to_address = models.TextField()
-    bill_to_email = models.EmailField()
-
-    # Business Information
-    from_name = models.CharField(max_length=255)
-    from_address = models.TextField()
-    from_email = models.EmailField()
-
-    # Item/Service Details (related through another model for multiple items)
-    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
-    tax = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
-
-    # Payment Information
-    payment_status = models.CharField(max_length=50, choices=payment_status_choices)
-    payment_method = models.CharField(max_length=50, null=True, blank=True)
-    transaction_id = models.UUIDField()
-
+    payment_status = models.CharField(max_length=20, choices=payment_status_choices)
+    project_id = models.OneToOneField(Project, on_delete=models.CASCADE, related_name="invoices")
+    payment_amount = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(100)])
     # Metadata
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Invoice {self.invoice_id} - {self.bill_to_name}"
+        return f"Invoice {self.invoice_id} - {self.project_id}"

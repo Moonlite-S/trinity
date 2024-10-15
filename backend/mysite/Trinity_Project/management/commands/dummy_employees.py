@@ -97,5 +97,26 @@ employees = [
         'password': 'complexpassword123',
         'role': 'Team Member',
         'date_joined': '2023-12-01'
-    }
+    },
+    {
+        'name': 'Emma',
+        'email': 'emma@example.com',
+        'password': 'complexpassword123',
+        'role': 'Accountant',
+        'date_joined': '2024-02-01'
+    },
+    {
+        'name': 'Sophia',
+        'email': 'sophia@example.com',
+        'password': 'complexpassword123',
+        'role': 'Accountant',
+        'date_joined': '2024-03-01'
+    },
+    {
+        'name': 'test',
+        'email': 'test@example.com',
+        'password': 'complexpassword123',
+        'role': 'Accountant',
+        'date_joined': '2024-04-01'
+    },
 ]

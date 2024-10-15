@@ -47,5 +47,6 @@ urlpatterns = [
     path("rfi/user/<str:email>", rfi_by_user),
     path("announcement/",announcement),
     path("invoice/",invoice_list),
-    path("invoice/id/<str:invoice_id>",invoice_detail)
+    path("invoice/id/<str:invoice_id>",invoice_detail),
+    path("invoice/project/<str:project_id>", invoice_by_project_id)
 ]

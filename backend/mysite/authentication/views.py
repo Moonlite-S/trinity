@@ -37,20 +37,35 @@ class GetUserInfo(UserDetailsView):
                 try:
                     user = User.objects.get(email=email)
 
-                    projects = user.projects.select_related('manager').all()
+                    projects = user.projects.select_related('manager').all().exclude(status='Completed')
                     project_list = []
                     for project in projects:
                         project_dict = model_to_dict(project)
                         project_dict['manager'] = model_to_dict(project.manager)
                         project_list.append(project_dict)
 
-                    tasks = user.tasks.select_related('assigned_to', 'project_id').all()
+                    tasks = user.tasks.select_related('assigned_to', 'project_id').all().exclude(status='Completed')
                     task_list = []
                     for task in tasks:
                         task_dict = model_to_dict(task)
                         task_dict['assigned_to'] = model_to_dict(task.assigned_to)
                         task_dict['project_id'] = Project.objects.filter(project_id=task.project_id.project_id).first().project_name
                         task_list.append(task_dict)
+
+                    submittals = user.submittals.all().exclude(status='Completed')
+                    submittal_list = []
+                    for submittal in submittals:
+                        submittal_dict = model_to_dict(submittal)
+                        submittal_dict['project_name'] = submittal.project.project_name
+                        submittal_list.append(submittal_dict)
+
+                    rfis = user.rfi_created.all().exclude(status='Completed') | user.rfi_sent.all().exclude(status='Completed')
+                    rfis = rfis.distinct()
+                    rfi_list = []
+                    for rfi in rfis:
+                        rfi_dict = model_to_dict(rfi)
+                        #rfi_dict['project_name'] = rfi.project.project_name
+                        rfi_list.append(rfi_dict)
 
                     response.data['user'] = {
                         'id': user.id,
@@ -60,6 +75,8 @@ class GetUserInfo(UserDetailsView):
                         'date_joined': user.date_joined,
                         'projects': project_list,
                         'tasks': task_list,
+                        'submittals': submittal_list,
+                        'RFIs': rfi_list
                     }
                 except User.DoesNotExist:
                     pass

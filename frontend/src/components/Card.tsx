@@ -133,6 +133,8 @@ export function RFICard ({rfi, isNew, onView} : {rfi: RFIProps, isNew: boolean, 
 export function InvoiceCard ({invoice, isNew, onView} : {invoice: InvoiceProps, isNew: boolean, onView: () => void}) {
     const [isNewLocal, setIsNewLocal] = useState(isNew)
 
+    console.log(invoice)
+
     useEffect(() => {
         if (isNewLocal) {
             setIsNewLocal(true)
@@ -142,18 +144,19 @@ export function InvoiceCard ({invoice, isNew, onView} : {invoice: InvoiceProps, 
 
     return (
         <CardBase isNew={isNewLocal} link={`/invoices/update_invoice/${invoice.invoice_id}`}>
-            <h3>{invoice.invoice_id}</h3>
+            <h3>{invoice.project_name ?? 'Project Name Not Found'}</h3>
+            <p>Percentage Paid: {invoice.payment_amount}%</p>
             <p>{invoice.invoice_date}</p>
-            <p>{invoice.due_date}</p>
+            <p className={ColorStatus(invoice.payment_status)}>{invoice.payment_status}</p>
         </CardBase>
     )
 }
 // Color Coded Functions to help visually see the status of important fields
 
 function ColorStatus(status : string) {
-    if (status === "ACTIVE" || status === "OPEN") {
+    if (status === "ACTIVE" || status === "OPEN" || status === "Paid")  {
         return "text-green-500"
-    } else if (status === "CLOSING") {
+    } else if (status === "CLOSING" || status === "Pending") {
         return "text-yellow-600"
     } else {
         return "text-red-500"

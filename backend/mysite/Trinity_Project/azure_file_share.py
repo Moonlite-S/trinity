@@ -7,9 +7,9 @@ class AzureFileShareClient:
     ### Creates a client class for the Azure File Share Cloud Storage
     You must set *AZURE_FILE_SHARE_CONNECTION_STRING* and *AZURE_FILE_SHARE_NAME*, which come from settings.py  
     #### Currently can do the following:
-    - Create Folder
-    - Create Subfolders
-    - Create Project (either empty or with template)
+    - Create Folder (create_folder_directory)
+    - Create Subfolders (create_sub_folder_directory)
+    - Create Project (either empty or with template) (create_empty_project_folder, create_template_project_folder)
 
     So far, you NEED to have two folders in your main file share directory: "projects" and "templates"
 

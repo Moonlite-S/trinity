@@ -6,9 +6,7 @@ import { EmployeeProps } from "../interfaces/employee_type"
 import { ProjectProps } from "../interfaces/project_types"
 import { TaskProps } from "../interfaces/tasks_types"
 import { TaskCard, AnnouncementCard, ProjectCard, RFICard, SubmittalCard, InvoiceCard } from "./Card"
-import { useEffect, useState } from "react"
-import { getSubmittalByUser } from "../api/submittal"
-import { getRFIByUser } from "../api/rfi"
+import { useEffect, useMemo, useState } from "react"
 import { RFIProps } from "../interfaces/rfi_types"
 import { SubmittalProps } from "../interfaces/submittal_types"
 import { InvoiceProps } from "../interfaces/invoices_types"
@@ -33,85 +31,83 @@ type MainMenuDashboardProps = {
 export function MainMenuDashboard(
     {user, announcements}: MainMenuDashboardProps
 ) {
-    const [submittals, setSubmittals] = useState<SubmittalProps[]>([])
-    const [rfis, setRFIs] = useState<RFIProps[]>([])
+    const { isNewCard, markAsSeen } = useDashboardFunc()
 
-    useEffect(() => {
-        const get_submittals = async () => {
-            try {
-                const response = await getSubmittalByUser(user.email)
-                setSubmittals(response)
-            } catch (error) {
-                console.log(error)
-            }
-        }
-
-        const get_rfis = async () => {
-            try {
-                const response = await getRFIByUser(user.email)
-                setRFIs(response)
-            } catch (error) {
-                console.log(error)
-            }
-        }
-
-        if (user.role === "Manager" || user.role === "Administrator") {
-            get_submittals()
-            get_rfis()
+    // Sorts all the Cards by those that are new, then by the date
+    const sort_tasks = useMemo(() => {
+        return (tasks: TaskProps[]) => {
+            return [...tasks].sort((a, b) => {
+                const aIsNew = isNewCard('task', a.task_id ?? '')
+                const bIsNew = isNewCard('task', b.task_id ?? '')
+                if (aIsNew && !bIsNew) return -1
+                if (!aIsNew && bIsNew) return 1
+                return a.due_date.localeCompare(b.due_date)
+            })
         }
     }, [])
 
-    const sort_tasks = (tasks: TaskProps[]) => {
-        return tasks.sort((a, b) => a.due_date.localeCompare(b.due_date))
-    }
+    const sort_projects = useMemo(() => {
+        return (projects: ProjectProps[]) => {
+            return [...projects].sort((a, b) => {
+                const aIsNew = isNewCard('project', a.project_id ?? '')
+                const bIsNew = isNewCard('project', b.project_id ?? '')
+                if (aIsNew && !bIsNew) return -1
+                if (!aIsNew && bIsNew) return 1
+                return a.end_date.localeCompare(b.end_date)
+            })
+        }
+    }, [])
 
-    const sorted_tasks = sort_tasks(user.tasks ?? [])
+    const sort_submittals = useMemo(() => {
+        return (submittals: SubmittalProps[]) => {
+            return [...submittals].sort((a, b) => {
+                const aIsNew = isNewCard('submittal', a.submittal_id ?? '')
+                const bIsNew = isNewCard('submittal', b.submittal_id ?? '')
+                if (aIsNew && !bIsNew) return -1
+                if (!aIsNew && bIsNew) return 1
+                if (a.status !== b.status) {
+                    const statusOrder = ['CLOSING', 'OPEN', 'CLOSED']
+                    return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status)
+                }
+                return a.received_date.localeCompare(b.received_date)
+            })
+        }
+    }, [])
 
-    const sort_projects = (projects: ProjectProps[]) => {
-        return projects.sort((a, b) => a.end_date.localeCompare(b.end_date))
-    }
+    const sort_rfis = useMemo(() => {
+        return (rfis: RFIProps[]) => {
+            return [...rfis].sort((a, b) => {
+                const aIsNew = isNewCard('rfi', a.RFI_id ?? '')
+                const bIsNew = isNewCard('rfi', b.RFI_id ?? '')
+                if (aIsNew && !bIsNew) return -1
+                if (!aIsNew && bIsNew) return 1
+                return a.sent_out_date.localeCompare(b.sent_out_date)
+            })
+        }
+    }, [])
 
-    const sorted_projects = sort_projects(user.projects ?? [])
+    const sorted_tasks = useMemo(() => sort_tasks(user.tasks ?? []), [user.tasks, sort_tasks])
+    const sorted_projects = useMemo(() => sort_projects(user.projects ?? []), [user.projects, sort_projects])
+    const sorted_submittals = useMemo(() => sort_submittals(user.submittals ?? []), [user.submittals, sort_submittals])
+    const sorted_rfis = useMemo(() => sort_rfis(user.RFIs ?? []), [user.RFIs, sort_rfis])
 
-    const sort_submittals = (submittals: SubmittalProps[]) => {
-        return submittals.sort((a, b) => {
-            // First, sort by status
-            if (a.status !== b.status) {
-                const statusOrder = ['CLOSING', 'OPEN', 'CLOSED'];
-                return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
-            }
-            // If statuses are the same, sort by received date
-            return a.received_date.localeCompare(b.received_date);
-        })
-    }
-    
-    const sorted_submittals = sort_submittals(submittals)
-
-    const sort_rfis = (rfis: RFIProps[]) => {
-        return rfis.sort((a, b) => a.sent_out_date.localeCompare(b.sent_out_date))
-    }
-
-    const sorted_rfis = sort_rfis(rfis)
 
     return (
         <div className="flex flex-row">
             <MainNavBar role={user.role} />
             {(user.role === "Manager" || user.role === "Administrator") &&
-            <ManagerDashboard user={user} announcements={announcements} sorted_tasks={sorted_tasks} sorted_projects={sorted_projects} sorted_submittals={sorted_submittals} sorted_rfis={sorted_rfis} />}
+            <ManagerDashboard user={user} announcements={announcements} sorted_tasks={sorted_tasks} sorted_projects={sorted_projects} sorted_submittals={sorted_submittals} sorted_rfis={sorted_rfis} isNewCard={isNewCard} markAsSeen={markAsSeen} />}
             {user.role === "Team Member" &&
-            <TeamMemberDashboard user={user} announcements={announcements} sorted_tasks={sorted_tasks} sorted_projects={sorted_projects}/>}
+            <TeamMemberDashboard user={user} announcements={announcements} sorted_tasks={sorted_tasks} sorted_projects={sorted_projects} isNewCard={isNewCard} markAsSeen={markAsSeen}/>}
             {user.role === "Accountant" &&
-            <AccountantDashboard user={user} announcements={announcements}/>}
+            <AccountantDashboard user={user} announcements={announcements} isNewCard={isNewCard} markAsSeen={markAsSeen}/>}
         </div>
     )
 }
 
 function ManagerDashboard(
-    {user, announcements, sorted_tasks, sorted_projects, sorted_submittals, sorted_rfis}: ManagerDashboardProps
+    {user, announcements, sorted_tasks, sorted_projects, sorted_submittals, sorted_rfis, isNewCard, markAsSeen}: ManagerDashboardProps
 ) {
-
-    const { isNewCard, markAsSeen } = useDashboardFunc()
-
     return (
     <div className="flex flex-col w-screen pr-2 h-screen">
 
@@ -159,10 +155,8 @@ function ManagerDashboard(
 }
 
 function TeamMemberDashboard(
-    {user, announcements, sorted_tasks, sorted_projects}: MainDashboardProps
+    {user, announcements, sorted_tasks, sorted_projects, isNewCard, markAsSeen}: MainDashboardProps
 ) {
-    const { isNewCard, markAsSeen } = useDashboardFunc()
-
     return (
     <div className="flex flex-col w-screen pr-2 h-screen">
 
@@ -198,7 +192,7 @@ function TeamMemberDashboard(
 }
 
 function AccountantDashboard(
-    {user, announcements}: AccountantDashboardProps
+    {user, announcements, isNewCard, markAsSeen}: AccountantDashboardProps
 ) {
     const [invoices, setInvoices] = useState<InvoiceProps[]>([])
 
@@ -215,7 +209,19 @@ function AccountantDashboard(
         get_invoices()
     }, [])
 
-    const { isNewCard, markAsSeen } = useDashboardFunc()
+    const sort_invoices = useMemo(() => {
+        return (invoices: InvoiceProps[]) => {
+            return [...invoices].sort((a, b) => {
+                const aIsNew = isNewCard('invoice', a.invoice_id ?? '')
+                const bIsNew = isNewCard('invoice', b.invoice_id ?? '')
+                if (aIsNew && !bIsNew) return -1
+                if (!aIsNew && bIsNew) return 1
+                return a.invoice_date.localeCompare(b.invoice_date)
+            })
+        }
+    }, [])
+
+    const sorted_invoices = useMemo(() => sort_invoices(invoices), [invoices, sort_invoices])
 
     return (
         <div className="flex flex-col w-screen pr-2 h-screen">
@@ -233,7 +239,7 @@ function AccountantDashboard(
         />
         
         <InvoiceSection
-            invoices={invoices}
+            invoices={sorted_invoices}
             isNewCard={isNewCard}
             markAsSeen={markAsSeen}
         />
@@ -248,11 +254,10 @@ export function MainNavBar(
     return (
     <div className='p-2 flex flex-col justify-items-center'>
         {(role === "Manager" || role === "Administrator") && <Button_Card text="Create Announcement" route="/announcements/create_anncouncement" />}  
-        {(role === "Accountant" || role === "Administrator") && <Button_Card text="Create Invoice" route="/invoices/create_invoice" />}
         {(role === "Accountant" || role === "Administrator") && <Button_Card text="View Invoices" route="/invoices/" />}
         {(role === "Manager" || role === "Administrator" )&& <Button_Card text="Create Project" route="/projects/create_project" />}
         {(role === "Manager" || role === "Administrator") && <Button_Card text="View Projects" route="/projects/" />}
-        <Button_Card text="Project Status Report" route="/projects/project_status_report" popup_window />
+        <Button_Card text="Project Status Report" route="/projects/project_status_report" popup_window additional_window="/weekly_calendar" />
         <Button_Card text="Your Tasks" route="/tasks" />
         {(role === "Manager" || role === "Administrator") && <Button_Card text="Create Task" route="/tasks/create_task" />}
         <Button_Card text="View RFI" route="/rfi" />
@@ -269,14 +274,15 @@ export function MainNavBar(
 
     </div>
         
-    );
+    )
 }
 
 
 type ButtonProps = {
     text: string, 
     route: string,
-    popup_window?: boolean
+    popup_window?: boolean,
+    additional_window?: string
 }
 
 /**
@@ -284,16 +290,21 @@ type ButtonProps = {
  * 
  * @param text - The text of the button
  * @param route - The route of the button
- * 
+ * @param popup_window - Whether the button should open a new window
+ * @param additional_window - The route of one additional window (Used for the Project Status Report)
  */
 function Button_Card(
-    {text, route, popup_window = false}: ButtonProps
+    {text, route, popup_window = false, additional_window}: ButtonProps
 ) {
-    const navigate = useNavigate();
+    const navigate = useNavigate()
 
     const handleClick = () => {
         if (popup_window) {
             window.open(route, '_blank', 'width=1000,height=1000')
+
+            if (additional_window) {
+                window.open(additional_window, '_blank', 'width=1000,height=1000')
+            }
         } else {
             navigate(route)
         }
@@ -319,7 +330,7 @@ function Button_Card(
  * 
  */
 function LogOut() {
-    const navigate = useNavigate();
+    const navigate = useNavigate()
 
     const handleClick = async() => {
         try {

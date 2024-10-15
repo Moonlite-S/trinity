@@ -17,7 +17,7 @@ import CreateSubmittal, { EditSubmittal, SubmittalList } from './components/Subm
 import { EditTask } from './components/Tasks'
 import ViewRFI, { CreateRFI, EditRFI } from './components/RFI'
 import ProposalList from './components/Proposal'
-import { ViewInvoices, CreateInvoice, EditInvoice } from './components/Invoice'
+import { ViewInvoices, EditInvoice } from './components/Invoice'
 import { PasswordReset } from './auth/PasswordReset'
 import { EmailConfirmation } from './auth/VerifyEmail'
 // Main Router for the application
@@ -56,7 +56,6 @@ export default function App() {
               <Route path='/rfi/update_rfi/:id' element={<EditRFI />} />
               <Route path='/announcements/create_anncouncement' element={<SetAnnouncement />} />
 
-              <Route path='/invoices/create_invoice' element={<CreateInvoice />} />
               <Route path='/invoices/update_invoice/:id' element={<EditInvoice />} />
               <Route path='/invoices/' element={<ViewInvoices />} />
 

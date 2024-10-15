@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
 
 /**
  * ## useDashboard
@@ -8,6 +8,9 @@ import { useEffect, useState } from "react";
  * The cards are identified by their type and id.
  * 
  * I might add more things to this in the future.
+ * 
+ * @param markAsSeen - A function to mark a card as seen (takes in the card type and id)
+ * @param isNewCard - A function to check if a card is new (takes in the card type and id)
  * 
  * @returns a function to mark a card as seen and a function to check if a card is new
  */
@@ -19,7 +22,7 @@ export default function useDashboard() {
     }
 
     const isNewCard = (cardType: string, id: string) => {
-        return !seenCards[`${cardType}-${id}`];
+        return !seenCards[`${cardType}-${id}`]
     }
 
     return {markAsSeen, isNewCard}
@@ -37,17 +40,17 @@ export default function useDashboard() {
 function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void] {
     const [storedValue, setStoredValue] = useState<T>(() => {
         try {
-            const item = window.localStorage.getItem(key);
-            return item ? JSON.parse(item) : initialValue;
+            const item = window.localStorage.getItem(key)
+            return item ? JSON.parse(item) : initialValue
         } catch (error) {
-            console.log(error);
-            return initialValue;
+            console.log(error)
+            return initialValue
         }
-    });
+    })
 
     useEffect(() => {
-        window.localStorage.setItem(key, JSON.stringify(storedValue));
-    }, [key, storedValue]);
+        window.localStorage.setItem(key, JSON.stringify(storedValue))
+    }, [key, storedValue])
 
-    return [storedValue, setStoredValue];
+    return [storedValue, setStoredValue]
 }

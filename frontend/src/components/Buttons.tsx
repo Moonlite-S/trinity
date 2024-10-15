@@ -24,7 +24,7 @@ export function BackButton() {
 
 export function OrangeButton({children, onClick}: {children: React.ReactNode, onClick?: () => void}){
     return (
-        <button className="bg-orange-300 rounded p-4 my-2 hover:bg-orange-400 transition" onClick={onClick}>
+        <button type="button" className="bg-orange-300 rounded p-4 my-2 hover:bg-orange-400 transition" onClick={onClick}>
             {children}
         </button>
     )
@@ -33,18 +33,23 @@ export function OrangeButton({children, onClick}: {children: React.ReactNode, on
 /**
  * For use in both the CreateProjectForm and UpdateProjectForm components
  *  
- * There are two buttons: One that goes back to the main menu and one that creates or updates a project
+ * There are two buttons: One that goes back a page and one that creates or updates a project
  * 
+ * Optional: @param children prop to add a button next to the other two (You might want to use OrangeButton for this)
+ * 
+ * Remember to supply an onClick function for the children button
  */
-export function BottomFormButton({ button_text }: { button_text: string}) {
+export function BottomFormButton({ button_text, children }: { button_text: string, children?: React.ReactNode}) {
     return (
-    <div className="mx-auto text-center justify-center pt-5">
+    <div className="mx-auto text-center justify-center pt-5 gap-5 flex">
 
         <BackButton/>
         
-        <button type="submit" className="bg-orange-300 rounded p-4 my-2 hover:bg-orange-400 transition ml-5">
+        <button type="submit" className="bg-orange-300 rounded p-4 my-2 hover:bg-orange-400 transition">
             {button_text}
         </button>
+
+        {children}
 
     </div>
     );

@@ -1,6 +1,8 @@
 import { FormEvent } from "react"
 import { TaskProps } from "./tasks_types"
 import { ProjectProps } from "./project_types"
+import { RFIProps } from "./rfi_types"
+import { SubmittalProps } from "./submittal_types"
 
 export type Roles = "Administrator" | "Manager" | "Team Member" | "Accountant"
 
@@ -14,6 +16,8 @@ export type EmployeeProps = {
     date_joined?: string,
     projects?: ProjectProps[]
     tasks?: TaskProps[] 
+    RFIs?: RFIProps[]
+    submittals?: SubmittalProps[]
 }
 
 export type EmployeeNameEmail = {

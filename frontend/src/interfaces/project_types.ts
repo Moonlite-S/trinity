@@ -2,6 +2,7 @@ import { FormEvent } from "react"
 import { EmployeeProps } from "./employee_type"
 import { SubmittalProps } from "./submittal_types"
 import { RFIProps } from "./rfi_types"
+import { InvoiceProps } from "./invoices_types"
 
 export type ProjectStatus = 
     "ACTIVE" |
@@ -46,8 +47,11 @@ export type ProjectFormBaseProps = {
     Cities: { value: string, label: string }[]
     templates: string[]
     method: "POST" | "PUT"
+    invoiceData: InvoiceProps
+    setInvoiceData: (data: InvoiceProps) => void
     onSubmit: (e: React.FormEvent<HTMLFormElement>) => void
     onManagerChange: (e: unknown) => void
     onClientChange: (e: unknown) => void
     onCityChange: (e: unknown) => void
+    onSendInvoice: () => void
 }

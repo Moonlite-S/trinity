@@ -10,11 +10,15 @@ export type MainDashboardProps = {
     announcements: AnnouncementProps[],
     sorted_tasks: TaskProps[],
     sorted_projects: ProjectProps[],
+    isNewCard: (type: string, id: string) => boolean,
+    markAsSeen: (type: string, id: string) => void
 }
 
 export type AccountantDashboardProps = {
     user: EmployeeProps,
     announcements: AnnouncementProps[],
+    isNewCard: (type: string, id: string) => boolean,
+    markAsSeen: (type: string, id: string) => void
 }
 
 export type ManagerDashboardProps = {
@@ -23,5 +27,7 @@ export type ManagerDashboardProps = {
     sorted_tasks: TaskProps[],
     sorted_projects: ProjectProps[],
     sorted_submittals: SubmittalProps[],
-    sorted_rfis: RFIProps[]
+    sorted_rfis: RFIProps[],
+    isNewCard: (type: string, id: string) => boolean,
+    markAsSeen: (type: string, id: string) => void
 }

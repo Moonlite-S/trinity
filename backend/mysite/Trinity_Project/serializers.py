@@ -125,10 +125,10 @@ class AnnouncmentsSerializer(serializers.ModelSerializer):
     
 class InvoiceSerializer(serializers.ModelSerializer):
     invoice_id = serializers.UUIDField(read_only=True)
-    transaction_id = serializers.UUIDField(read_only=True)
+    project_id = serializers.PrimaryKeyRelatedField(queryset=Project.objects.all(),write_only=True)
+    project = serializers.CharField(source='project_id.project_id',read_only=True)
+    project_name = serializers.CharField(source='project_id.project_name',read_only=True)
     class Meta:
         model = Invoice
-        fields = ['invoice_id', 'invoice_date', 'due_date', 'bill_to_name', 'bill_to_address', 'bill_to_email',
-                  'from_name', 'from_address', 'from_email', 'subtotal', 'tax', 'total_amount',
-                  'payment_status', 'payment_method', 'transaction_id', 'created_at', 'updated_at']
+        fields = ['invoice_id', 'invoice_date', 'project', 'project_name', 'payment_status', 'project_id', 'payment_amount']
         read_only_fields = ['invoice_id', 'created_at', 'updated_at']

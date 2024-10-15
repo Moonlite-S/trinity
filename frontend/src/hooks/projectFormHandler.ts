@@ -4,10 +4,13 @@ import { createProject, updateProject } from "../api/projects"
 import { FormEvent } from "react"
 import { EmployeeProps } from "../interfaces/employee_type"
 import { MethodHandler } from "../components/misc"
+import { InvoiceProps } from "../interfaces/invoices_types"
+import { createInvoice } from "../api/invoices"
 
 export const useProjectFormHandler = (
     setCurrentProjectData: React.Dispatch<React.SetStateAction<ProjectProps>>,
     currentProjectData: ProjectProps,
+    invoiceData: InvoiceProps,
     navigate: NavigateFunction,
     setErrorString: React.Dispatch<React.SetStateAction<string | undefined>>,
     method: "POST" | "PUT",
@@ -29,6 +32,45 @@ export const useProjectFormHandler = (
         if (e && typeof e === 'object' && 'value' in e && 'label' in e) {
             setCurrentProjectData(prev => ({...prev, city: e.label as string}))
             console.log("City: ", e.label as string)
+        }
+    }
+
+    const onSendInvoice = async() => {
+        if (!currentProjectData.project_id) {
+            setErrorString("Project ID not found")
+            return
+        }
+
+        const invoice: InvoiceProps = {
+            invoice_date: new Date().toLocaleDateString("en-CA"),
+            payment_status: "Pending",
+            payment_amount: invoiceData.payment_amount ?? 0,
+            project_id: currentProjectData.project_id ?? "",
+            project_name: currentProjectData.project_name ?? ""
+        }
+
+        try {
+            const result_code = await createInvoice(invoice)
+
+            switch (result_code) {
+                case 201:
+                    alert("Invoice created successfully!")
+                    break
+                case 200:
+                    alert("Invoice updated successfully!")
+                    break
+                case 400:
+                    setErrorString("Bad Request: Invalid data. Please make sure all fields are filled out. Error: " + result_code)
+                    break
+                case 401:
+                    setErrorString("Unauthorized: You are not authorized to create invoices. Error: " + result_code)
+                    break
+                default:
+                    throw new Error("Error creating invoice: " + result_code)
+            }
+        } catch (error: unknown) {
+            console.error("Something went wrong: ", error)
+            setErrorString("Error creating invoice: " + error)
         }
     }
 
@@ -80,5 +122,5 @@ export const useProjectFormHandler = (
         }
     }
 
-    return {onManagerChange, onClientChange, onCityChange, onSubmit}
+    return {onManagerChange, onClientChange, onCityChange, onSubmit, onSendInvoice}
 }
