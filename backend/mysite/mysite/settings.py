@@ -264,5 +264,3 @@ REST_AUTH = {
     'USE_JWT': False,
     'SESSION_LOGIN': True,
 }
-
-CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
