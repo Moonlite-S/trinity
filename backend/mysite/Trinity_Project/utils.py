@@ -42,7 +42,7 @@ def authenticate_user(request):
         return user_dict
 
     except Token.DoesNotExist:
-        raise AuthenticationFailed('Invalid token!')
+        raise AuthenticationFailed('Invalid token! Does not exist.')
     
 
 def role_required(allowed_roles, allowed_methods):

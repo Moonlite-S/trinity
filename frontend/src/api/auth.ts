@@ -86,7 +86,7 @@ export async function login({email, password }: LoginProps): Promise<string> {
 
       const token = response.data.key
 
-      setCookie('authToken', token, { secure: true, sameSite: 'strict' })
+      setCookie('authToken', token, { secure: true, sameSite: 'none' })
 
       //Set the token in the AxiosInstance headers
       AxiosInstance.defaults.headers['Authorization'] = `Token ${token}`;
