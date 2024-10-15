@@ -1,7 +1,7 @@
 import { AxiosError } from 'axios';
 import AxiosInstance from '../components/Axios';
 import { EmployeeProps } from '../interfaces/employee_type';
-import { removeCookie, setCookie } from 'typescript-cookie'
+import { getCookie, removeCookie, setCookie } from 'typescript-cookie'
 /**
  * This sends a GET request to the backend and verifies a user's authentication status
  * via the session token / cookie.
@@ -79,10 +79,18 @@ type LoginProps = {
  */
 export async function login({email, password }: LoginProps): Promise<string> {
     try {
+      const csrfToken = getCookie('csrftoken')
+      
       const response = await AxiosInstance.post('auth/login/', {
         username: email,
         password: password
-      })
+      },
+      {
+        headers: {
+          'X-CSRFToken': csrfToken
+        }
+      }
+    )
 
       const token = response.data.key
 
@@ -124,9 +132,4 @@ export async function logout(): Promise<number> {
       console.error("Network Error: ",error)
       return 500
     }
-}
-
-export async function getCSRFToken(): Promise<string> {
-  const response = await AxiosInstance.get('auth/csrf/')
-  return response.data.csrftoken
 }
