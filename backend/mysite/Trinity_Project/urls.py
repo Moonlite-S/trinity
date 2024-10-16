@@ -1,4 +1,5 @@
-from django.urls import path
+from django import views
+from django.urls import  path,include
 from django.contrib import admin
 
 from Trinity_Project.views.authentication_view import *
@@ -45,5 +46,7 @@ urlpatterns = [
     path("invoice/",invoice_list),
     path("invoice/id/<str:invoice_id>",invoice_detail),
     path("invoice/project/<str:project_id>", invoice_by_project_id),
-    path("invoice/not_paid", invoices_not_paid)
+    path("invoice/not_paid", invoices_not_paid),
+    path("login_athen",azure_ad_login),
+    path('callback/', azure_ad_callback, name='callback')
 ]
