@@ -4,6 +4,9 @@ from rest_framework.authtoken.models import Token
 
 User = get_user_model()
 
+# A custom backend made for our custom User model
+# This kind of solves that weird bug where I can only login
+# through the admin page when I try to login through the frontend
 class EmailAuthBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
         try:
