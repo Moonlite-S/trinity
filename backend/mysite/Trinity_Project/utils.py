@@ -35,6 +35,14 @@ def authenticate_user(request):
     
 
 def role_required(allowed_roles, allowed_methods):
+    '''
+    ### Decorator to check if the user has the required role to access the view
+    Also authenticates the user and specifies the allowed methods for the view
+
+    `allowed_roles` So far, we have: Manager, Administrator, Team Member, Accountant [* = everyone]
+
+    `allowed_methods` GET, POST, PUT, DELETE, etc.
+    '''
     def decorator(view_func):
         @wraps(view_func)
         @api_view(allowed_methods)
@@ -50,3 +58,10 @@ def role_required(allowed_roles, allowed_methods):
                 return Response({"error": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
         return wrapper
     return decorator
+
+def get_csrf_token(request):
+    '''
+    ### Function to get the CSRF token from the request
+    '''
+    csrf_token = request.COOKIES.get('csrftoken')
+    return csrf_token

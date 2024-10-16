@@ -48,5 +48,6 @@ urlpatterns = [
     path("announcement/",announcement),
     path("invoice/",invoice_list),
     path("invoice/id/<str:invoice_id>",invoice_detail),
-    path("invoice/project/<str:project_id>", invoice_by_project_id)
+    path("invoice/project/<str:project_id>", invoice_by_project_id),
+    path("invoice/not_paid", invoices_not_paid)
 ]

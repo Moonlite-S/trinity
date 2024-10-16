@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 import AxiosInstance from "../components/Axios";
-import { EmployeeNameEmail, EmployeeProps } from "../interfaces/employee_type";
+import { EmployeeNameEmail, EmployeeCreationProps, EmployeeProps } from "../interfaces/employee_type";
 
 /**
  * Employee Creation API
@@ -10,15 +10,11 @@ import { EmployeeNameEmail, EmployeeProps } from "../interfaces/employee_type";
  * @returns Code 200 if successful and error if not
  * 
  */
-export async function createEmployee(user : EmployeeProps): Promise<number> {
+export async function createEmployee(user : EmployeeCreationProps): Promise<number> {
     try {
-        const response = await AxiosInstance.post('api/register', user);
+        const response = await AxiosInstance.post('auth/register/', user);
 
-        if (response.status === 200) {
-            return response.status
-        } else {
-            throw new Error('Error creating employee')
-        }
+        return response.status
 
     } catch (error) {
         console.error("Server Error: ",error)
@@ -66,7 +62,6 @@ export async function getEmployeeNameList(): Promise<string[]> {
 
         if (response.status === 200) {
             const names: string[] = response.data.map((employee: { name: string }) => employee.name)
-
             return names
         } else {
             throw new Error('Error getting employee list')

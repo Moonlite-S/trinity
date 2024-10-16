@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import { GenericTable, Header } from "./misc";
+import { GenericTable, Header, OpenFolderButton } from "./misc";
 import { getProjectList, getProject, deleteProject } from "../api/projects";
 import { useNavigate, useParams } from "react-router-dom";
 import { TableColumn } from "react-data-table-component";
@@ -461,9 +461,7 @@ const ExpandableRowComponent = ({ data, user }: { data: ProjectProps, user: Empl
         <div className="flex flex-row gap-5 m-5">
             <RouteButton route={"/projects/update_project/" + data.project_id} text="Edit"/>
             {user.role === "Manager" || user.role === "Administrator" && <OrangeButton onClick={handleDelete}>Delete Project</OrangeButton>}
-            <a href={'localexplorer:L:\\projects\\' + data.folder_location}>
-                <button className="bg-blue-300 rounded p-4 my-2 hover:bg-blue-400 transition">Open Folder</button>
-            </a>
+            <OpenFolderButton folder_path={'projects\\' + data.folder_location} />
         </div>
 
     </div>

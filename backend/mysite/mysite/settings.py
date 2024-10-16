@@ -263,4 +263,5 @@ SOCIALACCOUNT_PROVIDERS = {
 REST_AUTH = {
     'USE_JWT': False,
     'SESSION_LOGIN': True,
+    'REGISTER_SERIALIZER': 'authentication.serializers.CustomRegisterSerializer',
 }

@@ -139,6 +139,7 @@ class Submittal(models.Model):
     closing_notes=models.TextField(default="", blank=True)
     sent_item=models.TextField(default="", blank=True)
     send_email=models.TextField(default="", blank=True)
+    last_edited_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="edited_submittals")
     
     def __str__(self):
         return f"Submittal ID: {self.submittal_id} | Project: {self.project.project_name} | Status: {self.status}"

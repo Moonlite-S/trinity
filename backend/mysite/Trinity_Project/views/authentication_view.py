@@ -12,17 +12,22 @@ from rest_framework.views import APIView
 import jwt
 from django.contrib.auth import authenticate,login,logout
 from django.middleware.csrf import get_token
+from ..utils import role_required
 
-# Deprecated
 class RegisterView(APIView):
+    '''
+    DEPRECATED
+    '''
     def post(self,request):
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
 
-# Deprecated
 class UserView(APIView):
+    '''
+    DEPRECATED
+    '''
     def get(self, request):
         payload = authenticate_user(request)
 
@@ -35,9 +40,11 @@ class UserView(APIView):
             print(f"An error occurred while getting the user: {e}")
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-# Deprecated
 @api_view(['POST'])
 def login_view(request):
+    '''
+    DEPRECATED
+    '''
     email = request.data['email']
     password = request.data['password']
 
@@ -68,10 +75,11 @@ def login_view(request):
     response.data = {"message": "Successfully logged in."}
     return response
 
-# Deprecated
 @api_view(['POST'])
 def logout_view(request):
-    # # Log the user out
+    '''
+    DEPRECATED
+    '''
     logout(request)
 
     # Create the response object
@@ -88,28 +96,10 @@ def logout_view(request):
 
 def index(request):
     return HttpResponse("Hello, world. You're at the Project index.")
-
-@api_view(['GET'])
-def get_user_by_id(request, id):
-    try:
-        user = User.objects.get(id=id)
-        serializer = UserSerializer(user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    except User.DoesNotExist:
-        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-    except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
-@api_view(['PUT'])
+@role_required(allowed_roles=['Admin'], allowed_methods=['PUT'])
 def update_user(request, id):
     user = User.objects.get(id=id)
-
-    print("Request Data: ", request.data)
-    print("User: ", user.password)
-
-    # Verify the password
-    if not authenticate(email=user.email, password=request.data['password']):
-        return Response({"error": "Current password is incorrect"}, status=status.HTTP_400_BAD_REQUEST)
 
     serializer = UserSerializer(user, data=request.data)
     if serializer.is_valid():

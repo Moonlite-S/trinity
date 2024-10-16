@@ -58,3 +58,10 @@ def invoice_by_project_id(request, project_id):
         invoice = Invoice.objects.filter(project_id=project_id).first()
         serializer = InvoiceSerializer(invoice)
         return Response(serializer.data)
+    
+@role_required(allowed_roles=['Accountant', 'Manager', 'Administrator'], allowed_methods=['GET'])
+def invoices_not_paid(request):
+    if request.method == 'GET':
+        invoices = Invoice.objects.filter(payment_status='Pending')
+        serializer = InvoiceSerializer(invoices, many=True)
+        return Response(serializer.data)

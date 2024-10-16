@@ -30,3 +30,13 @@ export type FilterProps = {
     onFilter: (e: FormEvent<HTMLInputElement>) => void
     onClear: () => void
 }
+
+export type EmployeeCreationProps = {
+    id?: string
+    name: string
+    email: string
+    username: string
+    password: string
+    password2: string
+    role: Roles
+}

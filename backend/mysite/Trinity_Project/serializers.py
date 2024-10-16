@@ -37,9 +37,11 @@ class SubmittalSerializer(serializers.ModelSerializer):
     project_name=serializers.CharField(source='project.project_name',read_only=True)
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(),write_only=True)
     assigned_to=serializers.CharField(source='user.name',read_only=True)
+    last_edited_by = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(),write_only=True)
+    last_edited_by_name = serializers.CharField(source='last_edited_by.name',read_only=True)
     class Meta:
         model=Submittal
-        fields = ['submittal_id','project','project_id','client_name','received_date','project_name','sub_description','type','user','assigned_to','status','notes']
+        fields = ['submittal_id','project','project_id','client_name','received_date','project_name','sub_description','type','user','assigned_to','status', 'send_email', 'sent_item', 'closing_notes', 'notes', 'last_edited_by_name', 'last_edited_by']
 
 # This is basically the same as the other ProjectSerializer
 # but returns the user object instead of the email
@@ -76,13 +78,13 @@ class UserSerializer(serializers.ModelSerializer):
             'password': {'write_only': True}
         }
     
-    def create(self, validated_data):
-        password = validated_data.pop('password', None)
-        instance = self.Meta.model(**validated_data)
-        if password is not None:
-            instance.set_password(password)
-        instance.save()
-        return instance
+    # def create(self, validated_data):
+    #     password = validated_data.pop('password', None)
+    #     instance = self.Meta.model(**validated_data)
+    #     if password is not None:
+    #         instance.set_password(password)
+    #     instance.save()
+    #     return instance
     
 class AnnouncmentsSerializer(serializers.ModelSerializer):
     author = serializers.EmailField()

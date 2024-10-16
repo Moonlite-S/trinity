@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { deleteSubmittal, getSubmittalById, getSubmittals} from "../api/submittal";
 import { OrangeButton, RouteButton } from "./Buttons";
-import { GenericTable, Header } from "./misc";
+import { GenericTable, Header, OpenFolderButton } from "./misc";
 import { TableColumn } from "react-data-table-component";
 import { SubmittalProps } from "../interfaces/submittal_types";
 import { useParams } from "react-router-dom";
@@ -146,6 +146,7 @@ function ExpandableRowComponent({ data, user }: { data: SubmittalProps, user: Em
                 const response = await deleteSubmittal(data.submittal_id);
                 if (response === 204) {
                     alert("Submittal deleted successfully");
+                    window.location.reload();
                 } else {
                     alert("Error deleting submittal: " + response);
                 }
@@ -158,7 +159,8 @@ function ExpandableRowComponent({ data, user }: { data: SubmittalProps, user: Em
     return (
         <div className="flex flex-row gap-2 mx-2">
             <RouteButton route={`/submittals/update_submittal/${data.submittal_id}`} text="Edit" />
-            {user.role === "Manager" || user.role === "Administrator" && <OrangeButton onClick={handleDelete}>Delete</OrangeButton>}
+            {(user.role === "Manager" || user.role === "Administrator") && <OrangeButton onClick={handleDelete}>Delete</OrangeButton>}
+            <OpenFolderButton folder_path={data.project_id ? 'projects\\' + data.project_id + '\\Submittals\\' + data.submittal_id : 'Submittals'} />
         </div>
     )
 }

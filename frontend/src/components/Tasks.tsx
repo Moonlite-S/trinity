@@ -7,6 +7,7 @@ import { TaskForm } from './TaskForm';
 import { OrangeButton, RouteButton } from './Buttons';
 import { useAuth } from '../App';
 import { EmployeeProps } from '../interfaces/employee_type';
+import { getProject } from '../api/projects';
 
 /**
  *  ### Route for ('/tasks/create_task')
@@ -62,6 +63,62 @@ export function EditTask() {
       <h1 className="mx-4 text-x1 font-semibold">Edit Task</h1>
 
       {task_data && <TaskForm task_data={task_data} method="PUT"/>}
+    </>
+  )
+}
+
+/**
+ *  ### Route for ('/tasks/create_task_from_project')
+ * 
+ *  This is a seperate route for creating a task from a project card
+ */
+export function CreateTaskFromProject(){
+  const { id } = useParams<string>()
+  if (!id) {
+    return <div>Loading...</div>
+  }
+
+  const [task_data, setTaskData] = useState<TaskProps>()
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const project = await getProject(id)
+
+        if (!project) {
+          throw new Error("Error fetching task data")
+        }
+
+        // I need it in this format because the TaskForm find the project in this format...
+        // Yet another hacky solution...
+        const string_format = "ID: " + project.project_id + " | Name: " + project.project_name
+
+        setTaskData({
+          task_id: "",
+          project: project.project_name,
+          title: "",
+          description: "",
+          assigned_to: "",
+          project_id: string_format,
+          due_date: new Date().toLocaleDateString('en-CA'),
+          status: "ACTIVE",
+          completion_percentage: 0
+        })
+      }
+      catch (error) {
+        console.error(error)
+      }
+    }
+
+    fetchData()
+  }, [id])
+
+  return (
+    <>
+      <Header />
+      <h1 className="mx-4 text-x1 font-semibold">Create Task</h1>
+
+      {task_data && <TaskForm task_data={task_data} method="POST"/>}
     </>
   )
 }

@@ -26,6 +26,7 @@ export function SubmittalForm({submittal, method}: {submittal?: SubmittalProps, 
         status: "OPEN",
         notes: "",
     })
+
     const navigate = useNavigate()
     const { onProjectChange, onAssignedToChange, onSubmit } = useSubmittalFormHandler(setCurrentSubmittalData, setErrorString, currentSubmittalData, navigate, method)
 

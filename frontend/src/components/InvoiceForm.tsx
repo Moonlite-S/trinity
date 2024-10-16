@@ -19,7 +19,7 @@ export function InvoiceForm({ method, current_invoice_data }: { method: string, 
         project_name: "",
     })
 
-    const { handleSubmit, handleNumeralChange } = useInvoiceFormHandler({ method, setCurrentInvoiceData, currentInvoiceData, navigate, setErrorString })
+    const { handleSubmit, handleNumeralChange, onStatusChange, onDateChange } = useInvoiceFormHandler({ method, setCurrentInvoiceData, currentInvoiceData, navigate, setErrorString })
 
     return (
         <InvoiceFormBase 
@@ -27,7 +27,10 @@ export function InvoiceForm({ method, current_invoice_data }: { method: string, 
         errorString={errorString} 
         handleSubmit={handleSubmit} 
         currentInvoiceData={currentInvoiceData} 
-        handleNumeralChange={handleNumeralChange} />
+        handleNumeralChange={handleNumeralChange} 
+        onStatusChange={onStatusChange}
+        onDateChange={onDateChange}
+        />
     )
 }
 
@@ -37,17 +40,19 @@ type InvoiceFormBaseProps = {
     handleSubmit: (data: React.FormEvent<HTMLFormElement>) => void
     currentInvoiceData?: InvoiceProps
     handleNumeralChange: (value: number) => void
+    onStatusChange: (event: React.ChangeEvent<HTMLSelectElement>) => void
+    onDateChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-export function InvoiceFormBase({ method, errorString, handleSubmit, currentInvoiceData, handleNumeralChange }: InvoiceFormBaseProps) {
+export function InvoiceFormBase({ method, errorString, handleSubmit, currentInvoiceData, handleNumeralChange, onStatusChange, onDateChange }: InvoiceFormBaseProps) {
     return (
         <>
             {errorString && <Error_Component errorString={errorString} />}
             <GenericForm form_id="invoice_form" onSubmit={handleSubmit}>
                 <GenericInput type="text" name="project_id" label="Project ID" value={currentInvoiceData?.project_name} readOnly/>
                 <div className="grid grid-cols-2 gap-4">
-                    <GenericInput type="date" name="invoice_date" label="Invoice Date" value={currentInvoiceData?.invoice_date} />
-                    <GenericSelect options={["Pending", "Paid"]} name="payment_status" label="Payment Status" value={currentInvoiceData?.payment_status} />
+                    <GenericInput type="date" name="invoice_date" label="Invoice Date" value={currentInvoiceData?.invoice_date} onChange={onDateChange} />
+                    <GenericSelect options={["Pending", "Paid"]} name="payment_status" label="Payment Status" value={currentInvoiceData?.payment_status} onChange={onStatusChange} />
                 </div>
                 <GenericSlider name="payment_amount" label="Payment Amount" value={currentInvoiceData?.payment_amount ?? 0} onChange={handleNumeralChange} />
                 <BottomFormButton button_text={method === "POST" ? "Create Invoice" : "Update Invoice"} />

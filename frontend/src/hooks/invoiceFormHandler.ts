@@ -56,8 +56,16 @@ export function useInvoiceFormHandler({ method, setCurrentInvoiceData, currentIn
     }
 
     const handleNumeralChange = (event: number) => {
-        setCurrentInvoiceData({ ...currentInvoiceData, payment_amount: event })
+        setCurrentInvoiceData({ ...currentInvoiceData, payment_amount: event})
     }
 
-    return { handleSubmit, handleNumeralChange }
+    const onStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setCurrentInvoiceData({ ...currentInvoiceData, payment_status: event.target.value as "Pending" | "Paid" })
+    }
+
+    const onDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setCurrentInvoiceData({ ...currentInvoiceData, invoice_date: event.target.value })
+    }
+
+    return { handleSubmit, handleNumeralChange, onStatusChange, onDateChange }
 }

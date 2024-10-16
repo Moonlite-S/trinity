@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { TableColumn } from "react-data-table-component";
-import { GenericTable, Header } from "./misc";
+import { GenericTable, Header, OpenFolderButton } from "./misc";
 import { RFIForm } from "./RFIForm";
 import { RFIProps } from "../interfaces/rfi_types";
 import { deleteRFI, getRFI, getRFIList } from "../api/rfi";
@@ -135,6 +135,7 @@ function ExpandableRowComponent({ data }: { data: RFIProps }) {
         <div className="ml-2 flex gap-2">
             <RouteButton route={"/rfi/update_rfi/" + data.RFI_id} text="Update" />
             <OrangeButton onClick={handleDelete}>Delete</OrangeButton>
+            <OpenFolderButton folder_path={data.project_id ? 'projects\\' + data.project_id + '\\RFI\\' + data.RFI_id : 'RFIs'} />
         </div>
     )
 }

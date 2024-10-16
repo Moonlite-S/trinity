@@ -10,12 +10,13 @@ from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.views import UserDetailsView
 from rest_framework.response import Response
 from Trinity_Project.models import User, Project
-
+from Trinity_Project.views.authentication_view import RegisterView
+from rest_framework import status
+from rest_framework.authtoken.models import Token
 def email_confirm_redirect(request, key):
     return HttpResponseRedirect(
         f"{settings.EMAIL_CONFIRM_REDIRECT_BASE_URL}{key}/"
     )
-
 
 def password_reset_confirm_redirect(request, uidb64, token):
     return HttpResponseRedirect(
@@ -26,6 +27,29 @@ class MicrosoftLogin(SocialLoginView):
     adapter_class = MicrosoftGraphOAuth2Adapter
     callback_url = "http://localhost:5173/auth/microsoft/login/callback/"
     client_class = OAuth2Client
+
+class RegisterEmployee(RegisterView):
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        data = self.get_response_data(user)
+
+        if data:
+            response = Response(data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            response = Response(status=status.HTTP_204_NO_CONTENT, headers=headers)
+
+        return response
+
+    def perform_create(self, serializer):
+        user = serializer.save(self.request)
+        if 'role' in self.request.data:
+            user.role = self.request.data['role']
+            user.save()
+        return user
 
 class GetUserInfo(UserDetailsView):
     def get(self, request, *args, **kwargs):
@@ -67,6 +91,8 @@ class GetUserInfo(UserDetailsView):
                         #rfi_dict['project_name'] = rfi.project.project_name
                         rfi_list.append(rfi_dict)
 
+                    token, created = Token.objects.get_or_create(user=user)
+
                     response.data['user'] = {
                         'id': user.id,
                         'email': user.email,
@@ -76,7 +102,8 @@ class GetUserInfo(UserDetailsView):
                         'projects': project_list,
                         'tasks': task_list,
                         'submittals': submittal_list,
-                        'RFIs': rfi_list
+                        'RFIs': rfi_list,
+                        'token': token.key
                     }
                 except User.DoesNotExist:
                     pass

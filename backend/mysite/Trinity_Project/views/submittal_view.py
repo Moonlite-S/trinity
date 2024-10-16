@@ -8,12 +8,10 @@ from Trinity_Project.azure_file_share import AzureFileShareClient
 from Trinity_Project.utils import authenticate_user, role_required
 from ..models import Project, Submittal, User
 from ..serializers import SubmittalSerializer
-from django.contrib.auth.decorators import login_required
-from rest_framework.decorators import api_view
 from azure.core.exceptions import ResourceExistsError, ResourceNotFoundError
 
 
-@role_required(allowed_roles=['Manager', 'Administrator', 'Team Member'], allowed_methods=['GET', 'POST'])
+@role_required(allowed_roles=['Manager', 'Administrator', 'Team Member', 'Accountant'], allowed_methods=['GET', 'POST'])
 def submittal_list(request):
     
     if request.method == 'GET':
@@ -73,6 +71,7 @@ def submittal_list(request):
 @role_required(allowed_roles=['Manager', 'Administrator', 'Team Member'], allowed_methods=['GET', 'PUT', 'DELETE'])
 def submittal_detail(request,submittal_id):
     user = request.user
+
     try:
         submittal=Submittal.objects.get(submittal_id=submittal_id)
     except Submittal.DoesNotExist:
@@ -83,18 +82,16 @@ def submittal_detail(request,submittal_id):
         return Response(serializer.data)
     
     elif request.method == 'PUT':
-        if len(request.data) == 1 and 'is_active' in request.data:
-            submittal.is_active = request.data['is_active']
-            submittal.save()
-            serializer = SubmittalSerializer(submittal)
-            return Response(data="Submittal closed successfully", status=status.HTTP_200_OK)
-        else:
-            serializer = SubmittalSerializer(submittal, data=request.data)
+        serializer = SubmittalSerializer(submittal, data=request.data)
+        request.data['last_edited_by'] = user.pk
+        submittal.save()
+        serializer = SubmittalSerializer(submittal, data=request.data)
 
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     elif request.method == 'DELETE':
         # TODO: Add auth check

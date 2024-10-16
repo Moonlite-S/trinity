@@ -5,6 +5,7 @@ export type SubmittalProps = {
     project: string
     received_date: string
     project_name?: string
+    project_id?: string
     type: "MECHANICAL" | "ELECTRICAL" | "PLUMBING" | "FIRE_PROTECTION" | "OTHER"
     sub_description: string
     assigned_to: string
@@ -13,6 +14,7 @@ export type SubmittalProps = {
     closing_notes?: string
     sent_item?: string
     send_email?: string
+    last_edited_by_name?: string
 }
 
 export type SubmittalFormBaseProps = {

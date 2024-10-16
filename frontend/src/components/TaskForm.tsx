@@ -61,16 +61,18 @@ export function TaskForm({task_data, method}: {task_data?: TaskProps, method: "P
               // The project_id is using the __str__ representation of the object
               // I don't really like this but it works for now
               const convert_project_obj_str_to_id = currentTaskData.project_id.split('|')[0].slice(4).trim()
-  
+
               const find_assigned_project = obj_projects.find(project => project.value === convert_project_obj_str_to_id)?.label ?? ""
   
               setCurrentTaskData(prev => ({...prev, project: find_assigned_project}))
-  
-              const convert_employee_obj_str_to_id = currentTaskData.assigned_to.split('|')[1].trim()
-  
-              const find_assigned_employee = obj_employees.find(employee => employee.value === convert_employee_obj_str_to_id)?.label ?? ""
-  
-              setCurrentTaskData(prev => ({...prev, assigned_to: find_assigned_employee}))
+              
+              // This check is necessary when creating a task directly from the dashboard
+              // Because the assigned_to is empty, it will lead to an error
+              if (currentTaskData.assigned_to !== "") {
+                const convert_employee_obj_str_to_id = currentTaskData.assigned_to.split('|')[1].trim()
+                const find_assigned_employee = obj_employees.find(employee => employee.value === convert_employee_obj_str_to_id)?.label ?? ""
+                setCurrentTaskData(prev => ({...prev, assigned_to: find_assigned_employee}))
+              }
             }
 
           } catch (error) {

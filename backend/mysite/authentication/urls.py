@@ -6,14 +6,13 @@ from dj_rest_auth.views import (
     PasswordResetConfirmView,
     PasswordResetView,
 )
-from dj_rest_auth.registration.views import RegisterView
 from dj_rest_auth.views import LoginView, LogoutView, UserDetailsView
 from django.urls import path
-from .views import MicrosoftLogin, email_confirm_redirect, password_reset_confirm_redirect, GetUserInfo
+from .views import MicrosoftLogin, email_confirm_redirect, password_reset_confirm_redirect, GetUserInfo, RegisterEmployee
 from allauth.socialaccount.views import signup
 
 urlpatterns = [
-    path("register/", RegisterView.as_view(), name="rest_register"),
+    path("register/", RegisterEmployee.as_view(), name="rest_register"),
     path("login/", LoginView.as_view(), name="rest_login"),
     path("logout/", LogoutView.as_view(), name="rest_logout"),
     path("user/", GetUserInfo.as_view(), name="rest_user_details"),

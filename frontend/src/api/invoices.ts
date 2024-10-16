@@ -63,3 +63,12 @@ export async function deleteInvoice(invoice_id: string): Promise<number> {
     }
 }
 
+export async function getInvoicesNotPaid(): Promise<InvoiceProps[]> {
+    try {
+        const response = await AxiosInstance.get('/api/invoice/not_paid')
+        return response.data
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+}

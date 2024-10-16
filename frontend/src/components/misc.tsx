@@ -28,6 +28,14 @@ export function Error_Component({ errorString }: { errorString: string }) {
   )
 }
 
+export function OpenFolderButton({ folder_path }: { folder_path: string }) {
+  return (
+    <a href={'localexplorer:L:\\' + folder_path}>
+      <button className="bg-blue-300 rounded p-4 my-2 hover:bg-blue-400 transition">Open Folder</button>
+    </a>
+  )
+}
+
 /**
  * This function handles the api method at the end of the form
  * @param create_fn corresponds to the POST method

@@ -3,7 +3,7 @@ import { useAuth } from "../App";
 import { useState, useEffect } from "react";
 import { getAnnouncements } from "../api/announcements";
 import { AnnouncementProps } from "../interfaces/announcement_types";
-import { MainMenuDashboard } from "./Dashboard";
+import { BaseDashboardLayout } from "./Dashboard";
 
 /**
  * ### [Route for ('/main_menu')]
@@ -56,7 +56,7 @@ export function MainMenu() {
                 <h2>Main Menu</h2>
             </div>
             
-            <MainMenuDashboard user={user} announcements={announcements}/>
+            <BaseDashboardLayout user={user} announcements={announcements}/>
         </>
     )
 }
