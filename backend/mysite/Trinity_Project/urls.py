@@ -1,3 +1,4 @@
+from django import views
 from django.urls import  path,include
 from django.contrib import admin
 
@@ -43,5 +44,7 @@ urlpatterns = [
     path("rfi/id/<str:rfi_id>",RFI_detail),
     path("announcement/",announcement),
     path("invoice/",invoice_list),
-    path("invoice/id/<str:invoice_id>",invoice_detail)
+    path("invoice/id/<str:invoice_id>",invoice_detail),
+    path("login_athen",azure_ad_login),
+    path('callback/', azure_ad_callback, name='callback')
 ]

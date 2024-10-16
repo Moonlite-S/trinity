@@ -5,7 +5,8 @@ from django.utils.deprecation import MiddlewareMixin
 from django.http import HttpResponseRedirect
 from django.conf import settings
 from django.contrib.auth import logout
-
+from django.shortcuts import redirect
+from Trinity_Project.views.authentication_view import check_mfa_status
 
 _user = local()
 #This get the current user for log and task changes class
@@ -47,3 +48,11 @@ class AutoLogoutMiddleware(MiddlewareMixin):
         
         # Update the last activity time with the current time (Unix timestamp)
         request.session['last_activity'] = current_time
+
+def mfa_required(view_func):
+    def wrapped_view(request, *args, **kwargs):
+        access_token = request.session.get('access_token')
+        if not access_token or not check_mfa_status(access_token):
+            return redirect('login_athen')  # Redirect to login if MFA is not configured
+        return view_func(request, *args, **kwargs)
+    return wrapped_view

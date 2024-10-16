@@ -135,3 +135,5 @@ class GraphAPI():
 
         response = requests.post(url, json=meeting_details, headers=headers)
         return response.json()
+    def authentication():
+        pass

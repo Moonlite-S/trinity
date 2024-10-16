@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Error</title>
+</head>
+<body>
+    <h1>An error occurred</h1>
+    <p>{{ error }}</p>
+    
+    {% if exception_notes %}
+        <p>{{ exception_notes }}</p>
+    {% else %}
+    <   p>No additional information available.</p>
+    {% endif %}
+</body>
+</html>
