@@ -66,11 +66,8 @@ export function ViewInvoices() {
 
     const invoiceColumns: TableColumn<InvoiceProps>[] = [
         { name: "Invoice Date", selector: (row: InvoiceProps) => row.invoice_date, sortable: true, cell: (row: InvoiceProps) => <div className="">{row.invoice_date}</div> },
-        { name: "Due Date", selector: (row: InvoiceProps) => row.due_date, sortable: true, cell: (row: InvoiceProps) => <div className="">{row.due_date}</div> },
-        { name: "Bill To Name", selector: (row: InvoiceProps) => row.bill_to_name, sortable: true, cell: (row: InvoiceProps) => <div className="">{row.bill_to_name}</div> },
-        { name: "Bill To Address", selector: (row: InvoiceProps) => row.bill_to_address, sortable: true, cell: (row: InvoiceProps) => <div className="">{row.bill_to_address}</div> },
-        { name: "Bill To Email", selector: (row: InvoiceProps) => row.bill_to_email, sortable: true, cell: (row: InvoiceProps) => <div className="">{row.bill_to_email}</div> },
-        { name: "From Name", selector: (row: InvoiceProps) => row.from_name, sortable: true, cell: (row: InvoiceProps) => <div className="">{row.from_name}</div> },
+        { name: "Payment Status", selector: (row: InvoiceProps) => row.payment_status, sortable: true, cell: (row: InvoiceProps) => <div className="">{row.payment_status}</div> },
+        { name: "Project ID", selector: (row: InvoiceProps) => row.project_id, sortable: true, cell: (row: InvoiceProps) => <div className="">{row.project_id}</div> },
     ]
 
     return (
