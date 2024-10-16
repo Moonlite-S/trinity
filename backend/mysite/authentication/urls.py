@@ -6,7 +6,8 @@ from dj_rest_auth.views import (
     PasswordResetConfirmView,
     PasswordResetView,
 )
-from dj_rest_auth.views import LoginView, LogoutView, UserDetailsView
+from dj_rest_auth.registration.views import RegisterView
+from dj_rest_auth.views import LoginView, LogoutView
 from django.urls import path
 from .views import MicrosoftLogin, email_confirm_redirect, password_reset_confirm_redirect, GetUserInfo, RegisterEmployee
 from allauth.socialaccount.views import signup

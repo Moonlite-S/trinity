@@ -6,9 +6,19 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from .models import User
 from rest_framework.authtoken.models import Token
+import logging
+logger = logging.getLogger(__name__)
 
 def authenticate_user(request):
-    auth_token = request.COOKIES.get('authToken')
+    logger.info("Authenticating user...")
+
+    auth_token = (
+        request.COOKIES.get('authToken') or
+        request.headers.get('Authorization') or
+        request.GET.get('token')
+    )
+
+    logger.info(f"Auth token found: {auth_token}")
     
     if not auth_token:
         raise AuthenticationFailed('Unauthenticated! No token provided.')
@@ -28,10 +38,11 @@ def authenticate_user(request):
             'role': user.role,
         }
         
+        logger.info(f"User authenticated: {user.email}")
         return user_dict
 
     except Token.DoesNotExist:
-        raise AuthenticationFailed('Invalid token!')
+        raise AuthenticationFailed('Invalid token! Does not exist.')
     
 
 def role_required(allowed_roles, allowed_methods):

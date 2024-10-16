@@ -21,12 +21,11 @@ export const AxiosInstance = axios.create({
 })
 
 AxiosInstance.interceptors.request.use((config) => {
-    const token = getCookie('authToken');
+    const token = getCookie('authToken')
     if (token) {
-      config.headers['Authorization'] = `Token ${token}`;
+        config.headers['Authorization'] = `Token ${token}`
     }
-    return config;
-  });
-  
+    return config
+})
 
 export default AxiosInstance
