@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from django.contrib.auth.models import AnonymousUser
 from .models import User
 from django.contrib.auth import get_user_model
-from django.conf import settings
+from rest_framework.authtoken.models import Token
 
 User = get_user_model()
 _user = local()
@@ -17,13 +17,15 @@ class CurrentUserMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        jwt_token = request.COOKIES.get('jwt_token')
-        if jwt_token:
+        auth_token = request.COOKIES.get('authToken')
+        if not auth_token and hasattr(request, 'auth_token'):
+            auth_token = request.auth_token
+
+        if auth_token:
             try:
-                payload = jwt.decode(jwt_token, settings.SECRET_KEY, algorithms=['HS256'])
-                user_id = payload.get('id')
-                user = User.objects.get(id=user_id)
-            except (jwt.DecodeError, User.DoesNotExist):
+                token = Token.objects.get(key=auth_token)
+                user = token.user
+            except Token.DoesNotExist:
                 user = AnonymousUser()
         else:
             user = AnonymousUser()
@@ -31,6 +33,11 @@ class CurrentUserMiddleware:
         request.user = user
         _user.value = user
         response = self.get_response(request)
+
+        # Set the authToken cookie if it's not already set
+        if not response.cookies.get('authToken') and hasattr(request, 'auth_token'):
+            response.set_cookie('authToken', request.auth_token, httponly=True, secure=True, samesite='Lax')
+
         return response
 
     @staticmethod

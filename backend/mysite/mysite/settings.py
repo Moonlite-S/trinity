@@ -78,13 +78,11 @@ REST_FRAMEWORK = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    "django.contrib.auth.backends.ModelBackend",
+    "Trinity_Project.auth.EmailAuthBackend",
     "allauth.account.auth_backends.AuthenticationBackend"
 )
 
 CORS_ALLOW_CREDENTIALS = True
-
-# CORS_ORIGIN_ALLOW_ALL = False
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173", # Local development
