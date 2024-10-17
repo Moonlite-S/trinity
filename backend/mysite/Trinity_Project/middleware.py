@@ -45,17 +45,17 @@ class CurrentUserMiddleware:
     def get_current_user():
         return getattr(_user, 'value', AnonymousUser())
     
-class PartitionedCookieMiddleware:
-    def __init__(self, get_response):
-        self.get_response = get_response
+# class PartitionedCookieMiddleware:
+#     def __init__(self, get_response):
+#         self.get_response = get_response
 
-    def __call__(self, request):
-        response = self.get_response(request)
+#     def __call__(self, request):
+#         response = self.get_response(request)
         
-        if 'jwt_token' in response.cookies:
-            response.cookies['jwt_token']['Partitioned'] = 'True'
+#         if 'jwt_token' in response.cookies:
+#             response.cookies['jwt_token']['Partitioned'] = 'True'
 
-        if 'csrftoken' in response.cookies:
-            response.cookies['csrftoken']['Partitioned'] = 'True'
+#         if 'csrftoken' in response.cookies:
+#             response.cookies['csrftoken']['Partitioned'] = 'True'
         
-        return response
+#         return response
