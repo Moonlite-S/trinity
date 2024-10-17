@@ -6,25 +6,25 @@ from ..models import User
 from ..serializers import UserNameAndEmail, UserNameSerializer, UserSerializer
 from rest_framework.exceptions import PermissionDenied
 
-@role_required(allowed_roles=['Admin', 'Manager', 'Team Member'], allowed_methods=['GET'])
+@role_required(allowed_roles=['Administratoristrator', 'Manager', 'Team Member'], allowed_methods=['GET'])
 def return_all_users_names(request):
     users = User.objects.all()
     serializer = UserNameSerializer(users, many=True)
     return Response(serializer.data)
 
-@role_required(allowed_roles=['Admin', 'Manager', 'Team Member'], allowed_methods=['GET'])
+@role_required(allowed_roles=['Administrator', 'Manager', 'Team Member'], allowed_methods=['GET'])
 def user_list(request):
     users = User.objects.all()
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
 
-@role_required(allowed_roles=['Admin', 'Manager', 'Team Member'], allowed_methods=['GET'])
+@role_required(allowed_roles=['Administrator', 'Manager', 'Team Member'], allowed_methods=['GET'])
 def user_view(request):
     user = request.user
     serializer = UserSerializer(user)
     return Response(serializer.data)
 
-@role_required(allowed_roles=['Admin'], allowed_methods=['GET','PUT','DELETE'])
+@role_required(allowed_roles=['Administrator'], allowed_methods=['GET','PUT','DELETE'])
 def user_edit(request,user_email):
     user_2=User.objects.get(email=user_email)
 
@@ -44,7 +44,7 @@ def user_edit(request,user_email):
         user_2.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
         
-@role_required(allowed_roles=['Admin', 'Manager', 'Team Member'], allowed_methods=['GET'])
+@role_required(allowed_roles=['Administrator', 'Manager', 'Team Member'], allowed_methods=['GET'])
 def return_all_users_name_and_email(request):
     payload = authenticate_user(request)
 
@@ -52,7 +52,7 @@ def return_all_users_name_and_email(request):
     serializer = UserNameAndEmail(users, many=True)
     return Response(serializer.data)
 
-@role_required(allowed_roles=['Admin', 'Manager', 'Team Member'], allowed_methods=['GET'])
+@role_required(allowed_roles=['Administrator', 'Manager', 'Team Member'], allowed_methods=['GET'])
 def get_user_by_id(request, id):
     try:
         user = User.objects.get(id=id)

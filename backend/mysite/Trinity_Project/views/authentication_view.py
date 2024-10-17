@@ -98,7 +98,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 def index(request):
     return HttpResponse("Hello, world. You're at the Project index.")
     
-@role_required(allowed_roles=['Admin'], allowed_methods=['PUT'])
+@role_required(allowed_roles=['Administrator'], allowed_methods=['PUT'])
 def update_user(request, id):
     user = User.objects.get(id=id)
 
@@ -108,7 +108,7 @@ def update_user(request, id):
         return Response(serializer.data, status=status.HTTP_201_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['DELETE'])
+@role_required(allowed_roles=['Administrator'], allowed_methods=['DELETE'])
 def delete_user(request, id):
     user = User.objects.get(id=id)
     user.delete()
