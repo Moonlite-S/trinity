@@ -14,6 +14,8 @@ from dj_rest_auth.registration.views import RegisterView
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from dj_rest_auth.views import LoginView, LogoutView
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 def email_confirm_redirect(request, key):
     return HttpResponseRedirect(
@@ -112,15 +114,15 @@ class GetUserInfo(UserDetailsView):
         
         return response
 
+@method_decorator(csrf_exempt, name='dispatch')
 class CustomLoginView(LoginView):
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
-        
+
         if response.status_code == status.HTTP_200_OK:
             token = Token.objects.get(key=response.data['key'])
             response['Authorization'] = f'Token {token.key}'
             response.set_cookie('authToken', token.key, httponly=True, secure=True, samesite='None')
-        
         return response
 
 class CustomLogoutView(LogoutView):
