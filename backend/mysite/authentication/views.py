@@ -16,6 +16,9 @@ from rest_framework.authtoken.models import Token
 from dj_rest_auth.views import LoginView, LogoutView
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import csrf_protect
+from rest_framework.decorators import api_view
 
 def email_confirm_redirect(request, key):
     return HttpResponseRedirect(
@@ -114,17 +117,19 @@ class GetUserInfo(UserDetailsView):
         
         return response
 
-@method_decorator(csrf_exempt, name='dispatch')
 class CustomLoginView(LoginView):
+    @method_decorator(ensure_csrf_cookie)
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
+
+        print("CSRF token in CustomLoginView: ", request.headers.get('X-CSRFToken'))
 
         if response.status_code == status.HTTP_200_OK:
             token = Token.objects.get(key=response.data['key'])
             response['Authorization'] = f'Token {token.key}'
             response.set_cookie('authToken', token.key, httponly=True, secure=True, samesite='None')
         return response
-
+        
 class CustomLogoutView(LogoutView):
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
@@ -133,4 +138,7 @@ class CustomLogoutView(LogoutView):
 
         return response
     
-
+@ensure_csrf_cookie
+@api_view(['GET'])
+def set_csrf_token(request):
+    return Response(data={"status": "CSRF token set"}, status=status.HTTP_200_OK)

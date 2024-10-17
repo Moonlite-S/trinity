@@ -71,6 +71,9 @@ MIDDLEWARE = [
 ]
 
 REST_FRAMEWORK = {
+    # 'DEFAULT_RENDERER_CLASSES': [
+    #     'rest_framework.renderers.JSONRenderer',
+    # ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
         'rest_framework.authentication.SessionAuthentication',
@@ -269,3 +272,5 @@ CSRF_COOKIE_SAMESITE = 'None'
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'None'
+
+CORS_EXPOSE_HEADERS = ['Context-Type', 'X-CSRFToken']

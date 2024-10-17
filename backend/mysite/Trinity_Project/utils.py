@@ -6,7 +6,9 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from .models import User
 from rest_framework.authtoken.models import Token
+from django.middleware.csrf import get_token
 import logging
+
 logger = logging.getLogger(__name__)
 
 def authenticate_user(request):
@@ -76,8 +78,8 @@ def role_required(allowed_roles, allowed_methods):
 
 def get_csrf_token(request):
     '''
-    ### Function to get the CSRF token from the request
+    Function to get or generate the CSRF token for the request
     '''
-    csrf_token = request.COOKIES.get('csrftoken')
-    print("CSRF token found: ", csrf_token)
+    csrf_token = get_token(request)
+    print("CSRF token: ", csrf_token)
     return csrf_token

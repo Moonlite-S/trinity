@@ -13,6 +13,7 @@ import jwt
 from django.contrib.auth import authenticate,login,logout
 from django.middleware.csrf import get_token
 from ..utils import role_required
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 # class RegisterView(APIView):
 #     '''
