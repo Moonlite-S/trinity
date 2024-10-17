@@ -11,7 +11,8 @@ from rest_framework.authtoken.models import Token
 
 User = get_user_model()
 _user = local()
-#This get the current user for log and task changes class
+
+# This gets the current user for log and task changes class
 class CurrentUserMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
@@ -34,7 +35,7 @@ class CurrentUserMiddleware:
         _user.value = user
         response = self.get_response(request)
 
-        # Set the authToken cookie if it's not already set
+        # Sets the authToken cookie if it's not already set
         if not response.cookies.get('authToken') and hasattr(request, 'auth_token'):
             response.set_cookie('authToken', request.auth_token, httponly=True, secure=True, samesite='Lax')
 

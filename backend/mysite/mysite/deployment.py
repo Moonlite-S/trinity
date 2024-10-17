@@ -8,9 +8,9 @@ from .settings import *
 from .settings import BASE_DIR
 
 ALLOWED_HOSTS = [os.environ["WEBSITE_HOSTNAME"]]
-DEBUG = False
+#DEBUG = False
 SECRET_KEY = os.environ['SECRET_KEY']
-LOGIN_URL = 'login'
+#LOGIN_URL = 'login'
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -28,6 +28,8 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "https://yellow-sea-07d8df30f.5.azurestaticapps.net",
 ]
+
+CORS_ALLOW_CREDENTIALS = True
 
 AZURE_FILE_SHARE_NAME = os.getenv("AZURE_FILE_SHARE_NAME_PROD")
 
