@@ -46,7 +46,6 @@ DATABASES = {
             "ssl": {"ca": "DigiCertGlobalRootCA.crt.pem"}
         }
     },
-
 }
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -54,6 +53,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = 'None'
 CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'None'
 
 CSRF_TRUSTED_ORIGINS = [

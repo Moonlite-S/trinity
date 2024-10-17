@@ -244,9 +244,9 @@ SOCIALACCOUNT_PROVIDERS = {
     "microsoft": {
         "APPS": [
             {
-                "client_id": os.getenv('AZURE_CLIENT_ID'),  # replace me
-                "secret": os.getenv('AZURE_CLIENT_SECRET'),        # replace me
-                "key": "",                                          # leave empty
+                "client_id": os.getenv('AZURE_CLIENT_ID'),
+                "secret": os.getenv('AZURE_CLIENT_SECRET'),
+                "key": "",
                 "settings": {
                     "tenant": "tenant",
                     "login_url": "https://login.microsoftonline.com",
@@ -263,3 +263,9 @@ REST_AUTH = {
     'SESSION_LOGIN': True,
     'REGISTER_SERIALIZER': 'authentication.serializers.CustomRegisterSerializer',
 }
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'None'

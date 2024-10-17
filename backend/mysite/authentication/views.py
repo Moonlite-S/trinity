@@ -13,6 +13,7 @@ from Trinity_Project.models import User, Project
 from Trinity_Project.views.authentication_view import RegisterView
 from rest_framework import status
 from rest_framework.authtoken.models import Token
+from dj_rest_auth.views import LoginView
 def email_confirm_redirect(request, key):
     return HttpResponseRedirect(
         f"{settings.EMAIL_CONFIRM_REDIRECT_BASE_URL}{key}/"
@@ -107,5 +108,16 @@ class GetUserInfo(UserDetailsView):
                     }
                 except User.DoesNotExist:
                     pass
+        
+        return response
+
+class CustomLoginView(LoginView):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        
+        if response.status_code == status.HTTP_200_OK:
+            token = Token.objects.get(key=response.data['key'])
+            response['Authorization'] = f'Token {token.key}'
+            response.set_cookie('authToken', token.key, httponly=True, secure=True, samesite='None')
         
         return response

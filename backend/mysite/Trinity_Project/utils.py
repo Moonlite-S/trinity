@@ -18,6 +18,8 @@ def authenticate_user(request):
         request.GET.get('token')
     )
 
+    print("Auth token found: ", auth_token)
+
     logger.info(f"Auth token found: {auth_token}")
     
     if not auth_token:
@@ -26,6 +28,8 @@ def authenticate_user(request):
     try:
         token = Token.objects.get(key=auth_token)
         user = token.user
+        print("User found: ", user)
+
         
         if not user.is_active:
             raise AuthenticationFailed('User is inactive!')

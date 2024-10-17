@@ -18,8 +18,10 @@ class CurrentUserMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        print("CurrentUserMiddleware called")
         auth_token = request.COOKIES.get('authToken')
         if not auth_token and hasattr(request, 'auth_token'):
+            print("Setting authToken cookie in CurrentUserMiddleware")
             auth_token = request.auth_token
 
         if auth_token:
@@ -35,10 +37,10 @@ class CurrentUserMiddleware:
         _user.value = user
         response = self.get_response(request)
 
-        # Sets the authToken cookie if it's not already set
         if not response.cookies.get('authToken') and hasattr(request, 'auth_token'):
-            response.set_cookie('authToken', request.auth_token, httponly=True, secure=True, samesite='Lax')
-
+            print("Setting authToken cookie in CurrentUserMiddleware 2")
+            response.set_cookie('authToken', request.auth_token, httponly=True, secure=True, samesite='None')
+            
         return response
 
     @staticmethod

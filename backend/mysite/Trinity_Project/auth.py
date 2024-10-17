@@ -11,10 +11,13 @@ class EmailAuthBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
         try:
             user = User.objects.get(email=username)
+            print("User found: ", user)
             if user.check_password(password):
+                print("Password correct", user)
                 # Create or get the token
                 token, _ = Token.objects.get_or_create(user=user)
-                
+                print("Token found: ", token)
+
                 # Set the token in the request for the middleware to use
                 request.auth_token = token.key
                 

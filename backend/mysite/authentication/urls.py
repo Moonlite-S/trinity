@@ -9,12 +9,12 @@ from dj_rest_auth.views import (
 from dj_rest_auth.registration.views import RegisterView
 from dj_rest_auth.views import LoginView, LogoutView
 from django.urls import path
-from .views import MicrosoftLogin, email_confirm_redirect, password_reset_confirm_redirect, GetUserInfo, RegisterEmployee
+from .views import MicrosoftLogin, email_confirm_redirect, password_reset_confirm_redirect, GetUserInfo, RegisterEmployee, CustomLoginView
 from allauth.socialaccount.views import signup
 
 urlpatterns = [
     path("register/", RegisterEmployee.as_view(), name="rest_register"),
-    path("login/", LoginView.as_view(), name="rest_login"),
+    path("login/", CustomLoginView.as_view(), name="rest_login"),
     path("logout/", LogoutView.as_view(), name="rest_logout"),
     path("user/", GetUserInfo.as_view(), name="rest_user_details"),
     path("register/verify-email/", VerifyEmailView.as_view(), name="rest_verify_email"),
