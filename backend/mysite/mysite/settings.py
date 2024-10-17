@@ -66,6 +66,7 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     'Trinity_Project.middleware.CurrentUserMiddleware',
+    'Trinity_Project.middleware.PartitionedCookieMiddleware',
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
