@@ -79,4 +79,5 @@ def get_csrf_token(request):
     ### Function to get the CSRF token from the request
     '''
     csrf_token = request.COOKIES.get('csrftoken')
+    print("CSRF token found: ", csrf_token)
     return csrf_token

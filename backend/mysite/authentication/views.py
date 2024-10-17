@@ -10,10 +10,11 @@ from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.views import UserDetailsView
 from rest_framework.response import Response
 from Trinity_Project.models import User, Project
-from Trinity_Project.views.authentication_view import RegisterView
+from dj_rest_auth.registration.views import RegisterView
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from dj_rest_auth.views import LoginView
+from dj_rest_auth.views import LoginView, LogoutView
+
 def email_confirm_redirect(request, key):
     return HttpResponseRedirect(
         f"{settings.EMAIL_CONFIRM_REDIRECT_BASE_URL}{key}/"
@@ -121,3 +122,13 @@ class CustomLoginView(LoginView):
             response.set_cookie('authToken', token.key, httponly=True, secure=True, samesite='None')
         
         return response
+
+class CustomLogoutView(LogoutView):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        response.delete_cookie('authToken')
+        response.delete_cookie('csrftoken')
+
+        return response
+    
+

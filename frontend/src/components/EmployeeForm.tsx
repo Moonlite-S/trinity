@@ -44,7 +44,7 @@ export function EmployeeForm({employee, method}: {employee?: EmployeeProps, meth
             name: data.get('name') as string,
             email: email as string,
             username: email as string,
-            password: password as string,
+            password1: password as string,
             password2: re_password as string,
             role: data.get('role') as Roles,
         }

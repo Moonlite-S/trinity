@@ -92,11 +92,12 @@ export async function login({email, password }: LoginProps): Promise<string> {
  */
 export async function logout(): Promise<number> {
     try {
-      const response = await AxiosInstance.post('api/logout')
+      const response = await AxiosInstance.post('auth/logout/' )
       
       if (response.status == 200) {
         console.log("Logged out")
         removeCookie('authToken')
+        AxiosInstance.defaults.headers['Authorization'] = ''
         return 200
       } else {
         console.log("Logout failed")

@@ -36,7 +36,7 @@ export type EmployeeCreationProps = {
     name: string
     email: string
     username: string
-    password: string
+    password1: string
     password2: string
     role: Roles
 }
