@@ -109,3 +109,40 @@ export async function logout(): Promise<number> {
       return 500
     }
 }
+
+/**
+ * This function is used to log in a user with their Microsoft account
+ * 
+ * First it gets the Microsoft login URL and redirects the user to it
+ * 
+ * After the user logs in the MS login, the callback URL goes to the backend
+ * where the user's information is verified and a session token is created
+ * 
+ * TODO: It returns the key, which is what the auth_token is, so all we need to do is
+ * store the key in the cookie. Most likely in another function
+ * 
+ * @returns the status code of the request
+ */
+export async function microsoftLogin(): Promise<number> {
+  try {
+    const response = await AxiosInstance.get('api/login_athen')
+    const data = response.data
+
+    window.location.href = data.auth_url // Redirect to the Microsoft login page
+    
+    return response.status
+  } catch (error) {
+    console.error("Network Error: ", error)
+    return 500
+  }
+}
+
+export async function get_auth_and_redirect(token: string): Promise<number> {
+  try {
+    AxiosInstance.defaults.headers['Authorization'] = `Token ${token}`
+    return 200
+  } catch (error) {
+    console.error("Network Error: ", error)
+    return 500
+  }
+}

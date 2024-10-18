@@ -92,6 +92,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173", # Local development
     "http://localhost:3000", # React frontend
     "https://web.postman.co",
+    "https://login.microsoftonline.com",
+    "http://localhost:8000",
 ]
 
 ROOT_URLCONF = "mysite.urls"
@@ -100,6 +102,8 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:3000",
     'https://web.postman.co',
+    'https://login.microsoftonline.com',
+    "http://localhost:8000",
 ]
 
 # CSRF_COOKIE_SAMESITE = 'None'
@@ -154,12 +158,6 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     }
 }
-
-
-AZURE_AD_CLIENT_ID = os.getenv("AZURE_AD_CLIENT_ID")
-AZURE_AD_CLIENT_SECRET = os.getenv("AZURE_AD_CLIENT_SECRET")
-AZURE_AD_TENANT_ID = os.getenv("AZURE_AD_TENANT_ID")
-AZURE_AD_REDIRECT_URI = os.getenv("AZURE_AD_REDIRECT_URI")
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -257,18 +255,15 @@ PASSWORD_RESET_CONFIRM_REDIRECT_BASE_URL = \
 
 SOCIALACCOUNT_PROVIDERS = {
     "microsoft": {
-        "APPS": [
-            {
-                "client_id": os.getenv('AZURE_CLIENT_ID'),
-                "secret": os.getenv('AZURE_CLIENT_SECRET'),
-                "key": "",
-                "settings": {
-                    "tenant": "tenant",
-                    "login_url": "https://login.microsoftonline.com",
-                    "graph_url": "https://graph.microsoft.com",
-                }
-            }
-        ],
+        'APP': {
+            'client_id': os.getenv('AZURE_CLIENT_ID'),
+            'secret': os.getenv('AZURE_CLIENT_SECRET'),
+            'tenant': os.getenv('AZURE_TENANT_ID'),
+        },
+        'SCOPE': ['User.Read'],
+        'AUTH_PARAMS': {'prompt': 'select_account'},
+        'METHOD': 'oauth2',
+        'VERIFIED_EMAIL': True,
     }
 }
 
@@ -286,3 +281,18 @@ CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'None'
 
 # CORS_EXPOSE_HEADERS = ['Context-Type', 'X-CSRFToken']
+
+AZURE_CLIENT_ID = os.getenv("AZURE_CLIENT_ID")
+AZURE_CLIENT_SECRET = os.getenv("AZURE_CLIENT_SECRET")
+AZURE_TENANT_ID = os.getenv("AZURE_TENANT_ID")
+AZURE_REDIRECT_URI = os.getenv("AZURE_REDIRECT_URI_DEV")
+AZURE_REDIRECT_HOME = os.getenv("AZURE_REDIRECT_HOME_DEV")
+
+# Update these settings
+ACCOUNT_EMAIL_VERIFICATION = "none"  # Change this to "optional" or "none" for testing
+SOCIALACCOUNT_EMAIL_VERIFICATION = "none"
+SOCIALACCOUNT_EMAIL_REQUIRED = False
+SOCIALACCOUNT_STORE_TOKENS = True
+
+# Add this setting
+SOCIALACCOUNT_ADAPTER = 'Trinity_Project.adapters.CustomSocialAccountAdapter'

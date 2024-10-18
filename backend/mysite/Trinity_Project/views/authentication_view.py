@@ -1,10 +1,13 @@
 from datetime import datetime, timedelta, timezone
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.urls import reverse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework import status
+
+from authentication.views import MicrosoftLogin
 from ..models import User
 from ..utils import authenticate_user
 from ..serializers import UserSerializer
@@ -17,7 +20,8 @@ from msal import ConfidentialClientApplication
 from django.conf import settings
 import requests
 from ..utils import role_required
-
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.test import APIClient
 # class RegisterView(APIView):
 #     '''
 #     DEPRECATED
@@ -117,34 +121,37 @@ def delete_user(request, id):
     user.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 
+@csrf_exempt
+@api_view(['GET'])
 def azure_ad_login(request):
     client = ConfidentialClientApplication(
-        settings.AZURE_AD_CLIENT_ID,
-        authority=f"https://login.microsoftonline.com/{settings.AZURE_AD_TENANT_ID}",
-        client_credential=settings.AZURE_AD_CLIENT_SECRET
+        settings.AZURE_CLIENT_ID,
+        authority=f"https://login.microsoftonline.com/{settings.AZURE_TENANT_ID}",
+        client_credential=settings.AZURE_CLIENT_SECRET
     )
     auth_url = client.get_authorization_request_url(
         scopes=["User.Read"],
-        redirect_uri=settings.AZURE_AD_REDIRECT_URI
+        redirect_uri='http://localhost:8000/api/callback'
     )
-    return redirect(auth_url)
-
+    # return redirect(auth_url)
+    return Response({"auth_url": auth_url})
 
 def azure_ad_callback(request):
     code = request.GET.get('code')
+
     if not code:
         return redirect('login')
 
     client = ConfidentialClientApplication(
-        settings.AZURE_AD_CLIENT_ID,
-        authority=f"https://login.microsoftonline.com/{settings.AZURE_AD_TENANT_ID}",
-        client_credential=settings.AZURE_AD_CLIENT_SECRET
+        settings.AZURE_CLIENT_ID,
+        authority=f"https://login.microsoftonline.com/{settings.AZURE_TENANT_ID}",
+        client_credential=settings.AZURE_CLIENT_SECRET
     )
 
     result = client.acquire_token_by_authorization_code(
         code,
         scopes=["User.Read"],
-        redirect_uri=settings.AZURE_AD_REDIRECT_URI
+        redirect_uri='http://localhost:8000/api/callback'
     )
 
     if "access_token" in result:
@@ -158,22 +165,44 @@ def azure_ad_callback(request):
         if email:
             # Try to find the user in your database
             user = User.objects.filter(email=email).first()
+            print("user: ", user)
 
             if user is None:
+                print("user is None")
                 # Optionally, create the user if they don't exist
-                user = User.objects.create_user(email=email, password=None)
+                user = User.objects.create_user(email=email, password=None, username=email)
                 user.save()
 
-            # Authenticate and log the user in Django
-            login(request, user)
+            # Prepare the data for MicrosoftLogin
+            data = {
+                'access_token': result['access_token'],
+            }
 
-            return redirect('/api/projects/')  # Or wherever you want to redirect after login
+            # Get the URL for the MicrosoftLogin view
+            microsoft_login_url = request.build_absolute_uri(reverse('microsoft_login'))
+
+            # Make a request to the MicrosoftLogin view
+            csrf_token = get_token(request)
+            headers = {
+                'X-CSRFToken': csrf_token,
+                'Content-Type': 'application/json',
+            }
+            response = requests.post(microsoft_login_url, json=data, headers=headers)
+
+            if response.status_code == 200:
+                print("response: ", response.json())
+                auth_token = response.json()['key']
+
+                redirect_response = redirect(f'http://localhost:5173/auth-callback?token={auth_token}')
+                redirect_response.set_cookie(key='auth_token', value=auth_token, httponly=True, samesite='None', secure=True, max_age=3600)
+
+                return redirect_response
+            else:
+                return JsonResponse({'error': 'Failed to authenticate with Microsoft'}, status=response.status_code)
         else:
             return render(request, 'error.html', {'error': 'Failed to retrieve user email from Microsoft Graph'})
     else:
         return render(request, 'error.html', {'error': result.get('error_description')})
-
-
 
 def check_mfa_status(access_token):
     headers = {

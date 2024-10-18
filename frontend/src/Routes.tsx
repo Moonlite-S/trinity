@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import { MainMenu } from './components/MainMenu'
-import Home from './components/Home'
+import Home, { AuthCallback } from './components/Home'
 import { CreateProject, UpdateProject, UpdateProjectList, ProjectStatusReport } from './components/Project'
 import { CreateTask, CreateTaskFromProject, TaskList } from './components/Tasks'
 import { CreateEmployee, EmployeeList, UpdateEmployee } from './components/Employee'
@@ -64,6 +64,8 @@ export function AppRoutes() {
 
             <Route path='/email/confirm/:key' element={<EmailConfirmation />} />
             <Route path='/password/reset/:key' element={<PasswordReset />} />
+
+            <Route path='/auth-callback' element={<AuthCallback />} />
 
             <Route path='*' element={<ErrorPage />} />
             </Routes>

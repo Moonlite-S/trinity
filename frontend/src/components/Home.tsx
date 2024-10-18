@@ -1,8 +1,8 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Header } from "./misc"
-import { login } from "../api/auth"
-
+import { get_auth_and_redirect, login, microsoftLogin } from "../api/auth"
+import microsoft_logo from '/microsoft_logo.png'
 /**
  * Index Home Page
  */
@@ -124,6 +124,11 @@ export function Login(){
     }
   }
 
+  const handleMicrosoftLogin = async () => {
+    const response = await microsoftLogin()
+    console.log(response)
+  }
+
   return(
     <div className='m-5'>
 
@@ -147,6 +152,44 @@ export function Login(){
       
       </form>
 
+      <div className='my-4 flex flex-row justify-center items-center'>
+        <div className='border-2 w-full' />
+        <div className='text-center mx-3'>OR</div>
+        <div className='border-2 w-full' />
+      </div>
+
+      <button onClick={handleMicrosoftLogin} className='flex flex-row justify-center items-center p-3 border rounded-md group hover:shadow-md transition-all duration-300'>
+        <img src={microsoft_logo} alt='Microsoft Logo' className='w-10 h-10 mr-3 group-hover:scale-110 transition-all duration-300' />
+        <div className='text-center '>Login with Microsoft</div>
+      </button>
+
+    </div>
+  )
+}
+
+export function AuthCallback() {
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const get_token = async () => {
+      const token = new URLSearchParams(window.location.search).get('token')
+      if (token) {
+        const response = await get_auth_and_redirect(token)
+        console.log(response)
+        if (response === 200) {
+          navigate('/main_menu')
+        } else {
+          console.log("Error: ", response)
+        }
+      }
+    }
+    get_token()
+
+  }, [])
+
+  return(
+    <div>
+      <p>Authenticating...</p>
     </div>
   )
 }
