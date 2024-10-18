@@ -236,11 +236,11 @@ DEFAULT_FROM_EMAIL = "7ddbd4001@smtp-brevo.com"    # email ending with @sendinbl
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 
-AUTO_LOGOUT = {
-    'IDLE_TIME': timedelta(minutes=15), 
-    'REDIRECT_TO_LOGIN_IMMEDIATELY': True,
-    'MESSAGE': 'The session has expired. Please login again to continue.',
-    } 
+# AUTO_LOGOUT = {
+#     'IDLE_TIME': timedelta(minutes=15), 
+#     'REDIRECT_TO_LOGIN_IMMEDIATELY': True,
+#     'MESSAGE': 'The session has expired. Please login again to continue.',
+# } 
 
 # <EMAIL_CONFIRM_REDIRECT_BASE_URL>/<key>
 EMAIL_CONFIRM_REDIRECT_BASE_URL = \

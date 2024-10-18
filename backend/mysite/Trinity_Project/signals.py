@@ -1,5 +1,4 @@
 #from datetime import timezone
-from attrs import field
 from django.utils import timezone
 from .models import RFI, RFIChangeLog, User, ProjectChangeLog, Project, Task,TaskChangeLog,Announcements
 from django.db.models.signals import post_save, pre_save, pre_delete,post_delete, post_init
