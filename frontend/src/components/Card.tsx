@@ -6,6 +6,7 @@ import { TaskProps } from "../interfaces/tasks_types"
 import { InvoiceProps } from "../interfaces/invoices_types"
 import { useEffect, useState } from "react"
 import { RouteButton } from "./Buttons"
+import { OpenFolderButton } from "./misc"
 
 /**
  * TaskCard Component
@@ -85,6 +86,7 @@ export function ProjectCard ({project, isNew, onView} : {project: ProjectProps, 
             hoverChildren={<CardHoverProject 
                 edit_project_route={`/projects/update_project/${project.project_id}`} 
                 create_task_route={`/tasks/create_task_from_project/${project.project_id}`} 
+                folder_path={`/projects/${project.project_id}`}
             />}
         >
             <h3>{project.project_name}</h3>
@@ -111,6 +113,7 @@ export function SubmittalCard ({submittal, isNew, onView} : {submittal: Submitta
             isNew={isNewLocal} 
             hoverChildren={<CardHoverSubmittal 
                 edit_submittal_route={`/submittals/update_submittal/${submittal.submittal_id}`} 
+                folder_path={`/projects/${submittal.project}/Submittals/${submittal.submittal_id}`}
             />}
         >
             <h3>{submittal.project_name}</h3>
@@ -137,6 +140,7 @@ export function RFICard ({rfi, isNew, onView} : {rfi: RFIProps, isNew: boolean, 
             isNew={isNewLocal} 
             hoverChildren={<CardHoverRFI 
                 edit_rfi_route={`/rfi/update_rfi/${rfi.RFI_id}`} 
+                folder_path={`/projects/${rfi.project}/RFI/${rfi.RFI_id}`}
             />}
         >
             <h3>{rfi.notes ? rfi.notes : '(No Notes Written)'}</h3>
@@ -151,8 +155,6 @@ export function RFICard ({rfi, isNew, onView} : {rfi: RFIProps, isNew: boolean, 
 
 export function InvoiceCard ({invoice, isNew, onView} : {invoice: InvoiceProps, isNew: boolean, onView: () => void}) {
     const [isNewLocal, setIsNewLocal] = useState(isNew)
-
-    console.log(invoice)
 
     useEffect(() => {
         if (isNewLocal) {
@@ -229,51 +231,57 @@ function CardBase({children, isNew, hoverChildren} : CardBaseProps){
     )
 }
 
+/**
+ * This is the container component for the the CardHover components
+ */
 function CardHoverBase({children} : {children: React.ReactNode}){
     return (
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center gap-4">
             {children}
         </div>
     )
 }
 
-function CardHoverProject({edit_project_route, create_task_route } : {edit_project_route: string, create_task_route: string}){
+function CardHoverProject({edit_project_route, create_task_route, folder_path } : {edit_project_route: string, create_task_route: string, folder_path: string} ){
     return (
-        <div className="flex justify-center items-center gap-4">
+        <>
             <RouteButton text="Edit Project" route={edit_project_route} />
             <RouteButton text="Create Task" route={create_task_route} />
-        </div>
+            <OpenFolderButton folder_path={folder_path} />
+        </>
     )
 }
 
 function CardHoverTask({edit_task_route} : {edit_task_route: string}){
     return (
-        <div className="flex justify-center items-center">
+        <>
             <RouteButton text="Edit Task" route={edit_task_route} />
-        </div>
+        </>
     )
 }
 
-function CardHoverSubmittal({edit_submittal_route} : {edit_submittal_route: string}){
+function CardHoverSubmittal({edit_submittal_route, folder_path} : {edit_submittal_route: string, folder_path: string}){
     return (
-        <div className="flex justify-center items-center">
+        <>
             <RouteButton text="Edit Submittal" route={edit_submittal_route} />
-        </div>
+            <OpenFolderButton folder_path={folder_path} />
+        </>
     )
 }
 
-function CardHoverRFI({edit_rfi_route} : {edit_rfi_route: string}){
+function CardHoverRFI({edit_rfi_route, folder_path} : {edit_rfi_route: string, folder_path: string}){
     return (
-        <div className="flex justify-center items-center">
+        <>
             <RouteButton text="Edit RFI" route={edit_rfi_route} />
-        </div>
+            <OpenFolderButton folder_path={folder_path} />
+        </>
     )
 }
 
 function CardHoverInvoice({edit_invoice_route} : {edit_invoice_route: string}){
     return (
-        <div className="flex justify-center items-center">
+        <>
             <RouteButton text="Edit Invoice" route={edit_invoice_route} />
-        </div>
+        </>
     )
 }

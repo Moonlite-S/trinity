@@ -28,6 +28,14 @@ export function Error_Component({ errorString }: { errorString: string }) {
   )
 }
 
+/**
+ * ## Component for opening a folder in the file explorer
+ * 
+ * Default color is blue
+ * 
+ * @param folder_path - The path to the folder to be opened
+ * @returns A button that opens the folder in the file explorer
+ */
 export function OpenFolderButton({ folder_path }: { folder_path: string }) {
   return (
     <a href={'localexplorer:L:\\' + folder_path}>
