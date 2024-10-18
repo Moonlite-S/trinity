@@ -1,11 +1,11 @@
-import { deleteEmployee, getAllEmployeeData, getEmployeeDataById } from "../api/employee";
-import { Header } from "./misc";
-import { useEffect, useMemo, useState } from "react";
-import DataTable, { Direction, TableColumn } from "react-data-table-component";
-import { EmployeeProps, FilterProps } from "../interfaces/employee_type";
-import { OrangeButton, RouteButton } from "./Buttons";
-import { EmployeeForm } from "./EmployeeForm";
-import { useParams } from "react-router-dom";
+import { deleteEmployee, getAllEmployeeData, getEmployeeDataById } from "../api/employee"
+import { Header } from "./misc"
+import { useEffect, useMemo, useState } from "react"
+import DataTable, { Direction, TableColumn } from "react-data-table-component"
+import { EmployeeProps, FilterProps } from "../interfaces/employee_type"
+import { OrangeButton, RouteButton } from "./Buttons"
+import { EmployeeForm } from "./EmployeeForm"
+import { useParams } from "react-router-dom"
 
 /**
  *  ### [Route for ('/create_employee')]
@@ -27,25 +27,25 @@ export function CreateEmployee() {
 }
 
 export function UpdateEmployee() {
-    const { id } = useParams();
+    const { id } = useParams()
     if (!id) {
         console.error("No employee selected")
         return <div>No employee selected</div>
     }
-    const [employeeData, setEmployeeData] = useState<EmployeeProps>();
+    const [employeeData, setEmployeeData] = useState<EmployeeProps>()
 
     useEffect(() => {
         const fetchEmployeeData = async () => {
             try {
-                const response = await getEmployeeDataById(id);
-                setEmployeeData({...response, id: id});
+                const response = await getEmployeeDataById(id)
+                setEmployeeData({...response, id: id})
             } catch (error) {
-                console.error("Error fetching employee data:", error);
+                console.error("Error fetching employee data:", error)
             }
-        };
+        }
 
-        fetchEmployeeData();
-    }, [id]);
+        fetchEmployeeData()
+    }, [id])
 
     console.log("Employee Data: ", employeeData)
 
@@ -79,8 +79,8 @@ export function EmployeeList() {
                 setEmployeeList(response as EmployeeProps[])
                 setListLoaded(true)
             } catch (error) {
-                console.error("Error fetching employees:", error);
-                throw error; // Re-throw the error so the caller can handle it if needed
+                console.error("Error fetching employees:", error)
+                throw error // Re-throw the error so the caller can handle it if needed
             }}
 
         getEmployees()
@@ -138,16 +138,16 @@ const ExpandableRowComponent = ({ data }: { data: EmployeeProps }) => {
     const deleteEmployeeFunc = async (id: string) => {
         if (confirm("Are you sure you want to delete this employee?") && confirm("Are you really sure?")) {
         try {
-            const response = await deleteEmployee(id);
+            const response = await deleteEmployee(id)
             if (response === 204) {
-                alert("Employee deleted successfully");
-                window.location.reload();
+                alert("Employee deleted successfully")
+                window.location.reload()
             } else {
                 throw new Error("Error deleting employee")
             }
         } catch (error) {
-            console.error("Error deleting employee:", error);
-            throw error;
+            console.error("Error deleting employee:", error)
+            throw error
             }
         }
     }
@@ -174,7 +174,7 @@ const ExpandableRowComponent = ({ data }: { data: EmployeeProps }) => {
  */
 function EmployeeUpdateTable({ employeeList, employeeLoaded }: { employeeList: EmployeeProps[], employeeLoaded: boolean }) {
     const [filterText, setFilterText] = useState<string>('')
-    const [resetPaginationToggle, setResetPaginationToggle] = useState<boolean>(false);
+    const [resetPaginationToggle, setResetPaginationToggle] = useState<boolean>(false)
 
     const filteredProjects: EmployeeProps[] = employeeList.filter(item => item.name.toLowerCase().includes(filterText.toLowerCase()))
 
@@ -191,7 +191,7 @@ function EmployeeUpdateTable({ employeeList, employeeLoaded }: { employeeList: E
     const filterSearchBox = useMemo(() => {
         const handleClear = () => {
             if (filterText) {
-                setResetPaginationToggle(!resetPaginationToggle);
+                setResetPaginationToggle(!resetPaginationToggle)
                 setFilterText('')
             }
         }

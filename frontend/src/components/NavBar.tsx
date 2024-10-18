@@ -1,6 +1,6 @@
-import { useNavigate } from "react-router-dom";
-import { logout } from "../api/auth";
-import { Button_Card } from "./Dashboard";
+import { useNavigate } from "react-router-dom"
+import { logout } from "../api/auth"
+import { Button_Card } from "./Dashboard"
 
 export function MainNavBar(
     {role}: {role: string}

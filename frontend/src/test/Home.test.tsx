@@ -18,7 +18,7 @@ describe('Home Page', () => {
     describe('Contact Form', () => {
         beforeEach(() => {
             // Mock window.open before each test
-            window.open = vi.fn();
+            window.open = vi.fn()
         })
 
         it('should display the Contact Form', () => {

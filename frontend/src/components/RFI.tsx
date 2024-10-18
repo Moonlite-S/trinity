@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
-import { TableColumn } from "react-data-table-component";
-import { GenericTable, Header, OpenFolderButton } from "./misc";
-import { RFIForm } from "./RFIForm";
-import { RFIProps } from "../interfaces/rfi_types";
-import { deleteRFI, getRFI, getRFIList } from "../api/rfi";
-import { useNavigate, useParams } from "react-router-dom";
-import { OrangeButton, RouteButton } from "./Buttons";
+import { useState, useEffect } from "react"
+import { TableColumn } from "react-data-table-component"
+import { GenericTable, Header, OpenFolderButton } from "./misc"
+import { RFIForm } from "./RFIForm"
+import { RFIProps } from "../interfaces/rfi_types"
+import { deleteRFI, getRFI, getRFIList } from "../api/rfi"
+import { useNavigate, useParams } from "react-router-dom"
+import { OrangeButton, RouteButton } from "./Buttons"
 
 export function CreateRFI() {
     return (
@@ -37,7 +37,7 @@ export function EditRFI() {
                 setCurrentRFIData({...response, RFI_id: id})
                 setLoading(false)
             } catch (error) {
-                console.error("Error fetching RFI:", error);
+                console.error("Error fetching RFI:", error)
                 navigate("/*")
             }
         }
@@ -72,7 +72,7 @@ export default function ViewRFI() {
                 setRfiList(data)
                 setRfiLoaded(true)
             } catch (error) {
-                console.error("Error fetching RFIs:", error);
+                console.error("Error fetching RFIs:", error)
             }
         }
 
@@ -126,7 +126,7 @@ function ExpandableRowComponent({ data }: { data: RFIProps }) {
                 await deleteRFI(data)
                 navigate("/rfi")
             } catch (error) {
-                console.error("Error deleting RFI:", error);
+                console.error("Error deleting RFI:", error)
             }
         }
     }

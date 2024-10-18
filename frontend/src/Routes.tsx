@@ -2,11 +2,11 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import { MainMenu } from './components/MainMenu'
 import Home from './components/Home'
 import { CreateProject, UpdateProject, UpdateProjectList, ProjectStatusReport } from './components/Project'
-import { CreateTask, CreateTaskFromProject, TaskList } from './components/Tasks';
+import { CreateTask, CreateTaskFromProject, TaskList } from './components/Tasks'
 import { CreateEmployee, EmployeeList, UpdateEmployee } from './components/Employee'
 import { TemplateList } from './components/Template'
 import { ErrorPage } from './components/Error'
-import { MonthlyCalendar, WeeklyCalendar } from './components/Calendar';
+import { MonthlyCalendar, WeeklyCalendar } from './components/Calendar'
 import { SetAnnouncement } from './components/Announcement'
 import CreateSubmittal, { EditSubmittal, SubmittalList } from './components/Submittal'
 import { EditTask } from './components/Tasks'

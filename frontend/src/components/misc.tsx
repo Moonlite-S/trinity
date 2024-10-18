@@ -1,12 +1,12 @@
 // For miscelaneous components
-import {useNavigate } from 'react-router-dom';
+import {useNavigate } from 'react-router-dom'
 import logo from '/trinity_logo.png'
-import { useMemo, useState } from 'react';
-import DataTable, { Direction, TableColumn } from 'react-data-table-component';
+import { useMemo, useState } from 'react'
+import DataTable, { Direction, TableColumn } from 'react-data-table-component'
 
 // Header Component for all pages
 export function Header() {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   return(
     <header className='w-full h-32 relative'>
@@ -89,15 +89,15 @@ export function GenericTable<T>({ dataList, isDataLoaded, columns, FilterCompone
 
   // Filter the data based on the filterField
   const filteredData: T[] = dataList.filter((item: T) => {
-    const fieldValue = item[filterField as keyof T];
-    return typeof fieldValue === 'string' ? fieldValue.toLowerCase().includes(filterText.toLowerCase()) : true;
+    const fieldValue = item[filterField as keyof T]
+    return typeof fieldValue === 'string' ? fieldValue.toLowerCase().includes(filterText.toLowerCase()) : true
   })
 
   // For the filter function
   const filterSearchBox = useMemo(() => {
       const handleClear = () => {
           if (filterText) {
-              setResetPaginationToggle(!resetPaginationToggle);
+              setResetPaginationToggle(!resetPaginationToggle)
               setFilterText('')
           }
       }

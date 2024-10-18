@@ -1,13 +1,13 @@
-import { BottomFormButton, SelectionComponent } from "./Buttons";
-import { SelectionButtonProps } from "../interfaces/button_types";
-import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { getDataForRFICreation } from "../api/rfi";
-import { RFIFormBaseProps, RFIProps } from "../interfaces/rfi_types";
-import { useRFIFormHandler } from "../hooks/rfiFormHandler";
-import { Error_Component } from "./misc";
-import { GenericForm, GenericInput, GenericSelect, GenericTextArea } from "./GenericForm";
-import { useAuth } from "../App";
+import { BottomFormButton, SelectionComponent } from "./Buttons"
+import { SelectionButtonProps } from "../interfaces/button_types"
+import { useState, useEffect } from "react"
+import { useNavigate, useParams } from "react-router-dom"
+import { getDataForRFICreation } from "../api/rfi"
+import { RFIFormBaseProps, RFIProps } from "../interfaces/rfi_types"
+import { useRFIFormHandler } from "../hooks/rfiFormHandler"
+import { Error_Component } from "./misc"
+import { GenericForm, GenericInput, GenericSelect, GenericTextArea } from "./GenericForm"
+import { useAuth } from "../App"
 
 export function RFIForm({RFIProps, method}: {RFIProps?: RFIProps, method: "POST" | "PUT"}) {
     const { user } = useAuth()

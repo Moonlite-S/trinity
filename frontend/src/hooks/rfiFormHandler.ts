@@ -39,8 +39,8 @@ export function useRFIFormHandler (
     }
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        console.log("Form submitted");
+        e.preventDefault()
+        console.log("Form submitted")
 
         const formData = new FormData(e.target as HTMLFormElement)
         const formDataObj = Object.fromEntries(formData.entries())

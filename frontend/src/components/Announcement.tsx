@@ -1,8 +1,8 @@
-import { useNavigate } from "react-router-dom";
-import { postAnnouncement } from "../api/announcements";
-import { useAuth } from "../App";
-import { Header } from "./misc";
-import { FormEvent } from "react";
+import { useNavigate } from "react-router-dom"
+import { postAnnouncement } from "../api/announcements"
+import { useAuth } from "../App"
+import { Header } from "./misc"
+import { FormEvent } from "react"
 
 /**
  * ### Route for ('/announcements/create')
@@ -13,16 +13,16 @@ import { FormEvent } from "react";
  * TODO: Need to automatically delete after a certain amount of time
  */
 export function SetAnnouncement() {
-    const { user } = useAuth();
-    const navigate = useNavigate();
+    const { user } = useAuth()
+    const navigate = useNavigate()
 
     const handleSubmit = async(event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const formData = new FormData(event.currentTarget);
-        const title = formData.get("title");
-        const content = formData.get("content");
-        const author = user?.email;
-        const date = new Date().toLocaleDateString("en-CA");
+        event.preventDefault()
+        const formData = new FormData(event.currentTarget)
+        const title = formData.get("title")
+        const content = formData.get("content")
+        const author = user?.email
+        const date = new Date().toLocaleDateString("en-CA")
 
         const data = {
             title: title as string,
@@ -31,27 +31,27 @@ export function SetAnnouncement() {
             date_created: date
         }
 
-        console.log(data);
+        console.log(data)
 
-        const response = await postAnnouncement(data);
+        const response = await postAnnouncement(data)
         console.log(response)
         
         switch (response) {
             case 400:
-                alert("Error: Invalid input");
-                break;
+                alert("Error: Invalid input")
+                break
             case 403:
-                alert("Error: Forbidden");
-                break;
+                alert("Error: Forbidden")
+                break
             case 500:
-                alert("Error: Server error");
-                break;
+                alert("Error: Server error")
+                break
             case 201:
-                alert("Announcement created successfully!");
-                navigate("/main_menu");
-                break;
+                alert("Announcement created successfully!")
+                navigate("/main_menu")
+                break
         }
-    };
+    }
     return (
         <>
             <Header />

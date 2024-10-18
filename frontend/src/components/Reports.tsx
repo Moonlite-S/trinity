@@ -1,4 +1,4 @@
-import { Header } from "./misc";
+import { Header } from "./misc"
 
 export default function Reports() {
     return (

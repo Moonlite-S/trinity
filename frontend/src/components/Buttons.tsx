@@ -1,11 +1,11 @@
-import CreatableSelect from "react-select/creatable";
-import Select from "react-select";
-import { Link, useNavigate } from "react-router-dom";
-import { SelectionComponentProps } from "../interfaces/button_types";
+import CreatableSelect from "react-select/creatable"
+import Select from "react-select"
+import { Link, useNavigate } from "react-router-dom"
+import { SelectionComponentProps } from "../interfaces/button_types"
 
 /** General Orange button */
 export function RouteButton({route, text}: {route: string, text: string}) {
-    const css = 'bg-orange-300 rounded p-4 my-2 hover:bg-orange-400 transition';
+    const css = 'bg-orange-300 rounded p-4 my-2 hover:bg-orange-400 transition'
   
     return(
       <Link className={css} to={route}>{text}</Link>
@@ -14,7 +14,7 @@ export function RouteButton({route, text}: {route: string, text: string}) {
   
 /** Goes back a page in the browser */
 export function BackButton() {
-    const navigate = useNavigate();
+    const navigate = useNavigate()
     const css = 'bg-orange-300 rounded p-4 my-2 hover:bg-orange-400 transition'
 
     return(
@@ -52,12 +52,12 @@ export function BottomFormButton({ button_text, children }: { button_text: strin
         {children}
 
     </div>
-    );
+    )
 }
 
 export function CreateableSelectionComponent({Value = '', multiple, options, name, onChange, label}: SelectionComponentProps){
     if (!options) {
-        options = [{value: '', label: ''}];
+        options = [{value: '', label: ''}]
     }
         
     const defaultOption = options.find((option) => option.value === Value)
@@ -111,7 +111,7 @@ export function CreateableSelectionComponent({Value = '', multiple, options, nam
 
 export function SelectionComponent({Value: defaultValue = '', multiple, options, name, onChange, label, readonly}: SelectionComponentProps){
     if (!options) {
-        options = [{value: '', label: ''}];
+        options = [{value: '', label: ''}]
         console.error("No options found for", name)
         return <div>No options found for {name}</div>
     }

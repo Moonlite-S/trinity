@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
-import { deleteSubmittal, getSubmittalById, getSubmittals} from "../api/submittal";
-import { OrangeButton, RouteButton } from "./Buttons";
-import { GenericTable, Header, OpenFolderButton } from "./misc";
-import { TableColumn } from "react-data-table-component";
-import { SubmittalProps } from "../interfaces/submittal_types";
-import { useParams } from "react-router-dom";
-import { SubmittalForm } from "./SubmittalForm";
-import { useAuth } from "../App";
-import { EmployeeProps } from "../interfaces/employee_type";
+import { useEffect, useState } from "react"
+import { deleteSubmittal, getSubmittalById, getSubmittals} from "../api/submittal"
+import { OrangeButton, RouteButton } from "./Buttons"
+import { GenericTable, Header, OpenFolderButton } from "./misc"
+import { TableColumn } from "react-data-table-component"
+import { SubmittalProps } from "../interfaces/submittal_types"
+import { useParams } from "react-router-dom"
+import { SubmittalForm } from "./SubmittalForm"
+import { useAuth } from "../App"
+import { EmployeeProps } from "../interfaces/employee_type"
 
 /**
  * ### Route for ('/submittals/create_submittal')   
@@ -140,18 +140,18 @@ function ExpandableRowComponent({ data, user }: { data: SubmittalProps, user: Em
         if (confirm("Are you sure you want to delete this submittal?")) {
             try {
                 if (!data.submittal_id) {
-                    alert("Submittal ID is undefined");
-                    return;
+                    alert("Submittal ID is undefined")
+                    return
                 }
-                const response = await deleteSubmittal(data.submittal_id);
+                const response = await deleteSubmittal(data.submittal_id)
                 if (response === 204) {
-                    alert("Submittal deleted successfully");
-                    window.location.reload();
+                    alert("Submittal deleted successfully")
+                    window.location.reload()
                 } else {
-                    alert("Error deleting submittal: " + response);
+                    alert("Error deleting submittal: " + response)
                 }
             } catch (error) {
-                alert("Error deleting submittal: " + error);
+                alert("Error deleting submittal: " + error)
             }
         }
     }

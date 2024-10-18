@@ -1,5 +1,5 @@
-import AxiosInstance from "../components/Axios";
-import { ProposalCreationProps, ProposalProps } from "../interfaces/proposal_types";
+import AxiosInstance from "../components/Axios"
+import { ProposalCreationProps, ProposalProps } from "../interfaces/proposal_types"
 
 export async function getProposalList(): Promise<ProposalProps[]>{
     try{

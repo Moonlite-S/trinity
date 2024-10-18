@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react"
 import { ProjectFormBaseProps, ProjectProps } from "../interfaces/project_types"
-import { getDataForProjectCreation } from "../api/projects";
-import { CreateableSelectionComponent, SelectionComponent, BottomFormButton, OrangeButton } from "./Buttons";
-import { Error_Component } from "./misc";
-import { useAuth } from "../App";
-import { useNavigate } from "react-router-dom";
-import { useProjectFormHandler } from "../hooks/projectFormHandler";
-import { GenericCheckbox, GenericForm, GenericInput, GenericSelect, GenericSlider, GenericTextArea } from "./GenericForm";
-import { InvoiceProps } from "../interfaces/invoices_types";
-import { getInvoiceByProjectId } from "../api/invoices";
+import { getDataForProjectCreation } from "../api/projects"
+import { CreateableSelectionComponent, SelectionComponent, BottomFormButton, OrangeButton } from "./Buttons"
+import { Error_Component } from "./misc"
+import { useAuth } from "../App"
+import { useNavigate } from "react-router-dom"
+import { useProjectFormHandler } from "../hooks/projectFormHandler"
+import { GenericCheckbox, GenericForm, GenericInput, GenericSelect, GenericSlider, GenericTextArea } from "./GenericForm"
+import { InvoiceProps } from "../interfaces/invoices_types"
+import { getInvoiceByProjectId } from "../api/invoices"
 
 const templates = [
     'default'

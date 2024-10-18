@@ -1,6 +1,6 @@
-import { ProjectCreationProps, ProjectProps } from "../interfaces/project_types";
-import AxiosInstance from "../components/Axios";
-import { AxiosError } from "axios";
+import { ProjectCreationProps, ProjectProps } from "../interfaces/project_types"
+import AxiosInstance from "../components/Axios"
+import { AxiosError } from "axios"
 
 /**
  * Fetches a list of projects

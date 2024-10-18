@@ -76,11 +76,11 @@ export function TaskForm({task_data, method}: {task_data?: TaskProps, method: "P
             }
 
           } catch (error) {
-            console.error(error);
+            console.error(error)
           }
         }
     
-        fetchData();
+        fetchData()
       }, [])
   
     return (
@@ -98,7 +98,7 @@ export function TaskForm({task_data, method}: {task_data?: TaskProps, method: "P
         method={method}
       />
     </>
-    );
+    )
 }
 
 function TaskFormBase({user, projects, employees, currentTaskData, onProjectSelectionChange, onAssignedToChange, onSliderChange, onSubmit, method}: TaskFormBaseProps) {

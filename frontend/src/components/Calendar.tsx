@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import { Header } from "./misc";
-import { format, addMonths, subMonths, getDaysInMonth, subWeeks, addWeeks, addDays, endOfWeek, startOfWeek } from 'date-fns';
-import { ProjectProps } from '../interfaces/project_types';
-import { getProjectByDate } from '../api/projects';
-import { Link, useNavigate } from 'react-router-dom';
-import { CalendarProps, DayButtonProps } from '../interfaces/calendar_type';
-import { RouteButton } from './Buttons';
+import { useEffect, useState } from 'react'
+import { Header } from "./misc"
+import { format, addMonths, subMonths, getDaysInMonth, subWeeks, addWeeks, addDays, endOfWeek, startOfWeek } from 'date-fns'
+import { ProjectProps } from '../interfaces/project_types'
+import { getProjectByDate } from '../api/projects'
+import { Link, useNavigate } from 'react-router-dom'
+import { CalendarProps, DayButtonProps } from '../interfaces/calendar_type'
+import { RouteButton } from './Buttons'
 
 /**
  * ### [Route for ('/monthly_calendar')]
@@ -17,14 +17,14 @@ import { RouteButton } from './Buttons';
  * - Show links to each project due
  */
 export function MonthlyCalendar() {
-    const [currentMonth, setCurrentMonth] = useState(new Date());
+    const [currentMonth, setCurrentMonth] = useState(new Date())
     
-    const [projectsDueThisMonth, setProjectsDueThisMonth] = useState<CalendarProps[]>([]);
-    const daysInMonth = getDaysInMonth(currentMonth);
+    const [projectsDueThisMonth, setProjectsDueThisMonth] = useState<CalendarProps[]>([])
+    const daysInMonth = getDaysInMonth(currentMonth)
 
     //*** Handles month navigation
     const handlePrevMonth = () => {
-        setCurrentMonth(subMonths(currentMonth, 1));
+        setCurrentMonth(subMonths(currentMonth, 1))
     }
 
     const handleNextMonth = () => {
@@ -314,7 +314,7 @@ export function WeeklyCalendar() {
 
             <div className='grid grid-cols-7 gap-2 text-center'>
                 {Array.from({ length: 7 }, (_, index) => {
-                    const currentDate = addDays(startOfWeek(currentWeek), index);
+                    const currentDate = addDays(startOfWeek(currentWeek), index)
                     return (
                         <WeekDayCard 
                             key={index}
@@ -322,7 +322,7 @@ export function WeeklyCalendar() {
                             projects={projectsDueThisWeek[index]?.projects}
                             alternate_color={index % 2 === 0}
                         />
-                    );
+                    )
                 })}
             </div>
         </div>
@@ -335,9 +335,9 @@ export function WeeklyCalendar() {
 }
 
 type WeekDayCardProps = {
-    date: Date;
-    projects?: ProjectProps[];
-    alternate_color: boolean;
+    date: Date
+    projects?: ProjectProps[]
+    alternate_color: boolean
 }
 
 function WeekDayCard({ date, projects, alternate_color }: WeekDayCardProps) {
@@ -353,7 +353,7 @@ function WeekDayCard({ date, projects, alternate_color }: WeekDayCardProps) {
                 )}
             </div>
         </div>
-    );
+    )
 }
 
 /**

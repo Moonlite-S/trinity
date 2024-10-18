@@ -87,12 +87,12 @@ type GenericSliderProps = {
 
 export function GenericSlider({label, value, name, className, onChange}: GenericSliderProps) {
     const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        onChange(Number(e.target.value));
+        onChange(Number(e.target.value))
     }
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValue = Math.min(100, Math.max(0, Number(e.target.value)));
-        onChange(newValue);
+        const newValue = Math.min(100, Math.max(0, Number(e.target.value)))
+        onChange(newValue)
     }
 
     return (

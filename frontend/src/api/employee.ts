@@ -1,6 +1,6 @@
-import { AxiosError } from "axios";
-import AxiosInstance from "../components/Axios";
-import { EmployeeNameEmail, EmployeeCreationProps, EmployeeProps } from "../interfaces/employee_type";
+import { AxiosError } from "axios"
+import AxiosInstance from "../components/Axios"
+import { EmployeeNameEmail, EmployeeCreationProps, EmployeeProps } from "../interfaces/employee_type"
 
 /**
  * Employee Creation API
@@ -12,7 +12,7 @@ import { EmployeeNameEmail, EmployeeCreationProps, EmployeeProps } from "../inte
  */
 export async function createEmployee(user : EmployeeCreationProps): Promise<number> {
     try {
-        const response = await AxiosInstance.post('auth/register/', user);
+        const response = await AxiosInstance.post('auth/register/', user)
 
         return response.status
 
@@ -24,7 +24,7 @@ export async function createEmployee(user : EmployeeCreationProps): Promise<numb
 
 export async function updateEmployee(user : EmployeeProps): Promise<number> {
     try {
-        const response = await AxiosInstance.put('api/user/update_user/' + user.id, user);
+        const response = await AxiosInstance.put('api/user/update_user/' + user.id, user)
 
         if (response.status === 200) {
             return response.status
@@ -39,7 +39,7 @@ export async function updateEmployee(user : EmployeeProps): Promise<number> {
 
 export async function deleteEmployee(id: string): Promise<number> {
     try {
-        const response = await AxiosInstance.delete('api/user/delete_user/' + id);
+        const response = await AxiosInstance.delete('api/user/delete_user/' + id)
 
         if (response.status === 204) {
             return response.status
@@ -120,7 +120,7 @@ export async function getAllEmployeeNameAndEmail(): Promise<EmployeeNameEmail[]>
     try {
         const response = await AxiosInstance.get(
           "api/user/all_users_name_and_email"
-        );
+        )
 
         console.log("Axios Response", response)
 

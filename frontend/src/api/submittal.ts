@@ -1,6 +1,6 @@
-import { AxiosError } from "axios";
-import AxiosInstance from "../components/Axios";
-import { SubmittalCreationProps, SubmittalProps } from "../interfaces/submittal_types";
+import { AxiosError } from "axios"
+import AxiosInstance from "../components/Axios"
+import { SubmittalCreationProps, SubmittalProps } from "../interfaces/submittal_types"
 
 /**
  * @returns a list of projects and users for the submittal creation page

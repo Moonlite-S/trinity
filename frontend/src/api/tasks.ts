@@ -1,6 +1,6 @@
-import { AxiosError } from "axios";
-import AxiosInstance from "../components/Axios";
-import { TaskCreationProps, TaskProps } from "../interfaces/tasks_types";
+import { AxiosError } from "axios"
+import AxiosInstance from "../components/Axios"
+import { TaskCreationProps, TaskProps } from "../interfaces/tasks_types"
 
 export async function postTask(task: TaskProps): Promise<number> {
     try {

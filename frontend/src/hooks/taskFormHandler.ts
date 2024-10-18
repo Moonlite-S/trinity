@@ -1,9 +1,9 @@
-import { FormEvent } from "react";
-import { filterTasksByProject, postTask, updateTask } from "../api/tasks";
-import { TaskProps } from "../interfaces/tasks_types";
-import { NavigateFunction } from "react-router-dom";
-import { SelectionButtonProps } from "../interfaces/button_types";
-import { MethodHandler } from "../components/misc";
+import { FormEvent } from "react"
+import { filterTasksByProject, postTask, updateTask } from "../api/tasks"
+import { TaskProps } from "../interfaces/tasks_types"
+import { NavigateFunction } from "react-router-dom"
+import { SelectionButtonProps } from "../interfaces/button_types"
+import { MethodHandler } from "../components/misc"
 
 export function useTaskFormHandler(
     setCurrentTaskData: React.Dispatch<React.SetStateAction<TaskProps>>,
@@ -15,7 +15,7 @@ export function useTaskFormHandler(
 ) {
       function onAssignedToChange(event: unknown) {
         if (event && typeof event === 'object' && 'value' in event && 'label' in event) {
-          setCurrentTaskData({...currentTaskData, assigned_to: event.label as string});
+          setCurrentTaskData({...currentTaskData, assigned_to: event.label as string})
 
           console.log("assigned_to: ", event.label)
         } else {
@@ -35,10 +35,10 @@ export function useTaskFormHandler(
     
           setCurrentTaskData(prevData => ({...prevData, project: newProjectName as string, project_id: project_id}))
     
-          const tasks = await filterTasksByProject(project_id);
+          const tasks = await filterTasksByProject(project_id)
     
           // Formats the task id to be: "T-<project id>-<task length + 1>"
-          const task_number = String(tasks.length + 1).padStart(3, '0');
+          const task_number = String(tasks.length + 1).padStart(3, '0')
           setCurrentTaskData(prevData => ({...prevData, task_id: "T-" + project_id + "-" + task_number}))
         } else {
           console.error("Invalid event object")
@@ -54,10 +54,10 @@ export function useTaskFormHandler(
       }
     
       const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+        e.preventDefault()
         setErrorString("")
         
-        const form_data = new FormData(e.currentTarget);
+        const form_data = new FormData(e.currentTarget)
 
         console.log("form_data: ", form_data)
 
@@ -80,18 +80,18 @@ export function useTaskFormHandler(
         console.log("Task data to send: ", data_to_send)
     
         try {
-            const method_handler = MethodHandler(method, postTask, updateTask);
+            const method_handler = MethodHandler(method, postTask, updateTask)
 
             if (method_handler) {
-                const result_code = await method_handler(data_to_send as TaskProps);
+                const result_code = await method_handler(data_to_send as TaskProps)
 
                 switch (result_code) {
                   case 201:
-                      alert("Task created successfully!");
+                      alert("Task created successfully!")
                       navigate("/main_menu")
                       break
                   case 200:
-                      alert("Task updated successfully!");
+                      alert("Task updated successfully!")
                       navigate("/main_menu")
                       break
                   case 400:

@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
-import { GenericTable, Header, OpenFolderButton } from "./misc";
-import { getProjectList, getProject, deleteProject } from "../api/projects";
-import { useNavigate, useParams } from "react-router-dom";
-import { TableColumn } from "react-data-table-component";
-import { ProjectFilterProps, ProjectProps } from "../interfaces/project_types";
-import { ProjectForm } from "./ProjectForm";
-import { OrangeButton, RouteButton } from "./Buttons";
-import { filterTasksByProject } from "../api/tasks";
-import { SubmittalProps } from "../interfaces/submittal_types";
-import { AxiosError } from "axios";
-import { EmployeeProps } from "../interfaces/employee_type";
-import { useAuth } from "../App";
+import { useEffect, useState } from "react"
+import { GenericTable, Header, OpenFolderButton } from "./misc"
+import { getProjectList, getProject, deleteProject } from "../api/projects"
+import { useNavigate, useParams } from "react-router-dom"
+import { TableColumn } from "react-data-table-component"
+import { ProjectFilterProps, ProjectProps } from "../interfaces/project_types"
+import { ProjectForm } from "./ProjectForm"
+import { OrangeButton, RouteButton } from "./Buttons"
+import { filterTasksByProject } from "../api/tasks"
+import { SubmittalProps } from "../interfaces/submittal_types"
+import { AxiosError } from "axios"
+import { EmployeeProps } from "../interfaces/employee_type"
+import { useAuth } from "../App"
 
 /**
  * ### [Route for ('/create_project')]
@@ -66,8 +66,8 @@ export function UpdateProjectList() {
                 setProjectLoaded(true)
             }
            catch (error) {
-               console.error("Error fetching projects:", error);
-               throw error; // Re-throw the error so the caller can handle it if needed
+               console.error("Error fetching projects:", error)
+               throw error // Re-throw the error so the caller can handle it if needed
             }
         }
 
@@ -126,7 +126,7 @@ export function UpdateProject() {
 
                 setLoading(false)
             } catch (error) {
-                console.error("Error fetching project:", error);
+                console.error("Error fetching project:", error)
                 navigate("/*")
             }
         }
@@ -169,7 +169,7 @@ export function ProjectStatusReport() {
                 throw new Error("Error fetching project list")
             }
 
-            const unique_managers = [...new Set(response.map(project => project.manager.name))];
+            const unique_managers = [...new Set(response.map(project => project.manager.name))]
 
             setManagers(unique_managers)
             setProject(response)
@@ -297,19 +297,19 @@ const ExpandableRowComponent = ({ data, user }: { data: ProjectProps, user: Empl
                 const counts = {
                     total: 0,
                     completed: 0
-                };
+                }
                 
                 response.forEach(task => {
-                    counts.total++;
+                    counts.total++
                     if (task.status === "COMPLETED") {
-                        counts.completed++;
+                        counts.completed++
                     }
-                });
+                })
                 
-                setTaskCounts(counts);
-            };
+                setTaskCounts(counts)
+            }
             
-            calculateTaskCounts();
+            calculateTaskCounts()
         }
         
         if (data.submittals) {
@@ -323,19 +323,19 @@ const ExpandableRowComponent = ({ data, user }: { data: ProjectProps, user: Empl
                     PLUMBING: { total: 0, completed: 0 },
                     FIRE_PROTECTION: { total: 0, completed: 0 },
                     OTHER: { total: 0, completed: 0 },
-            };
+            }
             
             submittals.forEach(submittal => {
                 counts[submittal.type].total++
                 if (submittal.status === "COMPLETED") {
-                    counts[submittal.type].completed++;
+                    counts[submittal.type].completed++
                 }
             })
             
-            setSubmittalCounts(counts);
+            setSubmittalCounts(counts)
         }
 
-        calculateSubmittalCounts();
+        calculateSubmittalCounts()
         }
         
         get_tasks()
@@ -345,15 +345,15 @@ const ExpandableRowComponent = ({ data, user }: { data: ProjectProps, user: Empl
         if (confirm("Are you sure you want to delete this project?") && confirm("Are you really sure?")) {
             try {
                 if (!data.project_id) {
-                    throw new Error("Project ID is undefined");
+                    throw new Error("Project ID is undefined")
                 }
 
-                const response = await deleteProject(data.project_id);
+                const response = await deleteProject(data.project_id)
                 if (response === 204) {
-                    alert("Project deleted successfully");
+                    alert("Project deleted successfully")
                     window.location.href = "/projects/"
                 } else {
-                    alert("Error deleting project:" + response);
+                    alert("Error deleting project:" + response)
                 }
             } catch (error: unknown) {
                 if (error instanceof AxiosError) {
@@ -365,15 +365,15 @@ const ExpandableRowComponent = ({ data, user }: { data: ProjectProps, user: Empl
                         return 403
                     }
                 }
-                alert("Error deleting project: Error" + error);
+                alert("Error deleting project: Error" + error)
             }
         }
-    };
+    }
     
 
-    const totalSubmittals = Object.values(submittalCounts).reduce((sum, { total }) => sum + total, 0);
-    const totalCompletedSubmittals = Object.values(submittalCounts).reduce((sum, { completed }) => sum + completed, 0);
-    const totalProgress = totalSubmittals > 0 ? (totalCompletedSubmittals / totalSubmittals) * 100 : 0;
+    const totalSubmittals = Object.values(submittalCounts).reduce((sum, { total }) => sum + total, 0)
+    const totalCompletedSubmittals = Object.values(submittalCounts).reduce((sum, { completed }) => sum + completed, 0)
+    const totalProgress = totalSubmittals > 0 ? (totalCompletedSubmittals / totalSubmittals) * 100 : 0
 
     console.log("Task Counts: ", taskCounts)
 

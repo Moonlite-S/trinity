@@ -15,14 +15,14 @@ export default function App() {
 } 
 
 export interface AuthContextType {
-  auth: boolean;
-  user: EmployeeProps | null;
-  loading: boolean;
-  setAuth: (auth: boolean) => void;
-  setUser: (user: EmployeeProps | null) => void;
+  auth: boolean
+  user: EmployeeProps | null
+  loading: boolean
+  setAuth: (auth: boolean) => void
+  setUser: (user: EmployeeProps | null) => void
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 /**
  * Get the current auth context
@@ -32,12 +32,12 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
  * @returns the current auth context
  */
 export const useAuth = () => {
-  const context = useContext(AuthContext);
+  const context = useContext(AuthContext)
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('useAuth must be used within an AuthProvider')
   }
-  return context;
-};
+  return context
+}
 
 /**
  * Bridge Component for login verification
@@ -69,7 +69,7 @@ export function Verification() {
           setUser(user)
           isAuth(true)
         } catch (error) {
-          console.error("Error checking user:", error);
+          console.error("Error checking user:", error)
           isAuth(false)
           setUser(null)
         } finally {
@@ -80,7 +80,7 @@ export function Verification() {
       console.log("Checking..")
 
       checkForValidation()
-    }, [location]);
+    }, [location])
     
     console.log("User: ", user)
     // Change this to a custom loading screen

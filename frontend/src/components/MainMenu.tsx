@@ -1,9 +1,9 @@
-import { Header } from "./misc";
-import { useAuth } from "../App";
-import { useState, useEffect } from "react";
-import { getAnnouncements } from "../api/announcements";
-import { AnnouncementProps } from "../interfaces/announcement_types";
-import { BaseDashboardLayout } from "./Dashboard";
+import { Header } from "./misc"
+import { useAuth } from "../App"
+import { useState, useEffect } from "react"
+import { getAnnouncements } from "../api/announcements"
+import { AnnouncementProps } from "../interfaces/announcement_types"
+import { BaseDashboardLayout } from "./Dashboard"
 
 /**
  * ### [Route for ('/main_menu')]

@@ -1,10 +1,10 @@
-import { EmployeeCreationProps, EmployeeProps, Roles } from "../interfaces/employee_type";
-import { BottomFormButton } from "./Buttons";
-import { Error_Component, MethodHandler } from "./misc";
-import { GenericForm, GenericInput, GenericSelect } from "./GenericForm";
-import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { createEmployee, updateEmployee } from "../api/employee";
+import { EmployeeCreationProps, EmployeeProps, Roles } from "../interfaces/employee_type"
+import { BottomFormButton } from "./Buttons"
+import { Error_Component, MethodHandler } from "./misc"
+import { GenericForm, GenericInput, GenericSelect } from "./GenericForm"
+import { useRef, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { createEmployee, updateEmployee } from "../api/employee"
 
 export function EmployeeForm({employee, method}: {employee?: EmployeeProps, method: "POST" | "PUT"}) {
     const email_regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/

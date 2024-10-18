@@ -1,11 +1,11 @@
-import { useEffect } from "react";
-import { Header } from "./misc";
+import { useEffect } from "react"
+import { Header } from "./misc"
 
 export function Client() {
 
     useEffect(() => {
         console.log("Hello World!")
-    }, []);
+    }, [])
 
     return (
         <>

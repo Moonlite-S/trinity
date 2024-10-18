@@ -1,7 +1,7 @@
 // Utility functions for testing
 
-import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
-import { AuthContext, AuthContextType } from "../App";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom"
+import { AuthContext, AuthContextType } from "../App"
 
 // Display the current location
 // Since MemoryRouter is being used for testing,
@@ -9,8 +9,8 @@ import { AuthContext, AuthContextType } from "../App";
 // Instead, we use this.
 export const LocationDisplay = () => {
     const location = useLocation()
-    return <div data-testid="location-display">{location.pathname}</div>;
-};
+    return <div data-testid="location-display">{location.pathname}</div>
+}
 
 type RouteType = {
   path: string

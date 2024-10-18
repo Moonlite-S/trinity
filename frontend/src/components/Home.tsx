@@ -82,7 +82,7 @@ export function Login(){
   const [errorCode, setErrorCode] = React.useState<string>('')
   const [loading, setLoading] = React.useState<boolean>(false)
   const email_regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const handleSubmit = async (event: any) => { 
     event.preventDefault()

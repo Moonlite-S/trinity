@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { test_user_dummy, TestRouterWrapper } from './utils'
 import { CreateProject, UpdateProjectList } from '../components/Project'
 import { createProject } from '../api/projects'
-import selectEvent from 'react-select-event';
+import selectEvent from 'react-select-event'
 import { act } from 'react'
 import { ProjectForm } from '../components/ProjectForm'
 

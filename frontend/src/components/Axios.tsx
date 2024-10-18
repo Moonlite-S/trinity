@@ -1,6 +1,6 @@
-import axios from "axios";
-import config from "../config";
-import { getCookie } from "typescript-cookie";
+import axios from "axios"
+import config from "../config"
+import { getCookie } from "typescript-cookie"
 
 const isDevelopment = import.meta.env.MODE === 'development'
 const baseUrl = isDevelopment ? config.development.apiBaseUrl : config.production.apiBaseUrl

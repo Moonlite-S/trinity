@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { GenericTable, Header } from "./misc";
-import { ProposalProps } from "../interfaces/proposal_types";
-import { getProposalList } from "../api/proposal";
-import { TableColumn } from "react-data-table-component";
+import { useState, useEffect } from "react"
+import { GenericTable, Header } from "./misc"
+import { ProposalProps } from "../interfaces/proposal_types"
+import { getProposalList } from "../api/proposal"
+import { TableColumn } from "react-data-table-component"
 export default function ProposalList() {
     const [proposals, setProposals] = useState<ProposalProps[]>([])
     const [isDataLoaded, setIsDataLoaded] = useState(false)

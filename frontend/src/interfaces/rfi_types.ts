@@ -1,24 +1,24 @@
-import { SelectionButtonProps } from "./button_types";
-import { EmployeeProps } from "./employee_type";
+import { SelectionButtonProps } from "./button_types"
+import { EmployeeProps } from "./employee_type"
 
 export type RFIProps = {
-    RFI_id?: string; // Optional because we create one in the backend
-    notes: string;
-    notes_closed?: string;
-    sent_out_date: string;
-    date_received: string;
+    RFI_id?: string // Optional because we create one in the backend
+    notes: string
+    notes_closed?: string
+    sent_out_date: string
+    date_received: string
 
-    created_by_pk: string;
-    created_by?: EmployeeProps;
-    assigned_to_pk: string;
-    assigned_to?: EmployeeProps;
-    description: string;
-    type: "MECHANICAL" | "ELECTRICAL" | "PLUMBING" | "FIRE_PROTECTION" | "OTHER";
+    created_by_pk: string
+    created_by?: EmployeeProps
+    assigned_to_pk: string
+    assigned_to?: EmployeeProps
+    description: string
+    type: "MECHANICAL" | "ELECTRICAL" | "PLUMBING" | "FIRE_PROTECTION" | "OTHER"
 
-    project: string;
-    project_id?: string;
-    project_name?: string;
-    days_old?: number;
+    project: string
+    project_id?: string
+    project_name?: string
+    days_old?: number
     status: "ACTIVE" | "CLOSING" | "COMPLETED"
 }
 

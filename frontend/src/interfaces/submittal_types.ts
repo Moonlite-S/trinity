@@ -18,19 +18,19 @@ export type SubmittalProps = {
 }
 
 export type SubmittalFormBaseProps = {
-    submittal: SubmittalProps;
-    projects: SelectionButtonProps[];
-    employees: SelectionButtonProps[];
-    onSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
-    onProjectChange: (e: unknown) => void;
-    onAssignedToChange: (e: unknown) => void;
-    method: "POST" | "PUT";
-};
+    submittal: SubmittalProps
+    projects: SelectionButtonProps[]
+    employees: SelectionButtonProps[]
+    onSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>
+    onProjectChange: (e: unknown) => void
+    onAssignedToChange: (e: unknown) => void
+    method: "POST" | "PUT"
+}
 
 export type SubmittalCreationProps = {
-    projects: string[][];
-    users: string[][];
-    client_names: string[];
+    projects: string[][]
+    users: string[][]
+    client_names: string[]
 }
 
 

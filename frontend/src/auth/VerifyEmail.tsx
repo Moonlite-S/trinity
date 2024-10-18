@@ -1,7 +1,7 @@
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router-dom"
 
 export function EmailConfirmation() {
-    const { key } = useParams();
+    const { key } = useParams()
 
     if (key) {
         return <div>Verifying Email... {key}</div>

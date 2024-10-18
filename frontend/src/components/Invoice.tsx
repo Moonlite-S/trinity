@@ -1,12 +1,12 @@
-import { useParams } from "react-router-dom";
-import { InvoiceForm } from "./InvoiceForm";
-import { GenericTable, Header } from "./misc";
-import { InvoiceProps } from "../interfaces/invoices_types";
-import { useState } from "react";
-import { useEffect } from "react";
-import { getInvoiceById, getInvoices } from "../api/invoices";
-import { TableColumn } from "react-data-table-component";
-import { RouteButton } from "./Buttons";
+import { useParams } from "react-router-dom"
+import { InvoiceForm } from "./InvoiceForm"
+import { GenericTable, Header } from "./misc"
+import { InvoiceProps } from "../interfaces/invoices_types"
+import { useState } from "react"
+import { useEffect } from "react"
+import { getInvoiceById, getInvoices } from "../api/invoices"
+import { TableColumn } from "react-data-table-component"
+import { RouteButton } from "./Buttons"
 
 export function CreateInvoice() {
     return (

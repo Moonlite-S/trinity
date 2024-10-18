@@ -1,4 +1,4 @@
-import { AxiosError } from 'axios';
+import { AxiosError } from 'axios'
 import AxiosInstance from '../components/Axios'
 import { EmployeeProps } from '../interfaces/employee_type'
 import { removeCookie } from 'typescript-cookie'
