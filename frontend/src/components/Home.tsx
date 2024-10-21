@@ -160,22 +160,27 @@ export function Login(){
 
       <button onClick={handleMicrosoftLogin} className='flex flex-row justify-center items-center p-3 border rounded-md group hover:shadow-md transition-all duration-300'>
         <img src={microsoft_logo} alt='Microsoft Logo' className='w-10 h-10 mr-3 group-hover:scale-110 transition-all duration-300' />
-        <div className='text-center '>Login with Microsoft</div>
+        <div className='text-center '>Log in with Microsoft</div>
       </button>
 
     </div>
   )
 }
 
+/**
+ * This is the component that is called at the end of the azure_ad_callback function from the backend
+ * 
+ * Just a little in between while we get the auth token and set it in the Authorization header
+ * 
+ * We have to do it here because we need the auth token to be set in the Authorization header to make any additional requests
+ */
 export function AuthCallback() {
   const navigate = useNavigate()
-
   useEffect(() => {
     const get_token = async () => {
       const token = new URLSearchParams(window.location.search).get('token')
       if (token) {
         const response = await get_auth_and_redirect(token)
-        console.log(response)
         if (response === 200) {
           navigate('/main_menu')
         } else {

@@ -247,12 +247,13 @@ class RFI(models.Model):
 
                                                                             
 class RFIChangeLog(models.Model):
-    project=models.CharField(max_length=50)
+    project=models.CharField(max_length=100)
     date_received=models.CharField(max_length=50)
     RFI_id=models.CharField(max_length=50)
     sent_out_date=models.CharField(max_length=50)
     type=models.CharField(max_length=50)
-    user=models.CharField(max_length=50)
+    assigned_to=models.CharField(max_length=50)
+    created_by=models.CharField(max_length=50)
     notes=models.TextField()
     notes_closed=models.TextField()
     description=models.TextField()

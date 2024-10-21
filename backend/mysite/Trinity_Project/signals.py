@@ -176,7 +176,7 @@ def log_task_delete(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=RFI)
-def log_RFI_change(sender, instance,created, **kwargs):
+def log_RFI_change(sender, instance, created, **kwargs):
     if created:
         user = CurrentUserMiddleware.get_current_user()
         if not user:
@@ -187,7 +187,8 @@ def log_RFI_change(sender, instance,created, **kwargs):
             RFI_id=f'{instance.RFI_id}',
             sent_out_date=f'{instance.sent_out_date}',
             type=f'{instance.type}',
-            user=f'{instance.user}',
+            assigned_to=f'{instance.assigned_to}',
+            created_by=f'{instance.created_by}',
             notes=f'{instance.notes}',
             description=f'{instance.description}',
             changed_by=f'{user}',
@@ -200,7 +201,7 @@ def log_RFI_change(sender, instance,created, **kwargs):
     except RFI.DoesNotExist:
         return
     
-    user =CurrentUserMiddleware.get_current_user()
+    user = CurrentUserMiddleware.get_current_user()
     
     if not user:
         return
@@ -219,7 +220,8 @@ def log_RFI_change(sender, instance,created, **kwargs):
                 RFI_id=f'{instance.RFI_id}',
                 sent_out_date=f'{instance.sent_out_date}',
                 type=f'{instance.type}',
-                user=f'{instance.user}',
+                assigned_to=f'{instance.assigned_to}',
+                created_by=f'{instance.created_by}',
                 notes=f'{instance.notes}',
                 description=f'{instance.description}',
                 changed_by=f'{user}',

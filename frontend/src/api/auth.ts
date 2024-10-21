@@ -70,7 +70,7 @@ export async function login({email, password }: LoginProps): Promise<string> {
     AxiosInstance.defaults.headers['Authorization'] = `Token ${token}`
     console.log("Authentication token: ", token)
 
-    return "200"
+    return "200" // Returns a string cuz if it returns an error, it'll return a string lol
   } catch (error) {
     if (error instanceof AxiosError) {
       const errorMessage = error.response?.data.non_field_errors[0]
@@ -137,8 +137,17 @@ export async function microsoftLogin(): Promise<number> {
   }
 }
 
+/**
+ * We need this to get the auth token given by the end of the azure_ad_callback function from the backend
+ * 
+ * This gets called at the AuthCallback component
+ * 
+ * @param token the token that is sent to the callback URL
+ * @returns the status code of the request
+ */
 export async function get_auth_and_redirect(token: string): Promise<number> {
   try {
+    console.log("token: ", token)
     AxiosInstance.defaults.headers['Authorization'] = `Token ${token}`
     return 200
   } catch (error) {

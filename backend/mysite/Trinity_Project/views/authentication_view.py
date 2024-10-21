@@ -179,6 +179,7 @@ def azure_ad_callback(request):
             }
 
             # Get the URL for the MicrosoftLogin view
+            # We're trying to login through Allauth's social login
             microsoft_login_url = request.build_absolute_uri(reverse('microsoft_login'))
 
             # Make a request to the MicrosoftLogin view
@@ -194,7 +195,7 @@ def azure_ad_callback(request):
                 auth_token = response.json()['key']
 
                 redirect_response = redirect(f'http://localhost:5173/auth-callback?token={auth_token}')
-                redirect_response.set_cookie(key='auth_token', value=auth_token, httponly=True, samesite='None', secure=True, max_age=3600)
+                redirect_response.set_cookie(key='authToken', value=auth_token, httponly=True, samesite='None', secure=True, max_age=3600)
 
                 return redirect_response
             else:

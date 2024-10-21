@@ -129,6 +129,8 @@ function FullCalendar({ currentMonth, handlePrevMonth, handleNextMonth, daysInMo
 /**
  * Component that layouts and renders each day of the month
  * @param {number} daysInMonth
+ * @param {Date} currentMonth uhh idk why we need this; it's not being used
+ * @param {CalendarProps[]} projectList
  */
 function MonthLayout({ currentMonth, projectList }: { daysInMonth: number, currentMonth: Date, projectList: CalendarProps[] }) {
     // Pads days to the beginning of the month

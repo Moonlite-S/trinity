@@ -95,7 +95,6 @@ def task_detail(request, task_id):
     except Project.DoesNotExist:
         return Response({"error": "Associated project not found"}, status=status.HTTP_404_NOT_FOUND)
 
-
     if request.method == 'GET':
         serializer = TaskSerializer(task)
         return Response(serializer.data)

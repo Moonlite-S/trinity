@@ -62,7 +62,9 @@ describe('Invoice Creation', () => {
         
         await waitFor(() => {
             expect(createInvoiceMock).toHaveBeenCalledWith({...invoice, 
-                invoice_id: undefined})
+                invoice_id: undefined,
+                project_id: undefined
+            })
         })
 
         expect(createInvoiceMock).toHaveBeenCalledTimes(1)

@@ -126,3 +126,44 @@ export function GenericTable<T>({ dataList, isDataLoaded, columns, FilterCompone
       />        
   )
 }
+
+type BaseFilterSearchProps = string
+
+type FilterByDropdownProps<T extends BaseFilterSearchProps> = {
+    filterSearch: T
+    setFilterSearch: (value: T) => void
+    options: { value: T, label: string }[]
+}
+
+/**
+ * A Generic Filter Selection for the Tables
+ * 
+ * You need to create the `BaseFilterSearchProps` type, which is just a union of strings of all possible filter values
+ * 
+ * You also need to create the options array
+ * 
+ * @param filterSearch - The current filter search
+ * @param setFilterSearch - The function to set the filter search
+ * @param options - The options to be displayed in { value: T, label: string } format
+ * @returns A dropdown to filter by
+ */
+export function FilterByDropdown<T extends BaseFilterSearchProps>({ 
+    filterSearch, 
+    setFilterSearch, 
+    options
+}: FilterByDropdownProps<T>) {
+  return (
+      <div className="flex flex-row justify-end gap-3 m-2 mr-20">
+        <h5 className="my-2">Filter By:</h5>
+        <select 
+            value={filterSearch} 
+            onChange={(e) => setFilterSearch(e.target.value as T)}
+            className="bg-slate-100 px-4 py-2 rounded-md"
+        >
+            {options.map((option) => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+        </select>
+      </div>
+  )
+}

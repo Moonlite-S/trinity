@@ -13,6 +13,7 @@ from azure.core.exceptions import ResourceExistsError, ResourceNotFoundError
 
 @role_required(allowed_roles=['Manager', 'Administrator', 'Team Member', 'Accountant'], allowed_methods=['GET', 'POST'])
 def submittal_list(request):
+    user = request.user
     
     if request.method == 'GET':
         submittals=Submittal.objects.all()
@@ -26,8 +27,6 @@ def submittal_list(request):
 
         submittal_id = "SB" + "-" + branch + "-" + project_id + "-" + unique_id
 
-        print(submittal_id)
-
         # If we have a collision, we will generate a new submittal ID
         # Shouldn't happen too often, if at all
         while Submittal.objects.filter(submittal_id=submittal_id).exists():
@@ -35,7 +34,8 @@ def submittal_list(request):
             submittal_id = "S" + "-" + branch + "-" + project_id + "-" + ''.join(random.choices(string.digits, k=3))
             print("New Submittal ID: ", submittal_id)
 
-        request.data['submittal_id'] = submittal_id
+        request.data['last_edited_by'] = user.pk # This is gets the last user that edited the submittal
+        request.data['submittal_id'] = submittal_id 
 
         serializer=SubmittalSerializer(data=request.data)
         
@@ -45,9 +45,6 @@ def submittal_list(request):
 
                 project_folder_location = serializer.validated_data['project'].project_id
                 submittal_folder_location = serializer.validated_data['submittal_id']
-
-                print(f"Project Folder Location: {project_folder_location}")
-                print(f"Submittal Folder Location: {submittal_folder_location}")
 
                 folder.create_sub_folder_directory(project_folder_location + "/Submittals", submittal_folder_location)
 

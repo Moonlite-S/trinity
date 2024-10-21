@@ -188,7 +188,6 @@ def project_creation_data(request):
 
     '''
     payload = authenticate_user(request)
-    print(payload)
     data_to_send = {}
 
     # gets projects create with the given date
@@ -218,7 +217,7 @@ def project_creation_data(request):
 
     return Response(data_to_send, status=status.HTTP_200_OK)
 
-@role_required(allowed_roles=['Manager', 'Administrator'], allowed_methods=['GET'])
+@role_required(allowed_roles=['Manager', 'Administrator', 'Team Member', 'Accountant'], allowed_methods=['GET'])
 def project_by_date(request):
     
     year = request.GET.get('year')

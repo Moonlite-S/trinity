@@ -145,7 +145,6 @@ export function SelectionComponent({Value: defaultValue = '', multiple, options,
             name={name} 
             placeholder="Search" 
             isMulti={multiple} 
-            isDisabled={readonly}
             classNamePrefix="react-select"
             styles = {{
                 control: (baseStyles: any, state: any) => ({
@@ -153,6 +152,7 @@ export function SelectionComponent({Value: defaultValue = '', multiple, options,
                     borderColor: state.isFocused ? 'orange' : 'gray',
                     boxShadow: state.isFocused ? '0 0 0 2px orange' : 'none',
                     minWidth: '200px',
+                    backgroundColor: readonly ? '#cacacc' : 'white',
                     '&:hover': {
                         borderColor: state.isFocused ? 'orange' : 'gray',
                     },
@@ -164,8 +164,7 @@ export function SelectionComponent({Value: defaultValue = '', multiple, options,
                         backgroundColor: '#cacacc',
                     },
                     backgroundColor: state.isFocused ? '#cacacc' : 'white',
-                })
-
+                }),
             }}/>
         </div>
     )

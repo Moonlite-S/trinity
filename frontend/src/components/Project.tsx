@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react"
-import { GenericTable, Header, OpenFolderButton } from "./misc"
+import { FilterByDropdown, GenericTable, Header, OpenFolderButton } from "./misc"
 import { getProjectList, getProject, deleteProject } from "../api/projects"
 import { useNavigate, useParams } from "react-router-dom"
 import { TableColumn } from "react-data-table-component"
@@ -40,6 +40,23 @@ export function CreateProject() {
     )
 }
 
+type FilterSearchProps = 
+    "project_name" |
+    "project_id" | 
+    "client_name" | 
+    "manager" | 
+    "city" | 
+    "next_deadline"
+
+const filterOptions: { value: FilterSearchProps, label: string }[] = [
+    { value: "project_name", label: "Project Name" },
+    { value: "project_id", label: "Project ID" },
+    { value: "client_name", label: "Client Name" },
+    // { value: "manager", label: "Manager" }, DOESN'T WORK
+    { value: "city", label: "City" },
+    { value: "next_deadline", label: "Next Deadline" }
+]
+
 /**
  * ### [Route for ('/update_project')]
  * 
@@ -56,6 +73,8 @@ export function UpdateProjectList() {
     const [projectList, setProjectList] = useState<ProjectProps[]>([])
     const [projectLoaded, setProjectLoaded] = useState<boolean>(false)
 
+    const [filterSearch, setFilterSearch] = useState<FilterSearchProps>("project_name")
+
     useEffect(() => {
         // This is where the list of projects will be fetched
         const fetchProjects = async () => {
@@ -65,7 +84,7 @@ export function UpdateProjectList() {
                 setProjectList(data)
                 setProjectLoaded(true)
             }
-           catch (error) {
+            catch (error) {
                console.error("Error fetching projects:", error)
                throw error // Re-throw the error so the caller can handle it if needed
             }
@@ -87,14 +106,16 @@ export function UpdateProjectList() {
         <>
             <Header />
             <h1 className="mx-4 text-x1 font-semibold">Projects</h1>
-            
+
+            <FilterByDropdown filterSearch={filterSearch} setFilterSearch={setFilterSearch} options={filterOptions} />
+
             <GenericTable
                 dataList={projectList}
                 isDataLoaded={projectLoaded}
                 columns={projectColumns}
                 FilterComponent={FilterComponent}
                 expandableRowComponent={({data}) => <ExpandableRowComponent data={data} user={user} />}
-                filterField="project_name"
+                filterField={filterSearch}
             />
 
             <div className="flex flex-row justify-center gap-3 m-2">
@@ -121,9 +142,7 @@ export function UpdateProject() {
         const fetchProject = async () => {
             try {
                 const data = await getProject(id)
-
                 setCurrentProject({...data, project_id: id})
-
                 setLoading(false)
             } catch (error) {
                 console.error("Error fetching project:", error)
@@ -237,13 +256,13 @@ export function ProjectStatusReport() {
 const FilterComponent = ({ filterText, onFilter, onClear }: ProjectFilterProps) => (
     <>
         <input
-         id="search"
-         type="text"
-         placeholder="Filter..."
-         aria-label="Search input"
-         value={filterText}
-         onChange={onFilter}
-         className="bg-slate-100 px-4 py-2"
+            id="search"
+            type="text"
+            placeholder="Filter..."
+            aria-label="Search input"
+            value={filterText}
+            onChange={onFilter}
+            className="bg-slate-100 px-4 py-2"
          />
 
         <button className="bg-orange-200 rounded px-4 py-2 ml-5 transition hover:bg-orange-300" type="button" onClick={onClear}>

@@ -22,7 +22,6 @@ export function useInvoiceFormHandler({ method, setCurrentInvoiceData, currentIn
             invoice_id: currentInvoiceData.invoice_id,
             invoice_date: currentInvoiceData.invoice_date as string,
             payment_status: currentInvoiceData.payment_status as "Pending" | "Paid",
-            payment_amount: currentInvoiceData.payment_amount as unknown as number,
             project_id: currentInvoiceData.project as string,
         }
 

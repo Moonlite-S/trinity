@@ -98,7 +98,7 @@ describe('Home Page', () => {
         })
 
         it('should login with correct credentials', async() => {
-            (login as jest.Mock).mockResolvedValue(200)
+            (login as jest.Mock).mockResolvedValue("200")
 
             render(
                 <TestRouterWrapper 
@@ -137,18 +137,16 @@ describe('Home Page', () => {
 
             fireEvent.change(screen.getByLabelText(/e-?mail:?/i), { target: { value: 'test' } })
             fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'test123' } })
-
             fireEvent.click(screen.getByTestId('login_submit'))
 
             await waitFor(() => {
                 expect(screen.getByText('Please enter a valid email and password')).toBeInTheDocument()
             })
-
         })
 
         it('should show error message with incorrect password', async() => {
 
-            (login as jest.Mock).mockResolvedValue(403)
+            (login as jest.Mock).mockResolvedValue("Unable to log in with provided credentials.")
 
             render(
             <MemoryRouter>
@@ -158,7 +156,6 @@ describe('Home Page', () => {
 
             fireEvent.change(screen.getByLabelText(/e-?mail:?/i), { target: { value: 'test@test.com' } })
             fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'test123' } })
-
             fireEvent.click(screen.getByTestId('login_submit'))
 
             await waitFor(() => {

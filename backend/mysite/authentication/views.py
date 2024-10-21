@@ -32,7 +32,7 @@ def password_reset_confirm_redirect(request, uidb64, token):
 
 class MicrosoftLogin(SocialLoginView):
     adapter_class = MicrosoftGraphOAuth2Adapter
-    callback_url = "http://localhost:5173/main_menu"
+    # callback_url = "http://localhost:5173/main_menu"
     client_class = OAuth2Client
 
     def post(self, request, *args, **kwargs):

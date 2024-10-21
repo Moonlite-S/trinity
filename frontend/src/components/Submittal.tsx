@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { deleteSubmittal, getSubmittalById, getSubmittals} from "../api/submittal"
 import { OrangeButton, RouteButton } from "./Buttons"
-import { GenericTable, Header, OpenFolderButton } from "./misc"
+import { FilterByDropdown, GenericTable, Header, OpenFolderButton } from "./misc"
 import { TableColumn } from "react-data-table-component"
 import { SubmittalProps } from "../interfaces/submittal_types"
 import { useParams } from "react-router-dom"
@@ -62,6 +62,15 @@ export function EditSubmittal() {
     )
 }
 
+type SubmittalFilterProps = "submittal_id" | "project_name" | "received_date" | "status"
+
+const submittalFilterOptions: { value: SubmittalFilterProps, label: string }[] = [
+    { value: "submittal_id", label: "Submittal ID" },
+    { value: "project_name", label: "Project" },
+    { value: "received_date", label: "Submitted On" },
+    { value: "status", label: "Status" },
+]
+
 /**
  * ### Route for ('/submittals')   
  * 
@@ -77,6 +86,9 @@ export function SubmittalList() {
 
     const [submittals, setSubmittals] = useState<SubmittalProps[]>([])
     const [submittalsLoaded, setSubmittalsLoaded] = useState<boolean>(false)
+
+    const [filterSearch, setFilterSearch] = useState<SubmittalFilterProps>("submittal_id")
+
     useEffect(() => {
         const get_submittals = async () => {
             try {
@@ -108,12 +120,14 @@ export function SubmittalList() {
                 <h1>Submittals</h1>
             </div>
 
+            <FilterByDropdown filterSearch={filterSearch} setFilterSearch={setFilterSearch} options={submittalFilterOptions} />
+
             {submittalsLoaded && <GenericTable
                 dataList={submittals}
                 isDataLoaded={submittalsLoaded}
                 columns={columns}
                 expandableRowComponent={({data}) => ExpandableRowComponent({data: data, user: user})}
-                filterField="submittal_id"
+                filterField={filterSearch}
                 FilterComponent={FilterComponent}
             />}
 
@@ -127,13 +141,11 @@ export function SubmittalList() {
 function FilterComponent({ filterText, onFilter, onClear }: { filterText: string, onFilter: (e: any) => void, onClear: () => void }) {
     return (
         <div className="flex flex-row gap-2">
-            <input type="text" placeholder="Filter by Submittal ID" value={filterText} onChange={onFilter} />
-            <button onClick={onClear}>Clear</button>
+            <input type="text" placeholder="Filter by Submittal ID" value={filterText} onChange={onFilter} className='bg-slate-100 rounded-md p-2' />
+            <button className="bg-orange-200 rounded px-4 py-2 ml-5 transition hover:bg-orange-300" type="button" onClick={onClear}>X</button>
         </div>
     )
 }
-
-
 
 function ExpandableRowComponent({ data, user }: { data: SubmittalProps, user: EmployeeProps }) {
     const handleDelete = async () => {

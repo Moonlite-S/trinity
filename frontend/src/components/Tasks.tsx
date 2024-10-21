@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { GenericTable, Header } from './misc'
+import { FilterByDropdown, GenericTable, Header } from './misc'
 import { deleteTask, filterTasksByAllUserProjects, getTaskByID, getTaskList } from '../api/tasks'
 import { TaskProps } from '../interfaces/tasks_types'
 import { useParams } from 'react-router-dom'
@@ -123,6 +123,15 @@ export function CreateTaskFromProject(){
   )
 }
 
+type TaskFilterProps = "title" | "project_id" | "assigned_to" | "status"
+
+const taskFilterOptions: { value: TaskFilterProps, label: string }[] = [
+  { value: "title", label: "Title" },
+  { value: "project_id", label: "Project ID" },
+  { value: "assigned_to", label: "Assigned To" },
+  { value: "status", label: "Status" },
+]
+
 /**
  *  ### Route for ('/tasks/')
  * 
@@ -137,6 +146,8 @@ export function TaskList() {
   
   const [tasks, setTasks] = useState<TaskProps[]>([])
   const [tasksLoaded, setTasksLoaded] = useState<boolean>(false)
+
+  const [filterSearch, setFilterSearch] = useState<TaskFilterProps>("title")
 
   useEffect(() => {
     const fetchData = async () => {
@@ -176,13 +187,15 @@ export function TaskList() {
       <Header/>
       <h1 className="mx-4 text-x1 font-semibold">Tasks</h1>
 
+      <FilterByDropdown filterSearch={filterSearch} setFilterSearch={setFilterSearch} options={taskFilterOptions}/>
+
       {tasksLoaded && <GenericTable
         dataList={tasks}
         isDataLoaded={tasksLoaded}
         columns={columns}
         FilterComponent={FilterComponent}
         expandableRowComponent={({data}) => expandableRowComponent({data: data, user: user})}
-        filterField="title"
+        filterField={filterSearch}
       />}
     </>
   )
@@ -192,7 +205,7 @@ function FilterComponent({ filterText, onFilter, onClear }: { filterText: string
     return (
         <div className="flex flex-row gap-2 ">
             <input type="text" placeholder="Filter by Submittal ID" value={filterText} onChange={onFilter} className='bg-slate-100 rounded-md p-2' />
-            <button onClick={onClear}>Clear</button>
+            <button className="bg-orange-200 rounded px-4 py-2 ml-5 transition hover:bg-orange-300" type="button" onClick={onClear}>X</button>
         </div>
     )
 }
