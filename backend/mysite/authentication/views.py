@@ -32,8 +32,16 @@ def password_reset_confirm_redirect(request, uidb64, token):
 
 class MicrosoftLogin(SocialLoginView):
     adapter_class = MicrosoftGraphOAuth2Adapter
-    callback_url = "http://localhost:5173/auth/microsoft/login/callback/"
+    callback_url = "http://localhost:5173/main_menu"
     client_class = OAuth2Client
+
+    def post(self, request, *args, **kwargs):
+        print(f"Received request data in MicrosoftLogin: {request.data}")
+        try:
+            return super().post(request, *args, **kwargs)
+        except Exception as e:
+            print(f"Error in MicrosoftLogin: {str(e)}")
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class RegisterEmployee(RegisterView):
     def create(self, request, *args, **kwargs):

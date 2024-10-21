@@ -22,8 +22,8 @@ class CurrentUserMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        print("CurrentUserMiddleware called")
         auth_token = request.COOKIES.get('authToken')
+        print("auth_token: ", auth_token)
         if not auth_token and hasattr(request, 'auth_token'):
             print("Setting authToken cookie in CurrentUserMiddleware")
             auth_token = request.auth_token
