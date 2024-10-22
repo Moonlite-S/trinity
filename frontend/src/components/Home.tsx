@@ -179,6 +179,8 @@ export function AuthCallback() {
   useEffect(() => {
     const get_token = async () => {
       const token = new URLSearchParams(window.location.search).get('token')
+      console.log("Token: ", token)
+      console.log("Whole URL: ", window.location.href)
       if (token) {
         const response = await get_auth_and_redirect(token)
         if (response === 200) {
