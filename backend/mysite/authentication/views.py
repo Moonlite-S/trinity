@@ -62,6 +62,7 @@ class RegisterEmployee(RegisterView):
     def perform_create(self, serializer):
         user = serializer.save(self.request)
         if 'role' in self.request.data:
+            user.name = self.request.data['name']
             user.role = self.request.data['role']
             user.save()
         return user

@@ -27,6 +27,7 @@ export function EmployeeForm({employee, method}: {employee?: EmployeeProps, meth
         setErrorString("")
 
         const data = new FormData(e.target as HTMLFormElement)
+        const name = data.get('name')
         const password = data.get('password')
         const re_password = data.get('re_password')
         const email = data.get('email')
@@ -41,7 +42,7 @@ export function EmployeeForm({employee, method}: {employee?: EmployeeProps, meth
 
         const data_to_send: EmployeeCreationProps = {
             id: employee?.id,
-            name: data.get('name') as string,
+            name: name as string,
             email: email as string,
             username: email as string,
             password1: password as string,
@@ -56,7 +57,7 @@ export function EmployeeForm({employee, method}: {employee?: EmployeeProps, meth
         if (method_handler) {
             try {
                 const response = await method_handler(data_to_send)
-                if (response === 201) {
+                if (response === 204) {
                     alert("Employee created successfully")
                     navigate('/employees')
                 } else if (response === 200) {
@@ -103,12 +104,10 @@ export function EmployeeFormBase({user, onSubmit, method}: {user: EmployeeProps,
                 <GenericInput type="text" name="name" label="Name" value={user.name} />
                 <GenericInput type="text" name="email" label="Email" value={user.email} readOnly={method === "PUT"} />
             </div>
-            {method === "POST" && (
             <div className="grid grid-cols-2 gap-4">
                 <GenericInput type="password" name="password" label="Password" value={user.password} />
                 <GenericInput type="password" name="re_password" label="Re-enter Password" value={user.password} />
             </div>
-            )}
             <GenericSelect options={["Manager", "Team Member", "Accountant"]} name="role" label="Role" value={user.role} />
             <BottomFormButton button_text={method === "POST" ? "Create Employee" : "Update Employee"} />
         </GenericForm>

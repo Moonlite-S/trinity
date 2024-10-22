@@ -13,7 +13,7 @@ import { EmployeeNameEmail, EmployeeCreationProps, EmployeeProps } from "../inte
 export async function createEmployee(user : EmployeeCreationProps): Promise<number> {
     try {
         const response = await AxiosInstance.post('auth/register/', user)
-
+        console.log("response: ", response)
         return response.status
 
     } catch (error) {

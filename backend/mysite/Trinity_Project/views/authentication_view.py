@@ -131,7 +131,7 @@ def azure_ad_login(request):
     )
     auth_url = client.get_authorization_request_url(
         scopes=["User.Read"],
-        redirect_uri='http://localhost:8000/api/callback'
+        redirect_uri=settings.AZURE_BACKEND_REDIRECT_URI
     )
     # return redirect(auth_url)
     return Response({"auth_url": auth_url})
@@ -151,7 +151,7 @@ def azure_ad_callback(request):
     result = client.acquire_token_by_authorization_code(
         code,
         scopes=["User.Read"],
-        redirect_uri='http://localhost:8000/api/callback'
+        redirect_uri=settings.AZURE_BACKEND_REDIRECT_URI
     )
 
     if "access_token" in result:
@@ -160,17 +160,26 @@ def azure_ad_callback(request):
             'Authorization': f"Bearer {result['access_token']}",
         }
         user_info = requests.get('https://graph.microsoft.com/v1.0/me', headers=headers).json()
-        email = user_info.get('mail')
 
+        # !! When creating the user, make sure to add the email !!
+
+        # We might need to have a redirect to the frontend to get the user's email as an alternative
+
+        email = user_info.get('mail')
+        name = user_info.get('displayName')
+
+        print("email: ", email)
+        print("name: ", name)
+        
         if email:
             # Try to find the user in your database
             user = User.objects.filter(email=email).first()
             print("user: ", user)
 
             if user is None:
-                print("user is None")
+                print("user is None. Creating user...")
                 # Optionally, create the user if they don't exist
-                user = User.objects.create_user(email=email, password=None, username=email)
+                user = User.objects.create_user(email=email, password=None, username=email, name=name)
                 user.save()
 
             # Prepare the data for MicrosoftLogin
@@ -194,7 +203,7 @@ def azure_ad_callback(request):
                 print("response: ", response.json())
                 auth_token = response.json()['key']
 
-                redirect_response = redirect(f'http://localhost:5173/auth-callback?token={auth_token}')
+                redirect_response = redirect(f'{settings.FRONTEND_URL}/auth-callback?token={auth_token}')
                 redirect_response.set_cookie(key='authToken', value=auth_token, httponly=True, samesite='None', secure=True, max_age=3600)
 
                 return redirect_response

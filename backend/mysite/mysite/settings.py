@@ -280,19 +280,17 @@ CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'None'
 
-# CORS_EXPOSE_HEADERS = ['Context-Type', 'X-CSRFToken']
-
 AZURE_CLIENT_ID = os.getenv("AZURE_CLIENT_ID")
 AZURE_CLIENT_SECRET = os.getenv("AZURE_CLIENT_SECRET")
 AZURE_TENANT_ID = os.getenv("AZURE_TENANT_ID")
-AZURE_REDIRECT_URI = os.getenv("AZURE_REDIRECT_URI_DEV")
-AZURE_REDIRECT_HOME = os.getenv("AZURE_REDIRECT_HOME_DEV")
+AZURE_BACKEND_REDIRECT_URI = "http://localhost:8000/api/callback"
 
-# Update these settings
+# Update these settings laters
 ACCOUNT_EMAIL_VERIFICATION = "none"  # Change this to "optional" or "none" for testing
 SOCIALACCOUNT_EMAIL_VERIFICATION = "none"
 SOCIALACCOUNT_EMAIL_REQUIRED = False
 SOCIALACCOUNT_STORE_TOKENS = True
 
-# Add this setting
 SOCIALACCOUNT_ADAPTER = 'Trinity_Project.adapters.CustomSocialAccountAdapter'
+
+FRONTEND_URL = "http://localhost:5173"
