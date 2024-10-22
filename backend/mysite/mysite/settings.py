@@ -283,7 +283,6 @@ SESSION_COOKIE_SAMESITE = 'None'
 AZURE_CLIENT_ID = os.getenv("AZURE_CLIENT_ID")
 AZURE_CLIENT_SECRET = os.getenv("AZURE_CLIENT_SECRET")
 AZURE_TENANT_ID = os.getenv("AZURE_TENANT_ID")
-AZURE_BACKEND_REDIRECT_URI = "http://localhost:8000/api/callback"
 
 # Update these settings laters
 ACCOUNT_EMAIL_VERIFICATION = "none"  # Change this to "optional" or "none" for testing
@@ -294,3 +293,4 @@ SOCIALACCOUNT_STORE_TOKENS = True
 SOCIALACCOUNT_ADAPTER = 'Trinity_Project.adapters.CustomSocialAccountAdapter'
 
 FRONTEND_URL = "http://localhost:5173"
+AZURE_BACKEND_REDIRECT_URI = "http://localhost:8000/api/callback"

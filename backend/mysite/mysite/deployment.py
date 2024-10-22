@@ -7,7 +7,7 @@ import os
 from .settings import *
 from .settings import BASE_DIR
 
-PORT = os.getenv("PORT", "8000")
+# PORT = os.getenv("PORT", "8000")
 
 ALLOWED_HOSTS = [os.environ["WEBSITE_HOSTNAME"]]
 #DEBUG = False
