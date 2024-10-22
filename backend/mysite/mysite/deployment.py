@@ -59,4 +59,4 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 FRONTEND_URL = "https://yellow-sea-07d8df30f.5.azurestaticapps.net"
-AZURE_BACKEND_REDIRECT_URI = "https://yellow-sea-07d8df30f.5.azurestaticapps.net/api/callback"
+AZURE_BACKEND_REDIRECT_URI = "https://django-react-test-e9ghbqcrf2djcmfu.israelcentral-01.azurewebsites.net/api/callback"
