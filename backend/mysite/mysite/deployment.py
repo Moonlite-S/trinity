@@ -30,6 +30,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "https://yellow-sea-07d8df30f.5.azurestaticapps.net",
     "https://django-react-test-e9ghbqcrf2djcmfu.israelcentral-01.azurewebsites.net",
+    'https://login.microsoftonline.com',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -56,6 +57,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 CSRF_TRUSTED_ORIGINS = [
     'https://yellow-sea-07d8df30f.5.azurestaticapps.net',
     'https://django-react-test-e9ghbqcrf2djcmfu.israelcentral-01.azurewebsites.net',
+    'https://login.microsoftonline.com',
 ]
 
 FRONTEND_URL = "https://yellow-sea-07d8df30f.5.azurestaticapps.net"
