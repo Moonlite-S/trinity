@@ -7,4 +7,3 @@ class ProjectConfig(AppConfig):
     #this is what makes it so that the method in signals.py cant automatically get called
     def ready(self):
         import Trinity_Project.signals
-        import Trinity_Project.graphapi

@@ -113,7 +113,7 @@ export function SubmittalCard ({submittal, isNew, onView} : {submittal: Submitta
             isNew={isNewLocal} 
             hoverChildren={<CardHoverSubmittal 
                 edit_submittal_route={`/submittals/update_submittal/${submittal.submittal_id}`} 
-                folder_path={`/projects/${submittal.project}/Submittals/${submittal.submittal_id}`}
+                folder_path={`/projects/${submittal.project}/Submittals/${submittal.type}/${submittal.submittal_id}`}
             />}
         >
             <h3>{submittal.project_name}</h3>

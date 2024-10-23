@@ -172,7 +172,7 @@ function ExpandableRowComponent({ data, user }: { data: SubmittalProps, user: Em
         <div className="flex flex-row gap-2 mx-2">
             <RouteButton route={`/submittals/update_submittal/${data.submittal_id}`} text="Edit" />
             {(user.role === "Manager" || user.role === "Administrator") && <OrangeButton onClick={handleDelete}>Delete</OrangeButton>}
-            <OpenFolderButton folder_path={data.project_id ? 'projects\\' + data.project_id + '\\Submittals\\' + data.submittal_id : 'Submittals'} />
+            <OpenFolderButton folder_path={data.project_id ? 'projects\\' + data.project_id + '\\Submittals\\' + data.type + '\\' + data.submittal_id : 'Submittals'} />
         </div>
     )
 }

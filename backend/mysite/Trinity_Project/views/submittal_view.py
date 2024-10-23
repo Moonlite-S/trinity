@@ -21,17 +21,16 @@ def submittal_list(request):
         return Response(serializer.data)
     
     if request.method == 'POST':
-        branch = 'E'
         project_id = request.data['project']
         unique_id = ''.join(random.choices(string.digits, k=3))
 
-        submittal_id = "SB" + "-" + branch + "-" + project_id + "-" + unique_id
+        submittal_id = "SB" + "-" + project_id + "-" + unique_id
 
         # If we have a collision, we will generate a new submittal ID
         # Shouldn't happen too often, if at all
         while Submittal.objects.filter(submittal_id=submittal_id).exists():
             print("Collision Detected, Generating New Submittal ID...")
-            submittal_id = "S" + "-" + branch + "-" + project_id + "-" + ''.join(random.choices(string.digits, k=3))
+            submittal_id = "S" + "-" + project_id + "-" + ''.join(random.choices(string.digits, k=3))
             print("New Submittal ID: ", submittal_id)
 
         request.data['last_edited_by'] = user.pk # This is gets the last user that edited the submittal
@@ -45,8 +44,11 @@ def submittal_list(request):
 
                 project_folder_location = serializer.validated_data['project'].project_id
                 submittal_folder_location = serializer.validated_data['submittal_id']
+                submittal_type = serializer.validated_data['type']
 
-                folder.create_sub_folder_directory(project_folder_location + "/Submittals", submittal_folder_location)
+                print(f"Folder Location: {project_folder_location + "/Submittals/" + submittal_type + "/" + submittal_folder_location}")
+
+                folder.create_sub_folder_directory(project_folder_location + "/Submittals/" + submittal_type + "/", submittal_folder_location)
 
             except ResourceNotFoundError:
                 return Response(data={"error": "Project Folder does not exist."}, status=status.HTTP_400_BAD_REQUEST)
@@ -57,7 +59,7 @@ def submittal_list(request):
             
             except Exception as e:
                 print(f"An error occurred while creating the submittal: {e}")
-                folder.delete_project_folder(project_folder_location)
+               #  folder.delete_project_folder(project_folder_location)
                 return Response(data={"error": "An error occurred while creating the submittal folders."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
             serializer.save()

@@ -1,7 +1,7 @@
 # Create Example Projects
 projects = [
     {
-        "project_id": "2024-09-001",
+        "project_id": "E-2024-09-001",
         "project_name": "Sunnyside Solar-Powered Community Center",
         "manager": "sean@example.com",
         "client_name": "Sunnyside City Council",
@@ -10,11 +10,11 @@ projects = [
         "end_date": "2025-06-30",
         "description": "Design and construction of a community center powered entirely by solar energy, featuring a green roof and rainwater harvesting system.",
         "status": "ACTIVE",
-        "folder_location": "2024-09-001",
+        "folder_location": "E-2024-09-001",
         "template": "default"
     },
     {
-        "project_id": "2024-09-002",
+        "project_id": "E-2024-09-002",
         "project_name": "Riverdale Hydroelectric Dam Upgrade",
         "manager": "matthew@example.com",
         "client_name": "Riverdale Power Company",
@@ -23,11 +23,11 @@ projects = [
         "end_date": "2025-08-15",
         "description": "Modernization of existing hydroelectric dam to improve efficiency and environmental impact mitigation.",
         "status": "NOT STARTED",
-        "folder_location": "2024-09-002",
-        "template": ""
+        "folder_location": "E-2024-09-002",
+        "template": "default"
     },
     {
-        "project_id": "2024-09-003",
+        "project_id": "E-2024-09-003",
         "project_name": "Pinecrest Eco-Friendly Industrial Park",
         "manager": "jose@example.com",
         "client_name": "Pinecrest Economic Development Board",
@@ -36,11 +36,11 @@ projects = [
         "end_date": "2025-11-30",
         "description": "Development of a sustainable industrial park with focus on circular economy principles and zero-waste infrastructure.",
         "status": "ACTIVE",
-        "folder_location": "2024-09-003",
+        "folder_location": "E-2024-09-003",
         "template": "default"
     },
     {
-        "project_id": "2024-09-004",
+        "project_id": "E-2024-09-004",
         "project_name": "Oakwood Smart Traffic Management System",
         "manager": "israel@example.com",
         "client_name": "Oakwood Department of Transportation",
@@ -49,11 +49,11 @@ projects = [
         "end_date": "2025-05-31",
         "description": "Implementation of AI-driven traffic management system to reduce congestion and improve air quality in the city center.",
         "status": "NOT STARTED",
-        "folder_location": "2024-09-004",
+        "folder_location": "E-2024-09-004",
         "template": "default"
     },
     {
-        "project_id": "2024-09-005",
+        "project_id": "E-2024-09-005",
         "project_name": "Meadowbrook Wetland Restoration",
         "manager": "sean@example.com",
         "client_name": "Meadowbrook Environmental Trust",
@@ -62,11 +62,11 @@ projects = [
         "end_date": "2025-10-15",
         "description": "Comprehensive wetland restoration project to improve local ecosystem and create natural flood protection.",
         "status": "ACTIVE",
-        "folder_location": "2024-09-005",
-        "template": ""
+        "folder_location": "E-2024-09-005",
+        "template": "default"
     },
     {
-        "project_id": "2024-09-006",
+        "project_id": "E-2024-09-006",
         "project_name": "Silver Springs Autonomous Vehicle Test Track",
         "manager": "matthew@example.com",
         "client_name": "Silver Springs Innovation Hub",
@@ -75,11 +75,11 @@ projects = [
         "end_date": "2025-07-31",
         "description": "Design and construction of a state-of-the-art test track for autonomous vehicles, including various road conditions and smart city elements.",
         "status": "NOT STARTED",
-        "folder_location": "2024-09-006",
+        "folder_location": "E-2024-09-006",
         "template": "default"
     },
     {
-        "project_id": "2024-09-007",
+        "project_id": "E-2024-09-007",
         "project_name": "Harmony Heights Vertical Farm",
         "manager": "jose@example.com",
         "client_name": "Harmony Heights Urban Agriculture Initiative",
@@ -88,11 +88,11 @@ projects = [
         "end_date": "2025-12-15",
         "description": "Development of a high-tech vertical farm to provide fresh produce for the local community, incorporating hydroponic and aeroponic systems.",
         "status": "ACTIVE",
-        "folder_location": "2024-09-007",
-        "template": ""
+        "folder_location": "E-2024-09-007",
+        "template": "default"
     },
     {
-        "project_id": "2024-09-008",
+        "project_id": "E-2024-09-008",
         "project_name": "Bayside Marine Research Center",
         "manager": "israel@example.com",
         "client_name": "Bayside Oceanographic Institute",
@@ -101,11 +101,11 @@ projects = [
         "end_date": "2025-11-30",
         "description": "Construction of a cutting-edge marine research center with laboratories, aquariums, and a deep-sea simulation facility.",
         "status": "NOT STARTED",
-        "folder_location": "2024-09-008",
+        "folder_location": "E-2024-09-008",
         "template": "default"
     },
     {
-        "project_id": "2024-09-009",
+        "project_id": "E-2024-09-009",
         "project_name": "Greenfield Waste-to-Energy Plant",
         "manager": "sean@example.com",
         "client_name": "Greenfield Sustainable Solutions",
@@ -114,11 +114,11 @@ projects = [
         "end_date": "2025-10-31",
         "description": "Design and implementation of an advanced waste-to-energy facility to reduce landfill usage and generate clean electricity.",
         "status": "ACTIVE",
-        "folder_location": "2024-09-009",
+        "folder_location": "E-2024-09-009",
         "template": "default"
     },
     {
-        "project_id": "2024-09-010",
+        "project_id": "E-2024-09-010",
         "project_name": "Sunset Valley Resilient Infrastructure Plan",
         "manager": "matthew@example.com",
         "client_name": "Sunset Valley City Planning Department",
@@ -127,11 +127,11 @@ projects = [
         "end_date": "2025-09-15",
         "description": "Comprehensive infrastructure resilience plan to address climate change impacts, including flood protection, heat mitigation, and sustainable energy systems.",
         "status": "NOT STARTED",
-        "folder_location": "2024-09-010",
-        "template": ""
+        "folder_location": "E-2024-09-010",
+        "template": "default"
     },
-        {
-        "project_id": "2024-09-011",
+    {
+        "project_id": "E-2024-09-011",
         "project_name": "Maple Grove Park Renovation",
         "manager": "sean@example.com",
         "client_name": "Maple Grove Parks Department",
@@ -140,11 +140,11 @@ projects = [
         "end_date": "2024-09-20",
         "description": "Quick renovation of central park facilities including playground equipment upgrade and pathway improvements.",
         "status": "ACTIVE",
-        "folder_location": "2024-09-011",
+        "folder_location": "E-2024-09-011",
         "template": "default"
     },
     {
-        "project_id": "2024-09-012",
+        "project_id": "E-2024-09-012",
         "project_name": "Hillside Emergency Water System Repair",
         "manager": "matthew@example.com",
         "client_name": "Hillside Water Authority",
@@ -153,11 +153,11 @@ projects = [
         "end_date": "2024-09-25",
         "description": "Urgent repair and upgrade of water distribution system in response to recent infrastructure failures.",
         "status": "ACTIVE",
-        "folder_location": "2024-09-012",
-        "template": ""
+        "folder_location": "E-2024-09-012",
+        "template": "default"
     },
     {
-        "project_id": "2024-09-013",
+        "project_id": "E-2024-09-013",
         "project_name": "Lakefront Temporary Event Structure",
         "manager": "jose@example.com",
         "client_name": "Lakefront City Events Committee",
@@ -166,11 +166,11 @@ projects = [
         "end_date": "2024-09-28",
         "description": "Design and construction of a temporary, eco-friendly structure for the annual Lakefront Arts Festival.",
         "status": "NOT STARTED",
-        "folder_location": "2024-09-013",
+        "folder_location": "E-2024-09-013",
         "template": "default"
     },
     {
-        "project_id": "2024-09-014",
+        "project_id": "E-2024-09-014",
         "project_name": "Redwood City Bridge Inspection",
         "manager": "israel@example.com",
         "client_name": "Redwood City Department of Transportation",
@@ -179,11 +179,11 @@ projects = [
         "end_date": "2024-09-30",
         "description": "Comprehensive structural inspection and report on the city's five major bridges.",
         "status": "NOT STARTED",
-        "folder_location": "2024-09-014",
+        "folder_location": "E-2024-09-014",
         "template": "default"
     },
     {
-        "project_id": "2024-09-015",
+        "project_id": "E-2024-09-015",
         "project_name": "Sunnyvale Solar Panel Quick Install",
         "manager": "sean@example.com",
         "client_name": "Sunnyvale Community Center",
@@ -192,11 +192,11 @@ projects = [
         "end_date": "2024-09-23",
         "description": "Rapid installation of solar panels on the community center roof to meet green energy grant deadline.",
         "status": "ACTIVE",
-        "folder_location": "2024-09-015",
-        "template": ""
+        "folder_location": "E-2024-09-015",
+        "template": "default"
     },
     {
-        "project_id": "2024-09-016",
+        "project_id": "E-2024-09-016",
         "project_name": "Clearwater Stormwater System Assessment",
         "manager": "matthew@example.com",
         "client_name": "Clearwater Environmental Services",
@@ -205,11 +205,11 @@ projects = [
         "end_date": "2024-09-27",
         "description": "Evaluation of current stormwater management system and recommendations for green infrastructure integration.",
         "status": "NOT STARTED",
-        "folder_location": "2024-09-016",
+        "folder_location": "E-2024-09-016",
         "template": "default"
     },
     {
-        "project_id": "2024-09-017",
+        "project_id": "E-2024-09-017",
         "project_name": "Maplewood Traffic Signal Optimization",
         "manager": "jose@example.com",
         "client_name": "Maplewood Traffic Management",
@@ -218,11 +218,11 @@ projects = [
         "end_date": "2024-09-29",
         "description": "Recalibration and optimization of traffic signals in the downtown area to reduce congestion.",
         "status": "ACTIVE",
-        "folder_location": "2024-09-017",
-        "template": ""
+        "folder_location": "E-2024-09-017",
+        "template": "default"
     },
     {
-        "project_id": "2024-09-018",
+        "project_id": "E-2024-09-018",
         "project_name": "Oakdale Drone Survey for Urban Planning",
         "manager": "israel@example.com",
         "client_name": "Oakdale City Planning Office",
@@ -231,11 +231,11 @@ projects = [
         "end_date": "2024-09-30",
         "description": "Comprehensive drone survey of the city to update GIS data for future urban development projects.",
         "status": "NOT STARTED",
-        "folder_location": "2024-09-018",
+        "folder_location": "E-2024-09-018",
         "template": "default"
     },
     {
-        "project_id": "2024-09-019",
+        "project_id": "E-2024-09-019",
         "project_name": "Springville Rapid Bike Lane Implementation",
         "manager": "sean@example.com",
         "client_name": "Springville Department of Transportation",
@@ -244,11 +244,11 @@ projects = [
         "end_date": "2024-09-24",
         "description": "Quick implementation of dedicated bike lanes on major thoroughfares to promote sustainable transportation.",
         "status": "ACTIVE",
-        "folder_location": "2024-09-019",
+        "folder_location": "E-2024-09-019",
         "template": "default"
     },
     {
-        "project_id": "2024-09-020",
+        "project_id": "E-2024-09-020",
         "project_name": "Riverside Emergency Levee Reinforcement",
         "manager": "matthew@example.com",
         "client_name": "Riverside Flood Control District",
@@ -257,11 +257,11 @@ projects = [
         "end_date": "2024-09-28",
         "description": "Urgent reinforcement of critical sections of the city's levee system before the fall rainy season.",
         "status": "ACTIVE",
-        "folder_location": "2024-09-020",
-        "template": ""
+        "folder_location": "E-2024-09-020",
+        "template": "default"
     },
     {
-        "project_id": "2024-10-001",
+        "project_id": "E-2024-10-001",
         "project_name": "Oakville Downtown Revitalization",
         "manager": "israel@example.com",
         "client_name": "Oakville City Council",
@@ -270,11 +270,11 @@ projects = [
         "end_date": "2024-10-23",
         "description": "Comprehensive plan to revitalize the downtown area, including façade improvements and pedestrian-friendly street designs.",
         "status": "NOT STARTED",
-        "folder_location": "2024-10-001",
+        "folder_location": "E-2024-10-001",
         "template": "default"
     },
     {
-        "project_id": "2024-10-002",
+        "project_id": "E-2024-10-002",
         "project_name": "Maplewood Smart Traffic Management System",
         "manager": "sarah@example.com",
         "client_name": "Maplewood Department of Transportation",
@@ -283,7 +283,7 @@ projects = [
         "end_date": "2024-10-31",
         "description": "Implementation of an AI-driven traffic management system to reduce congestion and improve traffic flow in the city center.",
         "status": "ACTIVE",
-        "folder_location": "2024-10-002",
-        "template": ""
+        "folder_location": "E-2024-10-002",
+        "template": "default"
     }
 ]
