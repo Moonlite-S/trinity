@@ -144,6 +144,7 @@ def azure_ad_login(request):
     # return redirect(auth_url)
     return Response({"auth_url": auth_url})
 
+#This would check email
 def azure_ad_callback(request):
     code = request.GET.get('code')
 
@@ -233,8 +234,10 @@ def azure_ad_callback(request):
                 logger.error(f"Request to MicrosoftLogin failed: {str(e)}")
                 return JsonResponse({'error': f'Request to MicrosoftLogin failed: {str(e)}'}, status=500)
         else:
+            #This is error would sent if we can get the email
             return render(request, 'error.html', {'error': 'Failed to retrieve user email from Microsoft Graph'})
     else:
+        
         return render(request, 'error.html', {'error': result.get('error_description')})
 
 def check_mfa_status(access_token):
@@ -252,3 +255,16 @@ def check_mfa_status(access_token):
             if method['@odata.type'] == '#microsoft.graph.microsoftAuthenticatorAuthenticationMethod':
                 return True  # User has Microsoft Authenticator set up
     return False
+
+def azure_ad_logout(request):
+    # Log out the user locally
+    logout(request)
+
+    # Log out from Azure AD
+    azure_logout_url = (
+        f"https://login.microsoftonline.com/{settings.AZURE_AD_TENANT_ID}/oauth2/v2.0/logout"
+        f"?post_logout_redirect_uri={settings.AZURE_AD_POST_LOGOUT_REDIRECT_URI}"
+    )
+
+    # Redirect to Azure AD logout endpoint, and then back to your app
+    return redirect(azure_logout_url)

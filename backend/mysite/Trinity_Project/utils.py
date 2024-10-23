@@ -57,7 +57,6 @@ def role_required(allowed_roles, allowed_methods):
     Also authenticates the user and specifies the allowed methods for the view
 
     `allowed_roles` So far, we have: Manager, Administrator, Team Member, Accountant [* = everyone]
-
     `allowed_methods` GET, POST, PUT, DELETE, etc.
     '''
     def decorator(view_func):
