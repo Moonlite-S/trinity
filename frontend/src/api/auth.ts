@@ -129,6 +129,7 @@ export async function microsoftLogin(): Promise<number> {
     const data = response.data
 
     window.location.href = data.auth_url // Redirect to the Microsoft login page
+    console.log("Redirecting to Microsoft login page: ", data.auth_url)
     
     return response.status
   } catch (error) {
