@@ -212,20 +212,27 @@ def azure_ad_callback(request):
                 'X-CSRFToken': csrf_token,
                 'Content-Type': 'application/json',
             }
-            response = requests.post(microsoft_login_url, json=data, headers=headers)
+            
+            try:
+                response = requests.post(microsoft_login_url, json=data, headers=headers, allow_redirects=True)
+                logger.info(f"Response status code: {response.status_code}")
+                logger.info(f"Response headers: {response.headers}")
+                logger.info(f"Response content: {response.content}")
 
-            logger.info(f"We got to the resposne")
+                if response.status_code == 200:
+                    logger.info(f"Response code 200: {response.json()}")
+                    auth_token = response.json()['key']
 
-            if response.status_code == 200:
-                logger.info(f"Response code 200: {response.json()}")
-                auth_token = response.json()['key']
+                    redirect_response = redirect(f'{settings.FRONTEND_URL}/auth-callback?token={auth_token}')
+                    redirect_response.set_cookie(key='authToken', value=auth_token, httponly=True, samesite='None', secure=True, max_age=3600)
 
-                redirect_response = redirect(f'{settings.FRONTEND_URL}/auth-callback?token={auth_token}')
-                redirect_response.set_cookie(key='authToken', value=auth_token, httponly=True, samesite='None', secure=True, max_age=3600)
-
-                return redirect_response
-            else:
-                return JsonResponse({'error': 'Failed to authenticate with Microsoft'}, status=response.status_code)
+                    return redirect_response
+                else:
+                    logger.error(f"Failed to authenticate with Microsoft. Status code: {response.status_code}")
+                    return JsonResponse({'error': f'Failed to authenticate with Microsoft. Status code: {response.status_code}'}, status=response.status_code)
+            except requests.RequestException as e:
+                logger.error(f"Request to MicrosoftLogin failed: {str(e)}")
+                return JsonResponse({'error': f'Request to MicrosoftLogin failed: {str(e)}'}, status=500)
         else:
             return render(request, 'error.html', {'error': 'Failed to retrieve user email from Microsoft Graph'})
     else:
