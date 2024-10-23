@@ -7,7 +7,13 @@ import os
 from .settings import *
 from .settings import BASE_DIR
 
-ALLOWED_HOSTS = [os.environ["WEBSITE_HOSTNAME"]]
+ALLOWED_HOSTS = [
+    os.environ["WEBSITE_HOSTNAME"],
+    "https://yellow-sea-07d8df30f.5.azurestaticapps.net",
+    "https://django-react-test-e9ghbqcrf2djcmfu.israelcentral-01.azurewebsites.net",
+    '*' # DELETE THIS LATER
+]
+
 #DEBUG = False
 SECRET_KEY = os.environ['SECRET_KEY']
 #LOGIN_URL = 'login'
@@ -56,6 +62,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://yellow-sea-07d8df30f.5.azurestaticapps.net',
     'https://django-react-test-e9ghbqcrf2djcmfu.israelcentral-01.azurewebsites.net',
     'https://login.microsoftonline.com',
+
 ]
 
 FRONTEND_URL = "https://yellow-sea-07d8df30f.5.azurestaticapps.net"
