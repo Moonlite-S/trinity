@@ -18,7 +18,7 @@ def authenticate_jwt(request):
     return payload
 
 
-#stuff for sending sms verifcation request if implemented
+#stuff for sending sms verification request if implemented
 account_sid = settings.ACCOUNT_SID
 auth_token =  settings.AUTH_TOKEN
 from_phone_number = settings.PHONE_NUMBER

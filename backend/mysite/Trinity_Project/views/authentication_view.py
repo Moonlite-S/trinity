@@ -60,7 +60,7 @@ def logout_view(request):
 def index(request):
     return HttpResponse("Hello, world. You're at the Project index.")
 
-
+#this will show you the microsoft login 
 def azure_ad_login(request):
     client = ConfidentialClientApplication(
         settings.AZURE_AD_CLIENT_ID,
@@ -73,7 +73,7 @@ def azure_ad_login(request):
     )
     return redirect(auth_url)
 
-
+#This would check email
 def azure_ad_callback(request):
     code = request.GET.get('code')
     if not code:
@@ -97,7 +97,8 @@ def azure_ad_callback(request):
             'Authorization': f"Bearer {result['access_token']}",
         }
         user_info = requests.get('https://graph.microsoft.com/v1.0/me', headers=headers).json()
-        email = user_info.get('mail')
+        email = user_info.get('mail') #get the Microsoft email
+        name = user_info.get('displayName') #get the name from the displayName field
 
         if email:
             # Try to find the user in your database
@@ -105,16 +106,18 @@ def azure_ad_callback(request):
 
             if user is None:
                 # Optionally, create the user if they don't exist
-                user = User.objects.create_user(email=email, password=None)
+                user = User.objects.create_user(email=email, password=None,name=name)
                 user.save()
 
             # Authenticate and log the user in Django
             login(request, user)
-
+            #This is where you will be sent to after the login was successful
             return redirect('/api/projects/')  # Or wherever you want to redirect after login
         else:
+            #This is error would sent if we can get the email
             return render(request, 'error.html', {'error': 'Failed to retrieve user email from Microsoft Graph'})
     else:
+        
         return render(request, 'error.html', {'error': result.get('error_description')})
 
 
@@ -134,3 +137,16 @@ def check_mfa_status(access_token):
             if method['@odata.type'] == '#microsoft.graph.microsoftAuthenticatorAuthenticationMethod':
                 return True  # User has Microsoft Authenticator set up
     return False
+
+def azure_ad_logout(request):
+    # Log out the user locally
+    logout(request)
+
+    # Log out from Azure AD
+    azure_logout_url = (
+        f"https://login.microsoftonline.com/{settings.AZURE_AD_TENANT_ID}/oauth2/v2.0/logout"
+        f"?post_logout_redirect_uri={settings.AZURE_AD_POST_LOGOUT_REDIRECT_URI}"
+    )
+
+    # Redirect to Azure AD logout endpoint, and then back to your app
+    return redirect(azure_logout_url)
