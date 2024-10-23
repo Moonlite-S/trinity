@@ -214,7 +214,7 @@ def azure_ad_callback(request):
             }
             response = requests.post(microsoft_login_url, json=data, headers=headers)
 
-            logger.info(f"Response from MicrosoftLogin: {response.json()}")
+            logger.info(f"We got to the resposne")
 
             if response.status_code == 200:
                 logger.info(f"Response code 200: {response.json()}")
