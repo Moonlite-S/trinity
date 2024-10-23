@@ -22,6 +22,8 @@ import requests
 from ..utils import role_required
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.test import APIClient
+import logging
+
 # class RegisterView(APIView):
 #     '''
 #     DEPRECATED
@@ -102,6 +104,13 @@ from rest_framework.test import APIClient
 
 #     return response
 
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
+logger = logging.getLogger(__name__)
+
 def index(request):
     return HttpResponse("Hello, world. You're at the Project index.")
     
@@ -170,14 +179,16 @@ def azure_ad_callback(request):
 
         print("email: ", email)
         print("name: ", name)
+
+        logger.info(f"User info received: email={email}, name={name}")
         
         if email:
             # Try to find the user in your database
             user = User.objects.filter(email=email).first()
-            print("user: ", user)
+            logger.info(f"User found in database: {user}")
 
             if user is None:
-                print("user is None. Creating user...")
+                logger.info(f"User not found in database. Creating user...")
                 # Optionally, create the user if they don't exist
                 user = User.objects.create_user(email=email, password=None, username=email, name=name)
                 user.save()
@@ -187,9 +198,13 @@ def azure_ad_callback(request):
                 'access_token': result['access_token'],
             }
 
+            logger.info(f"Data for MicrosoftLogin: {data}")
+
             # Get the URL for the MicrosoftLogin view
             # We're trying to login through Allauth's social login
             microsoft_login_url = request.build_absolute_uri(reverse('microsoft_login'))
+
+            logger.info(f"MicrosoftLogin URL: {microsoft_login_url}")
 
             # Make a request to the MicrosoftLogin view
             csrf_token = get_token(request)
@@ -199,8 +214,10 @@ def azure_ad_callback(request):
             }
             response = requests.post(microsoft_login_url, json=data, headers=headers)
 
+            logger.info(f"Response from MicrosoftLogin: {response.json()}")
+
             if response.status_code == 200:
-                print("response: ", response.json())
+                logger.info(f"Response code 200: {response.json()}")
                 auth_token = response.json()['key']
 
                 redirect_response = redirect(f'{settings.FRONTEND_URL}/auth-callback?token={auth_token}')
