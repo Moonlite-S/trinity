@@ -52,7 +52,7 @@ export function InvoiceFormBase({ method, errorString, handleSubmit, currentInvo
                 <GenericInput type="text" name="project_id" label="Project ID" value={currentInvoiceData?.project_name} readOnly/>
                 <div className="grid grid-cols-2 gap-4">
                     <GenericInput type="date" name="invoice_date" label="Invoice Date" value={currentInvoiceData?.invoice_date} onChange={onDateChange} />
-                    <GenericSelect options={["Pending", "Paid"]} name="payment_status" label="Payment Status" value={currentInvoiceData?.payment_status} onChange={onStatusChange} />
+                    <GenericSelect options={["Pending", "Sent"]} name="payment_status" label="Payment Status" value={currentInvoiceData?.payment_status} onChange={onStatusChange} />
                 </div>
                 <GenericSlider name="payment_amount" label="Payment Amount" value={currentInvoiceData?.payment_amount ?? 0} onChange={handleNumeralChange} />
                 <BottomFormButton button_text={method === "POST" ? "Create Invoice" : "Update Invoice"} />

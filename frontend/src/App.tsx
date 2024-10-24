@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { Outlet, useLocation } from 'react-router-dom'
+import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import Home from './components/Home'
 import './App.css'
 import { checkUser } from './api/auth'
@@ -86,6 +86,11 @@ export function Verification() {
     // Change this to a custom loading screen
     if (loading) {
       return <LoadingComponent />
+    }
+
+    if (!auth) {
+      console.log("Not authenticated, redirecting to home")
+      return <Navigate to="/" />
     }
 
     return (

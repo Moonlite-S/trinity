@@ -268,7 +268,7 @@ class RFIChangeLog(models.Model):
 class Invoice(models.Model):
     payment_status_choices = [
         ('Pending', 'Pending'), 
-        ('Paid', 'Paid'), 
+        ('Sent', 'Sent'), 
     ]
     invoice_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     invoice_date = models.DateField()

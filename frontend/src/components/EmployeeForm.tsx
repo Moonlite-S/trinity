@@ -6,6 +6,16 @@ import { useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { createEmployee, updateEmployee } from "../api/employee"
 
+// This type uses the old update_employee endpoint. Update this when the endpoint is updated.
+type EmployeeUpdateProps = {
+    id: string,
+    name: string,
+    email: string,
+    username: string,
+    password: string,
+    role: Roles,
+}
+
 export function EmployeeForm({employee, method}: {employee?: EmployeeProps, method: "POST" | "PUT"}) {
     const email_regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
     const [errorString, setErrorString] = useState<string>("")
@@ -40,14 +50,27 @@ export function EmployeeForm({employee, method}: {employee?: EmployeeProps, meth
             return
         }
 
-        const data_to_send: EmployeeCreationProps = {
-            id: employee?.id,
-            name: name as string,
-            email: email as string,
-            username: email as string,
-            password1: password as string,
-            password2: re_password as string,
-            role: data.get('role') as Roles,
+        let data_to_send: EmployeeCreationProps | EmployeeUpdateProps
+
+        // Hacky dumb thing since Update Employee uses a different type
+        if (method === "POST") {
+            data_to_send = {
+                name: name as string,
+                email: email as string,
+                username: email as string,
+                password1: password as string,
+                password2: re_password as string,
+                role: data.get('role') as Roles,
+            }
+        } else {
+            data_to_send = {
+                id: employee?.id ?? '',
+                name: name as string,
+                email: email as string,
+                username: email as string,
+                password: password as string,
+                role: data.get('role') as Roles,
+            }
         }
 
         console.log('Current Data:', data_to_send)

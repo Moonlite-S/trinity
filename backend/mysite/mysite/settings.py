@@ -76,6 +76,7 @@ REST_FRAMEWORK = {
     #     'rest_framework.renderers.JSONRenderer',
     # ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        'django.contrib.auth.backends.ModelBackend',
         "rest_framework.authentication.TokenAuthentication",
         'rest_framework.authentication.SessionAuthentication',
     ]
@@ -255,15 +256,14 @@ PASSWORD_RESET_CONFIRM_REDIRECT_BASE_URL = \
 
 SOCIALACCOUNT_PROVIDERS = {
     "microsoft": {
-        'APP': {
+        'APPS': {
             'client_id': os.getenv('AZURE_CLIENT_ID'),
             'secret': os.getenv('AZURE_CLIENT_SECRET'),
-            'tenant': os.getenv('AZURE_TENANT_ID'),
-        },
-        'SCOPE': ['User.Read'],
-        'AUTH_PARAMS': {'prompt': 'select_account'},
-        'METHOD': 'oauth2',
-        'VERIFIED_EMAIL': True,
+            'settings': {
+                "tenant": os.getenv('AZURE_TENANT_ID'),
+                'callback_url': "http://localhost:8000/api/callback",
+            }
+        }
     }
 }
 

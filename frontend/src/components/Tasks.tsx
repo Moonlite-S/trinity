@@ -197,6 +197,10 @@ export function TaskList() {
         expandableRowComponent={({data}) => expandableRowComponent({data: data, user: user})}
         filterField={filterSearch}
       />}
+
+      <div className="flex flex-row justify-center gap-3 m-2">
+        <RouteButton route={"/main_menu"} text="Back"/>
+      </div>
     </>
   )
 }

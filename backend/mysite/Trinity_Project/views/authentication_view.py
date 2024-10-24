@@ -12,7 +12,6 @@ from ..models import User
 from ..utils import authenticate_user
 from ..serializers import UserSerializer
 from rest_framework.views import APIView
-import jwt
 from django.contrib.auth import authenticate,login,logout
 from django.middleware.csrf import get_token
 from django.shortcuts import redirect, render
@@ -104,24 +103,24 @@ import logging
 
 #     return response
 
-# logging.basicConfig(
-#     level=logging.DEBUG,
-#     format='%(asctime)s - %(levelname)s - %(message)s'
-# )
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
 logger = logging.getLogger(__name__)
 
 def index(request):
     return HttpResponse("Hello, world. You're at the Project index.")
     
-@role_required(allowed_roles=['Administrator'], allowed_methods=['PUT'])
+@role_required(allowed_roles=['Administrator', 'Manager'], allowed_methods=['PUT'])
 def update_user(request, id):
     user = User.objects.get(id=id)
 
     serializer = UserSerializer(user, data=request.data)
     if serializer.is_valid():
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @role_required(allowed_roles=['Administrator'], allowed_methods=['DELETE'])

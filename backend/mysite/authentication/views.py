@@ -32,7 +32,7 @@ def password_reset_confirm_redirect(request, uidb64, token):
 
 class MicrosoftLogin(SocialLoginView):
     adapter_class = MicrosoftGraphOAuth2Adapter
-    # callback_url = "http://localhost:5173/main_menu"
+    callback_url = "http://localhost:8000/api/callback"
     client_class = OAuth2Client
 
     def post(self, request, *args, **kwargs):
@@ -62,7 +62,7 @@ class RegisterEmployee(RegisterView):
     def perform_create(self, serializer):
         user = serializer.save(self.request)
         if 'role' in self.request.data:
-            user.name = self.request.data['name']
+            user.name = self.request.data['username']
             user.role = self.request.data['role']
             user.save()
         return user
@@ -70,6 +70,10 @@ class RegisterEmployee(RegisterView):
 class GetUserInfo(UserDetailsView):
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
+
+        # Remove the user if the authToken is not present
+        if not request.COOKIES.get('authToken'):
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         
         if response.status_code == 200:
             email = response.data.get('email')

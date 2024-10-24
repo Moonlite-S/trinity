@@ -48,5 +48,5 @@ urlpatterns = [
     path("invoice/project/<str:project_id>", invoice_by_project_id),
     path("invoice/not_paid", invoices_not_paid),
     path("login_athen",azure_ad_login),
-    path('callback/', azure_ad_callback, name='callback')
+    path('callback/', azure_ad_callback, name='callback'),
 ]

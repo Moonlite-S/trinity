@@ -24,6 +24,7 @@ export async function createEmployee(user : EmployeeCreationProps): Promise<numb
 
 export async function updateEmployee(user : EmployeeProps): Promise<number> {
     try {
+        console.log("User: ", user)
         const response = await AxiosInstance.put('api/user/update_user/' + user.id, user)
 
         if (response.status === 200) {

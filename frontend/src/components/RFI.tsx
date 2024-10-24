@@ -98,8 +98,6 @@ export default function ViewRFI() {
         { name: "Date Sent", selector: row => row.sent_out_date, sortable: true },
         { name: "Date Received", selector: row => row.date_received, sortable: true },
     ]
-
-
     return (
         <>
             <Header />
@@ -109,6 +107,10 @@ export default function ViewRFI() {
             </div>
 
             <GenericTable dataList={rfiList} isDataLoaded={rfiLoaded} columns={columns} FilterComponent={FilterComponent} expandableRowComponent={ExpandableRowComponent} filterField={""} />
+
+            <div className="flex flex-row justify-center gap-3 m-2">
+                <RouteButton route={"/main_menu"} text="Back"/>
+            </div>
         </>
     )
 }

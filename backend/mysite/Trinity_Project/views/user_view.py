@@ -26,14 +26,14 @@ def user_view(request):
 
 @role_required(allowed_roles=['Administrator'], allowed_methods=['GET','PUT','DELETE'])
 def user_edit(request,user_email):
-    user_2=User.objects.get(email=user_email)
+    user=User.objects.get(email=user_email)
 
     if request.method=='GET':
-        serializer = UserSerializer(user_2)
+        serializer = UserSerializer(user)
         return Response(serializer.data)
 
     elif request.method=='PUT':
-        serializer = UserSerializer(user_2, data=request.data)
+        serializer = UserSerializer(user, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -41,7 +41,7 @@ def user_edit(request,user_email):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method=='DELETE':
-        user_2.delete()
+        user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
         
 @role_required(allowed_roles=['Administrator', 'Manager', 'Team Member'], allowed_methods=['GET'])
