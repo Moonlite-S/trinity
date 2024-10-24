@@ -76,7 +76,7 @@ REST_FRAMEWORK = {
     #     'rest_framework.renderers.JSONRenderer',
     # ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        'django.contrib.auth.backends.ModelBackend',
+        #'django.contrib.auth.backends.ModelBackend',
         "rest_framework.authentication.TokenAuthentication",
         'rest_framework.authentication.SessionAuthentication',
     ]
@@ -91,7 +91,6 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173", # Local development
-    "http://localhost:3000", # React frontend
     "https://web.postman.co",
     "https://login.microsoftonline.com",
     "http://localhost:8000",
@@ -295,8 +294,6 @@ SOCIALACCOUNT_ADAPTER = 'Trinity_Project.adapters.CustomSocialAccountAdapter'
 FRONTEND_URL = "http://localhost:5173"
 AZURE_BACKEND_REDIRECT_URI = "http://localhost:8000/api/callback"
 
-SESSION_COOKIE_SECURE = True  
 CSRF_COOKIE_AGE=   timedelta(hours=8) 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
-#CELERY_BROKER_URL = 'redis://localhost:6379/0'
-AZURE_AD_POST_LOGOUT_REDIRECT_URI = 'http://127.0.0.1:8000/'
+AZURE_POST_LOGOUT_REDIRECT_URI = 'http://localhost:5173/'

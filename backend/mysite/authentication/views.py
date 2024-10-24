@@ -1,5 +1,5 @@
 from django.forms import model_to_dict
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 # Create your views here.
 from django.conf import settings
@@ -14,11 +14,10 @@ from dj_rest_auth.registration.views import RegisterView
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from dj_rest_auth.views import LoginView, LogoutView
-from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
-from django.views.decorators.csrf import csrf_protect
 from rest_framework.decorators import api_view
+from allauth.socialaccount.models import SocialAccount
 
 def email_confirm_redirect(request, key):
     return HttpResponseRedirect(
@@ -38,7 +37,8 @@ class MicrosoftLogin(SocialLoginView):
     def post(self, request, *args, **kwargs):
         print(f"Received request data in MicrosoftLogin: {request.data}")
         try:
-            return super().post(request, *args, **kwargs)
+            response = super().post(request, *args, **kwargs)
+            return response
         except Exception as e:
             print(f"Error in MicrosoftLogin: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -145,9 +145,28 @@ class CustomLoginView(LoginView):
         
 class CustomLogoutView(LogoutView):
     def post(self, request, *args, **kwargs):
+        # Check if the user has a social account with Microsoft
+        social_account = SocialAccount.objects.filter(user=request.user, provider='microsoft').first()
+
         response = super().post(request, *args, **kwargs)
         response.delete_cookie('authToken')
         response.delete_cookie('csrftoken')
+
+        if social_account:
+            print("User has logged in with Microsoft, so log out")
+            try:
+                # If they have logged in with Microsoft, we need to log them out from Microsoft as well
+                # Log out from Azure AD
+                azure_logout_url = (
+                f"https://login.microsoftonline.com/{settings.AZURE_TENANT_ID}/oauth2/v2.0/logout"
+                f"?post_logout_redirect_uri={settings.AZURE_POST_LOGOUT_REDIRECT_URI}"
+                )
+
+                # Redirect to Azure AD logout endpoint, and then back to your app
+                response.data = {'redirect_url': azure_logout_url}
+            except Exception as e:
+                print(f"Error in CustomLogoutView: {str(e)}")
+                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         return response
     

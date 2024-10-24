@@ -81,12 +81,18 @@ export async function login({email, password }: LoginProps): Promise<string> {
 }
 
 /**
- * Sends a GET request to log the user out
+ * Sends a POST request to log the user out
+ * 
+ * This is a very weird way to log out.
+ * 
+ * @returns a tuple [azureLogoutUrl, statusCode], where azureLogoutUrl is the URL to redirect to after logging out from Azure AD
+ * 
+ * if the user didn't log in through Microsoft, then azureLogoutUrl will be an empty string
  * 
  * TODO: Make sure to delete the session token
  * and anything that ties back to the user
  */
-export async function logout(): Promise<number> {
+export async function logout(): Promise<[string, string]> {
     try {
       const response = await AxiosInstance.post('auth/logout/', {}, {
         headers: {
@@ -94,19 +100,27 @@ export async function logout(): Promise<number> {
         }
       })
 
+      const azureLogoutUrl = response.data.redirect_url
+
+      console.log("Logout Response: ", response)
+
       if (response.status == 200) {
         console.log("Logged out")
         removeCookie('authToken')
         delete AxiosInstance.defaults.headers['Authorization']
-        return 200
+        if (azureLogoutUrl) {
+          return [azureLogoutUrl, "200"]
+        } else {
+          return ["", "200"]
+        }
       } else {
         console.log("Logout failed")
-        return 401
+        return ["401", "401"]
       }
 
     } catch (error) {
       console.error("Network Error: ",error)
-      return 500
+      return ["500", "500"]
     }
 }
 

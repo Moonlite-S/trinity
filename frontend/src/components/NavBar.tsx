@@ -43,10 +43,20 @@ function LogOut() {
     const handleClick = async() => {
         try {
             const response = await logout()
-            
-            if (response === 200) {
+            console.log("Response: ", response)
+
+            if (response[1] === "200") {
                 console.log("Logged out")
-                navigate("/")
+
+                // Only do this if the user logged in through Microsoft
+                if (response[0] !== "") {
+                    console.log("Redirecting to: ", response[0])
+                    window.location.href = response[0]
+
+                // Otherwise, just navigate to the home page
+                } else {
+                    navigate("/")
+                }
             } else {
                 console.log("Error: ", response)
             }
